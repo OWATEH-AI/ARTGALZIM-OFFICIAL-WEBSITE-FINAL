@@ -1,0 +1,775 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ARTGALZIM CENTER - Contemporary African Art | Domboshava, Zimbabwe</title>
+    <meta name="description" content="ARTGALZIM CENTER is a world-class contemporary art and cultural hub in Domboshava, Zimbabwe. Discover African art, exhibitions, and connect with Zimbabwean creativity." />
+    <meta name="keywords" content="African art, Zimbabwe art gallery, Domboshava, contemporary African art, Zimbabwean artists, art exhibitions Zimbabwe, ARTGALZIM" />
+    <meta property="og:title" content="ARTGALZIM CENTER - Contemporary African Art" />
+    <meta property="og:description" content="A cultural space where Zimbabwean creativity meets the world. Located in Domboshava, Zimbabwe." />
+    <meta property="og:type" content="website" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Inter:wght@300;400;500;600&family=Playfair+Display:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="css/style.css" />
+  </head>
+  <body>
+    <!-- ===== PRELOADER ===== -->
+    <div id="preloader">
+      <div class="preloader-inner">
+        <div class="preloader-logo">
+          <img src="images/logo.jpg" alt="ARTGALZIM Center Logo" id="preloader-logo-img"
+            onerror="this.style.display='none'; document.querySelector('.preloader-text-logo').style.display='block';" />
+          <div class="preloader-text-logo" style="display: none">ARTGALZIM</div>
+        </div>
+        <div class="preloader-bar"><div class="preloader-fill"></div></div>
+        <p class="preloader-label">Curating your experience</p>
+      </div>
+    </div>
+
+    <!-- ===== NAVBAR ===== -->
+    <header class="navbar" id="navbar">
+      <div class="nav-container">
+        <a
+          href="index.html"
+          class="nav-logo"
+          aria-label="ARTGALZIM CENTER Home"
+        >
+          <img
+            src="images/logo.jpg"
+            alt="ARTGALZIM Center"
+            class="logo-img"
+            onerror="
+              this.style.display = 'none';
+              this.nextElementSibling.style.display = 'flex';
+            "
+          />
+          <div class="nav-site-name"><span class="name-main">ARTGALZIM</span><span class="name-sub">CENTER</span></div>
+        </a>
+
+        <nav class="nav-links" id="navLinks">
+          <a href="index.html" class="nav-link active" id="nav-home">Home</a>
+          <a href="exhibitions.html" class="nav-link" id="nav-exhibitions"
+            >Exhibitions</a
+          >
+          <a href="artists.html" class="nav-link" id="nav-artists">Artists</a>
+          <a href="artworks.html" class="nav-link" id="nav-artworks"
+            >Artworks</a
+          >
+          <a href="about.html" class="nav-link" id="nav-about">About</a>
+          <a href="visit.html" class="nav-link" id="nav-visit">Visit</a>
+          <a href="contact.html" class="nav-link nav-link-cta" id="nav-contact"
+            >Contact</a
+          >
+        </nav>
+
+        <div class="nav-controls">
+          <a href="donate.html" class="donate-btn-link" aria-label="Donate">
+            <span class="donate-text">Donate</span>
+            <svg class="donate-icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 12 20 22 4 22 4 12"></polyline><rect x="2" y="7" width="20" height="5"></rect><line x1="12" y1="22" x2="12" y2="7"></line><path d="M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7z"></path><path d="M12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7z"></path></svg>
+          </a>
+          <button
+            class="theme-toggle"
+            id="themeToggle"
+            aria-label="Toggle dark/light mode"
+            title="Toggle theme"
+          >
+            <svg
+              class="icon-sun"
+              xmlns="http://www.w3.org/2000/svg"
+              width="18"
+              height="18"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+            >
+              <circle cx="12" cy="12" r="5" />
+              <line x1="12" y1="1" x2="12" y2="3" />
+              <line x1="12" y1="21" x2="12" y2="23" />
+              <line x1="4.22" y1="4.22" x2="5.64" y2="5.64" />
+              <line x1="18.36" y1="18.36" x2="19.78" y2="19.78" />
+              <line x1="1" y1="12" x2="3" y2="12" />
+              <line x1="21" y1="12" x2="23" y2="12" />
+              <line x1="4.22" y1="19.78" x2="5.64" y2="18.36" />
+              <line x1="18.36" y1="5.64" x2="19.78" y2="4.22" />
+            </svg>
+            <svg
+              class="icon-moon"
+              xmlns="http://www.w3.org/2000/svg"
+              width="18"
+              height="18"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+            >
+              <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
+            </svg>
+          </button>
+          <button class="panel-toggle" id="panelToggle" aria-label="Open Options">
+            <span></span><span></span><span></span>
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <div class="left-social-bar">
+      <a href="https://www.facebook.com" target="_blank" class="left-social-link" aria-label="Facebook">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg>
+      </a>
+      <a href="https://www.instagram.com" target="_blank" class="left-social-link" aria-label="Instagram">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line></svg>
+      </a>
+      <div class="left-social-divider"></div>
+      <span class="left-social-label">Follow Us</span>
+    </div>
+
+    <!-- ===== RIGHT SIDEBAR DRAWER ===== -->
+    <aside class="sidebar-drawer" id="rightSidebar">
+      <div class="sidebar-drawer-header">
+        <div class="sidebar-drawer-logo">ARTGALZIM <span>Center</span></div>
+        <button class="sidebar-close-btn" id="sidebarCloseBtn" aria-label="Close menu">✕</button>
+      </div>
+      <div class="sidebar-drawer-body">
+        <div class="sidebar-nav-section">
+          <h4>Explore & Services</h4>
+          <div class="sidebar-nav-links">
+          <a href="index.html" class="sidebar-nav-link active">Home</a>
+          <a href="exhibitions.html" class="sidebar-nav-link">Exhibitions</a>
+          <a href="artists.html" class="sidebar-nav-link">Artists</a>
+          <a href="artworks.html" class="sidebar-nav-link">Artworks</a>
+          <a href="about.html" class="sidebar-nav-link">About Us</a>
+          <a href="services.html" class="sidebar-nav-link">Services</a>
+          <a href="visit.html" class="sidebar-nav-link">Plan Your Visit</a>
+          <a href="contact.html" class="sidebar-nav-link">Contact</a>
+          <a href="donate.html" class="sidebar-nav-link">Donate & Support</a>
+          <a href="owa-technologies.html" class="sidebar-nav-link">OWA TECHNOLOGIES</a>
+        </div>
+        </div>
+        <div class="sidebar-info-section">
+          <h4>Location</h4>
+          <p>Mverechena Business Center<br/>Domboshava, Zimbabwe</p>
+        </div>
+        <div class="sidebar-info-section">
+          <h4>Call or Email</h4>
+          <p><a href="tel:+263776330869">+263 77 633 0869</a></p>
+          <p><a href="mailto:info@artgalzim.com">info@artgalzim.com</a></p>
+        </div>
+      </div>
+    </aside>
+
+    <div class="mobile-overlay" id="mobileOverlay"></div>
+
+    <!-- ===== HERO ===== -->
+    <section class="hero" id="hero">
+      <div class="hero-slides">
+        <div class="hero-slide active" style="background-image: url('images/artwork_1.png')"></div>
+        <div class="hero-slide" style="background-image: url('images/domboshava.png')"></div>
+        <div class="hero-slide" style="background-image: url('images/hero_gallery.png')"></div>
+      </div>
+      <div class="hero-overlay"></div>
+      <div class="hero-content">
+        <div class="hero-badge animate-in">
+          <span class="badge-dot"></span>
+          <span>Domboshava, Zimbabwe</span>
+        </div>
+        <h1 class="hero-title animate-in delay-1">
+          Contemporary African Art<br />
+          <em>in the Heart of Domboshava</em>
+        </h1>
+        <p class="hero-subtitle animate-in delay-2">
+          A cultural space where Zimbabwean creativity meets the world.
+        </p>
+        <div class="hero-actions animate-in delay-3">
+          <a
+            href="exhibitions.html"
+            class="btn btn-primary"
+            id="hero-explore-btn"
+            >Explore Exhibitions</a
+          >
+          <a href="visit.html" class="btn btn-outline" id="hero-visit-btn"
+            >Visit the Gallery</a
+          >
+        </div>
+      </div>
+      <div class="hero-indicators">
+        <button
+          class="hero-dot active"
+          data-slide="0"
+          aria-label="Slide 1"
+        ></button>
+        <button class="hero-dot" data-slide="1" aria-label="Slide 2"></button>
+        <button class="hero-dot" data-slide="2" aria-label="Slide 3"></button>
+      </div>
+      <div class="hero-scroll-cue">
+        <span>Scroll</span>
+        <div class="scroll-line"></div>
+      </div>
+    </section>
+
+    <!-- ===== TICKER ===== -->
+    <div class="ticker-wrap">
+      <div class="ticker-track">
+        <span>Contemporary African Art</span><span class="ticker-sep">***</span>
+        <span>Domboshava, Zimbabwe</span><span class="ticker-sep">***</span>
+        <span>Zimbabwean Creativity</span><span class="ticker-sep">***</span>
+        <span>Current Exhibition: Roots &amp; Visions</span
+        ><span class="ticker-sep">***</span> <span>Open 09:00 - 18:00 Daily</span
+        ><span class="ticker-sep">***</span> <span>African Art for the World</span
+        ><span class="ticker-sep">***</span> <span>Contemporary African Art</span
+        ><span class="ticker-sep">***</span> <span>Domboshava, Zimbabwe</span
+        ><span class="ticker-sep">***</span> <span>Zimbabwean Creativity</span
+        ><span class="ticker-sep">***</span>
+        <span>Current Exhibition: Roots &amp; Visions</span
+        ><span class="ticker-sep">***</span> <span>Open 09:00 - 18:00 Daily</span
+        ><span class="ticker-sep">***</span> <span>African Art for the World</span
+        ><span class="ticker-sep">***</span>
+      </div>
+    </div>
+
+    <!-- ===== FEATURED ARTWORKS (ANIMATED GRID) ===== -->
+    <section class="section artworks-grid-section" id="featured">
+      <div class="section-header reveal">
+        <span class="section-eyebrow">Featured Works</span>
+        <h2 class="section-title">The Art of Africa, Curated</h2>
+        <p class="section-lead">
+          An intimate selection of works by Zimbabwean and African contemporary
+          artists.
+        </p>
+      </div>
+      <div class="masonry-grid reveal-stagger">
+        <article class="masonry-item" data-id="aw1">
+          <div class="masonry-img-wrap">
+            <img
+              src="images/artwork_1.png"
+              alt="Abstract Expression I"
+              loading="lazy"
+              class="masonry-img"
+            />
+            <div class="masonry-hover">
+              <div class="masonry-info">
+                <h3>Abstract Expression I</h3>
+                <p>Chiedza Mutasa | 2024 | Acrylic on Canvas</p>
+                <a href="artworks.html" class="masonry-link"><u><b>View Artwork &gt;</b></u></a>
+              </div>
+            </div>
+          </div>
+        </article>
+        <article class="masonry-item tall" data-id="aw2">
+          <div class="masonry-img-wrap">
+            <img
+              src="images/artwork_2.png"
+              alt="Granite Soul"
+              loading="lazy"
+              class="masonry-img"
+            />
+            <div class="masonry-hover">
+              <div class="masonry-info">
+                <h3>Granite Soul</h3>
+                <p>Tendai Moyo | 2023 | Stone &amp; Bronze</p>
+                <a href="artworks.html" class="masonry-link"><u><b>View Artwork &gt;</b></u></a>
+              </div>
+            </div>
+          </div>
+        </article>
+        <article class="masonry-item" data-id="aw3">
+          <div class="masonry-img-wrap">
+            <img
+              src="images/artwork_3.png"
+              alt="Echoes of Identity"
+              loading="lazy"
+              class="masonry-img"
+            />
+            <div class="masonry-hover">
+              <div class="masonry-info">
+                <h3>Echoes of Identity</h3>
+                <p>Rudo Mazvita | 2024 | Oil on Canvas</p>
+                <a href="artworks.html" class="masonry-link"><u><b>View Artwork &gt;</b></u></a>
+              </div>
+            </div>
+          </div>
+        </article>
+        <article class="masonry-item wide" data-id="aw4">
+          <div class="masonry-img-wrap">
+            <img
+              src="images/artwork_4.png"
+              alt="Geometric Heritage"
+              loading="lazy"
+              class="masonry-img"
+            />
+            <div class="masonry-hover">
+              <div class="masonry-info">
+                <h3>Geometric Heritage</h3>
+                <p>Farai Dziva | 2024 | Mixed Media</p>
+                <a href="artworks.html" class="masonry-link"><u><b>View Artwork &gt;</b></u></a>
+              </div>
+            </div>
+          </div>
+        </article>
+        <!-- Added items for mobile mode -->
+        <article class="masonry-item mobile-added-item" data-id="aw5">
+          <div class="masonry-img-wrap">
+            <img
+              src="images/artwork_5.png"
+              alt="Heritage Rhythms"
+              loading="lazy"
+              class="masonry-img"
+            />
+            <div class="masonry-hover">
+              <div class="masonry-info">
+                <h3>Heritage Rhythms</h3>
+                <p>Willard Magiga | 2025 | Oils on Canvas</p>
+                <a href="artworks.html" class="masonry-link"><u><b>View Artwork &gt;</b></u></a>
+              </div>
+            </div>
+          </div>
+        </article>
+        <article class="masonry-item mobile-added-item tall" data-id="aw6">
+          <div class="masonry-img-wrap">
+            <img
+              src="images/artwork_6.png"
+              alt="Ancestral Echoes"
+              loading="lazy"
+              class="masonry-img"
+            />
+            <div class="masonry-hover">
+              <div class="masonry-info">
+                <h3>Ancestral Echoes</h3>
+                <p>Willard Magiga | 2025 | Mixed Media</p>
+                <a href="artworks.html" class="masonry-link"><u><b>View Artwork &gt;</b></u></a>
+              </div>
+            </div>
+          </div>
+        </article>
+      </div>
+      <div class="section-cta reveal">
+        <a href="artworks.html" class="btn btn-ghost" id="view-all-artworks-btn"
+          >View All Artworks</a
+        >
+      </div>
+    </section>
+
+    <!-- ===== VIRTUAL WALK THROUGH ===== -->
+    <section class="section walk-section" id="walkthrough">
+      <div class="walk-intro reveal">
+        <span class="section-eyebrow">Immersive Experience</span>
+        <h2 class="section-title">Walk Through the Gallery</h2>
+        <p class="section-lead">
+          Experience contemporary African art in an intimate gallery space
+          surrounded by the granite hills of Domboshava.
+        </p>
+      </div>
+      <div class="walk-track-outer">
+        <div class="walk-track" id="walkTrack">
+          <div
+            class="walk-frame"
+            style="background-image: url(&quot;images/hero_gallery.png&quot;)"
+          >
+            <div class="walk-caption">
+              <span>Main Gallery</span>
+              <p>
+                The central exhibition hall bathed in natural Zimbabwean light
+              </p>
+            </div>
+          </div>
+          <div
+            class="walk-frame"
+            style="background-image: url(&quot;images/domboshava.png&quot;)"
+          >
+            <div class="walk-caption">
+              <span>Garden Terrace</span>
+              <p>Outdoor works set against the ancient granite formations</p>
+            </div>
+          </div>
+          <div
+            class="walk-frame"
+            style="background-image: url(&quot;images/artwork_1.png&quot;)"
+          >
+            <div class="walk-caption">
+              <span>Roots &amp; Visions Gallery</span>
+              <p>Our flagship exhibition " bold and transformative</p>
+            </div>
+          </div>
+          <div
+            class="walk-frame"
+            style="background-image: url(&quot;images/artwork_3.png&quot;)"
+          >
+            <div class="walk-caption">
+              <span>Women in Art Wing</span>
+              <p>
+                Celebrating African women through powerful visual narratives
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="walk-controls">
+        <button class="walk-btn" id="walkPrev" aria-label="Previous frame">
+          &lt;
+        </button>
+        <div class="walk-dots" id="walkDots">
+          <button class="walk-dot active" data-frame="0"></button>
+          <button class="walk-dot" data-frame="1"></button>
+          <button class="walk-dot" data-frame="2"></button>
+          <button class="walk-dot" data-frame="3"></button>
+        </div>
+        <button class="walk-btn" id="walkNext" aria-label="Next frame">
+          &gt;
+        </button>
+      </div>
+    </section>
+
+    <!-- ===== CURRENT EXHIBITION ===== -->
+    <section class="section exhibition-feature-section" id="current-exhibition">
+      <div class="exhibition-feature reveal">
+        <div class="exhibition-feature-img">
+          <img
+            src="images/artwork_2.png"
+            alt="Roots & Visions Exhibition"
+            loading="lazy"
+          />
+          <div class="exhibit-badge">Now Open</div>
+        </div>
+        <div class="exhibition-feature-content">
+          <span class="section-eyebrow">Current Exhibition</span>
+          <h2 class="section-title">Roots &amp; Visions</h2>
+          <p class="exhibit-dates">15 February " 30 April 2026</p>
+          <p class="exhibit-desc">
+            An expansive survey of Zimbabwean contemporary painting and
+            sculpture, exploring themes of identity, transformation, and
+            cultural heritage. Featuring 14 artists from Harare, Domboshava and
+            beyond.
+          </p>
+          <div class="exhibit-meta">
+            <div class="exhibit-meta-item">
+              <span class="meta-label">Artists</span
+              ><span class="meta-val">14 Featured Artists</span>
+            </div>
+            <div class="exhibit-meta-item">
+              <span class="meta-label">Location</span
+              ><span class="meta-val">ARTGALZIM, Domboshava</span>
+            </div>
+          </div>
+          <a
+            href="exhibitions.html"
+            class="btn btn-primary"
+            id="view-exhibition-btn"
+            >Explore Exhibition</a
+          >
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== DISCOVER AFRICAN ART (Storytelling) ===== -->
+    <section class="section discover-section" id="discover">
+      <div
+        class="discover-hero reveal"
+        style="background-image: url(&quot;images/domboshava.png&quot;)"
+      >
+        <div class="discover-hero-overlay"></div>
+        <div class="discover-hero-text">
+          <span class="section-eyebrow light">Storytelling</span>
+          <h2 class="section-title light">Discover African Creativity</h2>
+          <p class="section-lead light">
+            Where the ancient and the contemporary converge beneath Zimbabwe's
+            granite skies.
+          </p>
+        </div>
+      </div>
+      <div class="discover-cards reveal-stagger">
+        <div class="discover-card">
+          <div class="discover-card-icon">*</div>
+          <h3>Zimbabwean Art Heritage</h3>
+          <p>
+            From the ancient rock paintings of Domboshava Caves to the vibrant
+            canvases of today's urban studios - Zimbabwe's visual culture spans
+            millennia. The granite hills that surround our gallery are
+            themselves a canvas of human expression.
+          </p>
+          <a href="about.html" class="text-link"><u><b>Learn More &gt;</b></u></a>
+        </div>
+        <div class="discover-card">
+          <div class="discover-card-icon">*</div>
+          <h3>Contemporary African Artists</h3>
+          <p>
+            We champion artists who challenge, provoke, and celebrate. Our
+            roster features painters, sculptors, and multimedia artists whose
+            work speaks to global conversations while remaining rooted in
+            African soil.
+          </p>
+          <a href="artists.html" class="text-link"><u><b>Meet the Artists &gt;</b></u></a>
+        </div>
+        <div class="discover-card">
+          <div class="discover-card-icon">*</div>
+          <h3>Women in African Art</h3>
+          <p>
+            ARTGALZIM CENTER actively platforms women artists - their stories of
+            womanhood, identity, resilience and beauty. Our inaugural vernissage
+            celebrated female creatives from across Zimbabwe.
+          </p>
+          <a href="exhibitions.html" class="text-link"><u><b>View Exhibitions &gt;</b></u></a>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== ARTISTS PREVIEW ===== -->
+    <section class="section artists-section" id="artists-preview">
+      <div class="section-header reveal">
+        <span class="section-eyebrow">The Creators</span>
+        <h2 class="section-title">Featured Artists</h2>
+      </div>
+      <div class="artists-grid reveal-stagger">
+        <article class="artist-card">
+          <div class="artist-img-wrap">
+            <img src="images/artwork_3.png" alt="Rudo Mazvita" loading="lazy" />
+            <div class="artist-overlay">
+              <a href="artists.html" class="artist-profile-btn">View Profile</a>
+            </div>
+          </div>
+          <div class="artist-info">
+            <h3 class="artist-name">Rudo Mazvita</h3>
+            <p class="artist-medium">Painter | Harare, Zimbabwe</p>
+            <p class="artist-bio">
+              Explores themes of African womanhood and transformation through
+              layered oil paintings.
+            </p>
+          </div>
+        </article>
+        <article class="artist-card">
+          <div class="artist-img-wrap">
+            <img src="images/artwork_2.png" alt="Tendai Moyo" loading="lazy" />
+            <div class="artist-overlay">
+              <a href="artists.html" class="artist-profile-btn">View Profile</a>
+            </div>
+          </div>
+          <div class="artist-info">
+            <h3 class="artist-name">Tendai Moyo</h3>
+            <p class="artist-medium">Sculptor | Domboshava, Zimbabwe</p>
+            <p class="artist-bio">
+              Stone and bronze works that channel the ancient spirit of the
+              Mwerechena landscape.
+            </p>
+          </div>
+        </article>
+        <article class="artist-card">
+          <div class="artist-img-wrap">
+            <img
+              src="images/artwork_1.png"
+              alt="Chiedza Mutasa"
+              loading="lazy"
+            />
+            <div class="artist-overlay">
+              <a href="artists.html" class="artist-profile-btn">View Profile</a>
+            </div>
+          </div>
+          <div class="artist-info">
+            <h3 class="artist-name">Chiedza Mutasa</h3>
+            <p class="artist-medium">Mixed Media | Bulawayo, Zimbabwe</p>
+            <p class="artist-bio">
+              Abstract compositions merging traditional Ndebele patterns with contemporary abstraction.
+            </p>
+          </div>
+        </article>
+        <article class="artist-card">
+          <div class="artist-img-wrap">
+            <img src="images/artwork_4.png" alt="Farai Dziva" loading="lazy" />
+            <div class="artist-overlay">
+              <a href="artists.html" class="artist-profile-btn">View Profile</a>
+            </div>
+          </div>
+          <div class="artist-info">
+            <h3 class="artist-name">Farai Dziva</h3>
+            <p class="artist-medium">Painter | Harare, Zimbabwe</p>
+            <p class="artist-bio">
+              Geometric abstraction inspired by Zimbabwean textile traditions and digital culture.
+            </p>
+          </div>
+        </article>
+        <!-- Added artists for mobile mode -->
+        <article class="artist-card mobile-added-item">
+          <div class="artist-img-wrap">
+            <img src="images/artwork_5.png" alt="Simba Dongo" loading="lazy" />
+            <div class="artist-overlay">
+              <a href="artists.html" class="artist-profile-btn">View Profile</a>
+            </div>
+          </div>
+          <div class="artist-info">
+            <h3 class="artist-name">Simba Dongo</h3>
+            <p class="artist-medium">Expressionist | Mutare, Zimbabwe</p>
+            <p class="artist-bio">
+              Capturing vibrant street energy through bold, emotive brushwork and urban color palettes.
+            </p>
+          </div>
+        </article>
+        <article class="artist-card mobile-added-item">
+          <div class="artist-img-wrap">
+            <img src="images/artwork_6.png" alt="Nyasha Zvakare" loading="lazy" />
+            <div class="artist-overlay">
+              <a href="artists.html" class="artist-profile-btn">View Profile</a>
+            </div>
+          </div>
+          <div class="artist-info">
+            <h3 class="artist-name">Nyasha Zvakare</h3>
+            <p class="artist-medium">Ceramicist | Kariba, Zimbabwe</p>
+            <p class="artist-bio">
+              Blending ancient pottery traditions with contemporary sculptural forms and textures.
+            </p>
+          </div>
+        </article>
+      </div>
+      <div class="section-cta reveal">
+        <a href="artists.html" class="btn btn-ghost" id="view-all-artists-btn"
+          >View All Artists</a
+        >
+      </div>
+    </section>
+
+    <!-- ===== STATS / NUMBERS ===== -->
+    <section class="section stats-section reveal">
+      <div class="stats-grid">
+        <div class="stat-item">
+          <div class="stat-number" data-count="34">0</div>
+          <div class="stat-label">Artists Exhibited</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-number" data-count="8">0</div>
+          <div class="stat-label">Exhibitions Hosted</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-number" data-count="120">0</div>
+          <div class="stat-label">Artworks Displayed</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-number" data-count="12">0</div>
+          <div class="stat-label">Countries Reached</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== VISIT CTA ===== -->
+    <section class="section visit-cta-section reveal">
+      <div
+        class="visit-cta"
+        style="background-image: url(&quot;images/domboshava.png&quot;)"
+      >
+        <div class="visit-cta-overlay"></div>
+        <div class="visit-cta-content">
+          <span class="section-eyebrow light">Plan Your Visit</span>
+          <h2 class="section-title light">
+            27km from Harare.<br />A World Away.
+          </h2>
+          <p class="section-lead light">
+            Nestled among the ancient granite formations of Domboshava,
+            ARTGALZIM CENTER is an unmissable cultural destination.
+          </p>
+          <div class="visit-cta-actions">
+            <a href="visit.html" class="btn btn-primary" id="get-directions-btn"
+              >Get Directions</a
+            >
+            <a
+              href="contact.html"
+              class="btn btn-outline-light"
+              id="contact-us-btn"
+              >Contact Us</a
+            >
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== FOOTER ===== -->
+  <footer class="footer" id="footer">
+    <div class="footer-top">
+      <div class="footer-brand">
+        <img src="images/logo.jpg" alt="ARTGALZIM Center" class="footer-logo" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';" />
+        <div class="footer-logo-text" style="display: none">ARTGALZIM<br /><small>CENTER</small></div>
+        <p class="footer-tagline">Contemporary African Art<br />in the Heart of Domboshava</p>
+        <div class="footer-social">
+          <a href="https://wa.me/263776330869?text=Hello%20ARTGALZIM%20Center%2C%20I%20discovered%20your%20gallery%20online%20and%20would%20like%20to%20learn%20more%20about%20your%20exhibitions." target="_blank" aria-label="WhatsApp" class="social-link">
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+          </a>
+          <a href="https://www.instagram.com" target="_blank" aria-label="Instagram" class="social-link">
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="5" /><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z" /><line x1="17.5" y1="6.5" x2="17.51" y2="6.5" /></svg>
+          </a>
+          <a href="https://www.facebook.com" target="_blank" aria-label="Facebook" class="social-link">
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z" /></svg>
+          </a>
+        </div>
+      </div>
+      <nav class="footer-nav" style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 2rem;">
+        <div class="footer-col">
+          <h4 class="footer-col-title">Explore</h4>
+          <a href="exhibitions.html">Exhibitions</a>
+          <a href="artworks.html">Artworks</a>
+          <a href="artists.html">Artists</a>
+          <a href="services.html">Services</a>
+        </div>
+        <div class="footer-col">
+          <h4 class="footer-col-title">About</h4>
+          <a href="about.html">Our Story</a>
+          <a href="about.html#mission">Mission &amp; Vision</a>
+          <a href="about.html#team">The Team</a>
+          <a href="privacy-policy.html">Privacy Policy</a>
+        </div>
+        <div class="footer-col">
+          <h4 class="footer-col-title">Support</h4>
+          <a href="donate.html">Donate</a>
+          <a href="owa-technologies.html">OWA TECH</a>
+        </div>
+        <div class="footer-col">
+          <h4 class="footer-col-title">Visit</h4>
+          <a href="visit.html">Plan Your Visit</a>
+          <a href="visit.html#directions">Directions</a>
+          <a href="contact.html">Contact</a>
+        </div>
+      </nav>
+      <div class="footer-contact">
+        <h4 class="footer-col-title">Get in Touch</h4>
+        <p>Mverechena Center, Harare</p>
+        <p><a href="tel:+263776330869">+263 77 633 0869</a></p>
+        <p><a href="mailto:info@artgalzim.com">info@artgalzim.com</a></p>
+      </div>
+    </div>
+    <div class="footer-bottom" style="border-top: 1px solid var(--border); padding: 0.8rem 0; margin-top: 1.5rem;">
+      <div style="max-width: 1400px; margin: 0 auto; padding: 0 2rem; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
+        <p style="font-size: 0.8rem; color: var(--text-muted);">&copy; 2026 ARTGALZIM CENTER</p>
+        <div style="font-weight: 700; letter-spacing: 0.15em; color: var(--gold); font-size: 0.72rem; text-transform: uppercase;">
+          POWERED BY <a href="owa-technologies.html" style="color: inherit; text-decoration: none; border-bottom: 2px solid var(--gold);">OWA TECHNOLOGIES</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+    <!-- ===== WHATSAPP FLOATING BUTTON ===== -->
+    <a
+      href="https://wa.me/263776330869?text=Hello%20ARTGALZIM%20Center%2C%20I%20discovered%20your%20gallery%20online%20and%20would%20like%20to%20learn%20more%20about%20your%20exhibitions."
+      target="_blank"
+      class="whatsapp-fab"
+      id="whatsappFab"
+      aria-label="Chat on WhatsApp"
+      title="Chat with us on WhatsApp"
+    >
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        width="28"
+        height="28"
+        viewBox="0 0 24 24"
+        fill="currentColor"
+      >
+        <path
+          d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"
+        />
+      </svg>
+      <span class="fab-tooltip">Chat with us</span>
+    </a>
+
+    <!-- ===== BACK TO TOP ===== -->
+    <button class="back-to-top" id="backToTop" aria-label="Back to top">
+      ^
+    </button>
+
+    <script src="js/main.js"></script>
+  </body>
+</html>

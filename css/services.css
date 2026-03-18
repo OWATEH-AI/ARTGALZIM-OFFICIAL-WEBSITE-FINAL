@@ -1,0 +1,223 @@
+/* Services Page Specific Styles */
+.services-container {
+    padding: 4rem 5%;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.service-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 2.5rem;
+    margin-bottom: 3rem;
+    position: relative;
+    overflow: hidden;
+    transition: transform 0.3s var(--ease), box-shadow 0.3s var(--ease);
+}
+
+.service-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+}
+
+.service-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 4px;
+    height: 100%;
+    background: var(--gold);
+}
+
+.service-mentorship {
+    border-color: rgba(220, 100, 180, 0.3);
+    background: linear-gradient(135deg, var(--surface) 0%, rgba(220, 100, 180, 0.05) 100%);
+}
+
+.service-mentorship::before {
+    background: #dc64b4; /* Pinkish from flyer */
+}
+
+.service-title {
+    font-family: "Cormorant Garamond", serif;
+    font-size: 2.5rem;
+    color: #fff;
+    margin-bottom: 1rem;
+}
+
+.service-meta {
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+    color: #dc64b4;
+    margin-bottom: 1.5rem;
+    display: flex;
+    gap: 1.5rem;
+    flex-wrap: wrap;
+}
+
+.service-meta span {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.service-description {
+    font-size: 1.1rem;
+    color: var(--text-muted);
+    margin-bottom: 2rem;
+    max-width: 800px;
+}
+
+.price-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 2.5rem;
+}
+
+.price-item {
+    background: rgba(255,255,255,0.03);
+    padding: 1.5rem;
+    border-radius: 4px;
+    text-align: center;
+    border: 1px solid rgba(255,255,255,0.05);
+}
+
+.price-value {
+    font-size: 2rem;
+    font-weight: 600;
+    color: #dc64b4;
+    margin-bottom: 0.5rem;
+}
+
+.price-label {
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--text-dim);
+}
+
+.discount-list {
+    background: rgba(220, 100, 180, 0.03);
+    border: 1px dashed rgba(220, 100, 180, 0.2);
+    padding: 1.5rem;
+    border-radius: 4px;
+    margin-bottom: 2rem;
+}
+
+.discount-list h4 {
+    font-size: 0.9rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: #dc64b4;
+    margin-bottom: 1rem;
+}
+
+.discount-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 1rem;
+}
+
+.discount-item {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.9rem;
+    padding: 0.5rem 0;
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+}
+
+.discount-item:last-child {
+    border-bottom: none;
+}
+
+.activity-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 2rem;
+    margin-top: 2rem;
+}
+
+.activity-card {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    padding: 2rem;
+    border-radius: var(--radius);
+    transition: all 0.3s var(--ease);
+}
+
+.activity-card:hover {
+    border-color: var(--gold);
+    transform: translateY(-3px);
+}
+
+.activity-icon {
+    font-size: 2rem;
+    margin-bottom: 1rem;
+    color: var(--gold);
+}
+
+.activity-card h3 {
+    margin-bottom: 1rem;
+}
+
+.activity-card p {
+    font-size: 0.95rem;
+    color: var(--text-muted);
+}
+
+.certificate-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.75rem;
+    background: linear-gradient(to right, #dc64b4, #8a2be2);
+    color: #fff;
+    padding: 0.75rem 1.5rem;
+    border-radius: 50px;
+    font-weight: 600;
+    margin-top: 1rem;
+    box-shadow: 0 4px 15px rgba(220, 100, 180, 0.3);
+}
+
+.download-flier-wrap {
+    display: flex;
+    justify-content: flex-end;
+    margin-bottom: 1.5rem;
+}
+
+.btn-download {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.75rem;
+    background: rgba(201, 168, 76, 0.1);
+    color: var(--gold);
+    border: 1px solid var(--gold);
+    padding: 0.75rem 1.25rem;
+    border-radius: var(--radius);
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    font-weight: 600;
+    transition: all 0.3s var(--ease);
+}
+
+.btn-download:hover {
+    background: var(--gold);
+    color: #000;
+    transform: translateY(-2px);
+}
+
+@media (max-width: 768px) {
+    .service-title {
+        font-size: 2rem;
+    }
+    .price-grid {
+        grid-template-columns: 1fr;
+    }
+    .discount-grid {
+        grid-template-columns: 1fr;
+    }
+}

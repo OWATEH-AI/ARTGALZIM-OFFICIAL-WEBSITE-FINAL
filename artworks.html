@@ -1,0 +1,680 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Artworks - ARTGALZIM CENTER | African Art Collection</title>
+  <meta name="description" content="Explore our curated collection of contemporary African artworks. Detailed viewing with our immersive digital gallery."/>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Inter:wght@300;400;500;600&family=Playfair+Display:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="css/style.css"/>
+</head>
+<body class="page-artworks">
+    <!-- ===== PRELOADER ===== -->
+    <div id="preloader">
+      <div class="preloader-inner">
+        <div class="preloader-logo">
+          <img src="images/logo.jpg" alt="ARTGALZIM Center Logo" id="preloader-logo-img"
+            onerror="this.style.display='none'; document.querySelector('.preloader-text-logo').style.display='block';" />
+          <div class="preloader-text-logo" style="display: none">ARTGALZIM</div>
+        </div>
+        <div class="preloader-bar"><div class="preloader-fill"></div></div>
+        <p class="preloader-label">Curating your experience</p>
+      </div>
+    </div>
+
+  <header class="navbar" id="navbar">
+    <div class="nav-container">
+      <a href="index.html" class="nav-logo" aria-label="ARTGALZIM CENTER Home">
+        <img src="images/logo.jpg" alt="ARTGALZIM Center" class="logo-img" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+        <div class="nav-site-name">
+          <span class="name-main">ARTGALZIM</span>
+          <span class="name-sub">CENTER</span>
+        </div>
+      </a>
+      <nav class="nav-links" id="navLinks">
+        <a href="index.html" class="nav-link">Home</a>
+        <a href="exhibitions.html" class="nav-link">Exhibitions</a>
+        <a href="artists.html" class="nav-link">Artists</a>
+        <a href="artworks.html" class="nav-link active">Artworks</a>
+        <a href="about.html" class="nav-link">About</a>
+        <a href="visit.html" class="nav-link">Visit</a>
+        <a href="contact.html" class="nav-link nav-link-cta">Contact</a>
+      </nav>
+      <div class="nav-controls">
+        <a href="donate.html" class="donate-btn-link" aria-label="Donate">
+           <span class="donate-text">Donate</span>
+           <svg class="donate-icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 12 20 22 4 22 4 12"></polyline><rect x="2" y="7" width="20" height="5"></rect><line x1="12" y1="22" x2="12" y2="7"></line><path d="M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7z"></path><path d="M12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7z"></path></svg>
+        </a>
+        <button class="theme-toggle" id="themeToggle" aria-label="Toggle dark/light mode">
+          <svg class="icon-sun" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+          <svg class="icon-moon" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+        </button>
+        <button class="panel-toggle" id="panelToggle" aria-label="Open Options"><span></span><span></span><span></span></button>
+      </div>
+    </div>
+  </header>
+
+
+
+  <aside class="sidebar-drawer" id="rightSidebar">
+    <div class="sidebar-drawer-header">
+      <div class="sidebar-drawer-logo">ARTGALZIM <span>Center</span></div>
+      <button class="sidebar-close-btn" id="sidebarCloseBtn" aria-label="Close menu">✕</button>
+    </div>
+    <div class="sidebar-drawer-body">
+      <div class="sidebar-nav-section">
+        <h4>Explore & Services</h4>
+        <div class="sidebar-nav-links">
+          <a href="index.html" class="sidebar-nav-link">Home</a>
+          <a href="exhibitions.html" class="sidebar-nav-link">Exhibitions</a>
+          <a href="artists.html" class="sidebar-nav-link active">Artists</a>
+          <a href="artworks.html" class="sidebar-nav-link active">Artworks</a>
+          <a href="about.html" class="sidebar-nav-link">About Us</a>
+          <a href="services.html" class="sidebar-nav-link">Services</a>
+          <a href="visit.html" class="sidebar-nav-link">Plan Your Visit</a>
+          <a href="contact.html" class="sidebar-nav-link">Contact</a>
+          <a href="donate.html" class="sidebar-nav-link">Donate & Support</a>
+          <a href="owa-technologies.html" class="sidebar-nav-link">OWA TECHNOLOGIES</a>
+        </div>
+      </div>
+      <div class="sidebar-info-section">
+        <h4>Location</h4>
+        <p>Mverechena Business Center<br/>Domboshava, Zimbabwe</p>
+      </div>
+      <div class="sidebar-info-section">
+        <h4>Call or Email</h4>
+        <p><a href="tel:+263776330869">+263 77 633 0869</a></p>
+        <p><a href="mailto:info@artgalzim.com">info@artgalzim.com</a></p>
+      </div>
+    </div>
+  </aside>
+  <div class="mobile-overlay" id="mobileOverlay"></div>
+
+  <section class="page-hero" style="background-image: url('Background images/artworks/artworks_hero.png');">
+    <div class="page-hero-overlay"></div>
+    <div class="page-hero-content reveal">
+      <span class="section-eyebrow">The Collection</span>
+      <h1 class="page-title">Artworks</h1>
+      <p class="page-lead">A comprehensive survey of contemporary African creativity, available for viewing and acquisition.</p>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <div class="section-header reveal" style="text-align: center; margin-bottom: 4rem; padding-top: 2rem;">
+        <span class="section-eyebrow">Available Works</span>
+        <h2 class="section-title" style="font-size: 2.5rem; font-weight: 500; margin-bottom: 0.5rem;">The Collection</h2>
+        <p style="color: var(--text-muted); font-size: 1.05rem; line-height: 1.7; max-width: 600px; margin-top: 1rem; margin-left: auto; margin-right: auto;">Explore our curated selection of contemporary African artworks, each piece telling a unique story of heritage and artistic excellence.</p>
+      </div>
+
+      <div class="search-container reveal">
+        <div class="search-wrapper">
+          <input type="text" id="artworkSearch" class="search-input" placeholder="Search by artist, title, or medium...">
+          <button class="search-icon-btn">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+          </button>
+        </div>
+      </div>
+
+      <div class="artworks-grid reveal-stagger" id="artworksGrid">
+      <div class="artwork-card">
+        <div class="artwork-img-area" onclick="openModal('images/MAIN IMAGES/artworks/artwork_1.png', 'Mother\'s Love', 'Willard Magiga', 'Oils on Canvas', '84 x 60cm', '2025', 'A profound exploration of maternal bonds and maternal strength, rendered with vibrant, soulful strokes that bridge traditional Zimbabwean values with contemporary aesthetic energy.', 'aw1', '$1,850')">
+          <img src="images/MAIN IMAGES/artworks/artwork_1.png" alt="Mother's Love" loading="lazy">
+        </div>
+        <div class="artwork-meta">
+          <p class="artwork-artist">Willard Magiga</p>
+          <h3 class="artwork-title">Mother's Love</h3>
+          <p class="artwork-details">2025 - Oils on Canvas</p>
+          <div class="artwork-card-actions" style="margin-top: 1rem;">
+            <button class="btn btn-outline btn-sm" onclick="openModal('images/MAIN IMAGES/artworks/artwork_1.png', 'Mother\'s Love', 'Willard Magiga', 'Oils on Canvas', '84 x 60cm', '2025', 'A profound exploration of maternal bonds and maternal strength, rendered with vibrant, soulful strokes that bridge traditional Zimbabwean values with contemporary aesthetic energy.', 'aw1', '$1,850')">View Details</button>
+          </div>
+        </div>
+      </div>
+      <!-- Artwork 2 -->
+      <div class="artwork-card">
+        <div class="artwork-img-area" onclick="openModal('images/MAIN IMAGES/artworks/artwork_2.png', 'Mother\'s Love', 'Willard Magiga', 'Oils on Canvas', '84 x 60cm', '2025', 'A deep and evocative study on the nurturing spirit, exploring the weight and warmth of heritage through masterful oil techniques.', 'aw2', '$3,200')">
+          <img src="images/MAIN IMAGES/artworks/artwork_2.png" alt="Mother's Love" loading="lazy">
+        </div>
+        <div class="artwork-meta">
+          <p class="artwork-artist">Willard Magiga</p>
+          <h3 class="artwork-title">Mother's Love</h3>
+          <p class="artwork-details">2025 - Oils on Canvas</p>
+          <div class="artwork-card-actions" style="margin-top: 1rem;">
+            <button class="btn btn-outline btn-sm" onclick="openModal('images/MAIN IMAGES/artworks/artwork_2.png', 'Mother\'s Love', 'Willard Magiga', 'Oils on Canvas', '84 x 60cm', '2025', 'A deep and evocative study on the nurturing spirit, exploring the weight and warmth of heritage through masterful oil techniques.', 'aw2', '$3,200')">View Details</button>
+          </div>
+        </div>
+      </div>
+      <!-- Artwork 3 -->
+      <div class="artwork-card">
+        <div class="artwork-img-area" onclick="openModal('images/MAIN IMAGES/artworks/artwork_3.png', 'Mother\'s Love', 'Willard Magiga', 'Oils on Canvas', '84 x 60cm', '2025', 'Capturing the enduring quiet dignity of African motherhood, this piece uses light and texture to tell a story of ancient love in a modern world.', 'aw3', '$2,100')">
+          <img src="images/MAIN IMAGES/artworks/artwork_3.png" alt="Mother's Love" loading="lazy">
+        </div>
+        <div class="artwork-meta">
+          <p class="artwork-artist">Willard Magiga</p>
+          <h3 class="artwork-title">Mother's Love</h3>
+          <p class="artwork-details">2025 - Oils on Canvas</p>
+          <div class="artwork-card-actions" style="margin-top: 1rem;">
+            <button class="btn btn-outline btn-sm" onclick="openModal('images/MAIN IMAGES/artworks/artwork_3.png', 'Mother\'s Love', 'Willard Magiga', 'Oils on Canvas', '84 x 60cm', '2025', 'Capturing the enduring quiet dignity of African motherhood, this piece uses light and texture to tell a story of ancient love in a modern world.', 'aw3', '$2,100')">View Details</button>
+          </div>
+        </div>
+      </div>
+      <!-- Artwork 4 -->
+      <div class="artwork-card">
+        <div class="artwork-img-area" onclick="openModal('images/MAIN IMAGES/artworks/artwork_4.png', 'Mother\'s Love', 'Willard Magiga', 'Oils on Canvas', '84 x 60cm', '2025', 'A textural masterpiece exploring the layers of maternal protection, merging geometric precision with the fluid warmth of oils.', 'aw4', '$1,500')">
+          <img src="images/MAIN IMAGES/artworks/artwork_4.png" alt="Mother's Love" loading="lazy">
+        </div>
+        <div class="artwork-meta">
+          <p class="artwork-artist">Willard Magiga</p>
+          <h3 class="artwork-title">Mother's Love</h3>
+          <p class="artwork-details">2025 - Oils on Canvas</p>
+          <div class="artwork-card-actions" style="margin-top: 1rem;">
+            <button class="btn btn-outline btn-sm" onclick="openModal('images/MAIN IMAGES/artworks/artwork_4.png', 'Mother\'s Love', 'Willard Magiga', 'Oils on Canvas', '84 x 60cm', '2025', 'A textural masterpiece exploring the layers of maternal protection, merging geometric precision with the fluid warmth of oils.', 'aw4', '$1,500')">View Details</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Artwork 5 -->
+      <div class="artwork-card">
+        <div class="artwork-img-area" onclick="openModal('images/artwork_5.png', 'Heritage Rhythms', 'Willard Magiga', 'Oils on Canvas', '100 x 80cm', '2025', 'A vibrant composition exploring the rhythmic patterns of communal life, where movement and tradition merge in a dance of primary colors.', 'aw5', '$2,400')">
+          <img src="images/artwork_5.png" alt="Heritage Rhythms" loading="lazy">
+        </div>
+        <div class="artwork-meta">
+          <p class="artwork-artist">Willard Magiga</p>
+          <h3 class="artwork-title">Heritage Rhythms</h3>
+          <p class="artwork-details">2025 - Oils on Canvas</p>
+          <div class="artwork-card-actions" style="margin-top: 1rem;">
+            <button class="btn btn-outline btn-sm" onclick="openModal('images/artwork_5.png', 'Heritage Rhythms', 'Willard Magiga', 'Oils on Canvas', '100 x 80cm', '2025', '...', 'aw5', '$2,400')">View Details</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Artwork 6 -->
+      <div class="artwork-card">
+        <div class="artwork-img-area" onclick="openModal('images/artwork_6.png', 'Ancestral Echoes', 'Willard Magiga', 'Mixed Media', '120 x 90cm', '2025', 'This piece bridges the gap between ancient stone carving aesthetics and modern canvas work, creating a textured surface that feels both old and new.', 'aw6', '$3,100')">
+          <img src="images/artwork_6.png" alt="Ancestral Echoes" loading="lazy">
+        </div>
+        <div class="artwork-meta">
+          <p class="artwork-artist">Willard Magiga</p>
+          <h3 class="artwork-title">Ancestral Echoes</h3>
+          <p class="artwork-details">2025 - Mixed Media</p>
+          <div class="artwork-card-actions" style="margin-top: 1rem;">
+            <button class="btn btn-outline btn-sm" onclick="openModal('images/artwork_6.png', 'Ancestral Echoes', 'Willard Magiga', 'Mixed Media', '120 x 90cm', '2025', '...', 'aw6', '$3,100')">View Details</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div id="artworkModal" class="modal">
+    <button class="modal-close" id="modalClose">✕</button>
+    <div class="modal-content split-layout">
+      
+      <!-- LEFT SIDE: Picture & Description below it -->
+      <div class="modal-left">
+        <div class="modal-img-wrap">
+          <img id="modalImg" src="" alt="Artwork View">
+        </div>
+        
+        <div class="modal-info-bar">
+           <h2 id="modalTitle"></h2>
+           <h3 id="modalArtist"></h3>
+           <div class="modal-desc-container" style="margin-top: 1.25rem;">
+             <p id="modalDesc" class="modal-desc-text" style="font-size: 0.95rem; line-height: 1.7; color: var(--text-muted);"></p>
+             <a href="#" id="readMoreBtn" class="read-more-link" style="display: inline-block; margin-top: 0.5rem; color: var(--gold); font-size: 0.85rem; font-weight: 500; text-decoration: none; border-bottom: 1px solid var(--gold);">Read more</a>
+           </div>
+        </div>
+
+        <!-- Technical Details -->
+        <div class="modal-tabs">
+          <button class="modal-tab-btn active">About the work</button>
+          <button class="modal-tab-btn">Exhibition history</button>
+          <button class="modal-tab-btn">Provenance</button>
+        </div>
+
+        <div class="modal-technical-details" style="padding-top: 0;">
+          
+          <div class="artsy-details-grid">
+            <div class="artsy-row-label">Materials</div>
+            <div class="artsy-row-value" id="modalMedium"></div>
+
+            <div class="artsy-row-label">Size</div>
+            <div class="artsy-row-value" id="modalSize"></div>
+
+            <div class="artsy-row-label">Rarity</div>
+            <div class="artsy-row-value"><a href="#" style="color: inherit; text-decoration: underline; text-underline-offset: 4px;">Unique</a></div>
+
+            <div class="artsy-row-label">Medium</div>
+            <div class="artsy-row-value"><a href="#" style="color: inherit; text-decoration: underline; text-underline-offset: 4px;">Painting</a></div>
+
+            <div class="artsy-row-label">Signature</div>
+            <div class="artsy-row-value">Hand-signed by artist</div>
+
+            <div class="artsy-row-label">Certificate of authenticity</div>
+            <div class="artsy-row-value">Included (issued by gallery)</div>
+
+            <div class="artsy-row-label">Frame</div>
+            <div class="artsy-row-value">Not included</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- RIGHT SIDE: Pricing & Inquiry (Screenshot Inspired) -->
+      <div class="modal-right" id="modalRightSidebar">
+        
+        <!-- SCREEN 1: Artsy Summary View -->
+        <div class="modal-summary-view active" id="modalRightSummary">
+          <h2 class="right-artist-name" id="modalArtistRight"></h2>
+          <div class="right-artwork-title-row">
+            <span id="modalSpecsRight"></span> — <span id="modalTitleRight"></span>, <span id="modalYearRight"></span>
+          </div>
+
+          <div class="right-technical-list">
+            <span id="modalMediumRight"></span>
+            <div class="right-icon-link">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>
+              <span>Unique work</span>
+            </div>
+            <div class="right-icon-link">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+              <span>Includes a Certificate of Authenticity</span>
+            </div>
+          </div>
+
+          <div class="right-price-display" id="modalPriceRight"></div>
+
+          <div class="modal-purchase-actions">
+            <button class="btn-pill purchase" id="btnShowPurchase">Purchase</button>
+            <button class="btn-pill offer" id="btnShowOffer">Make an Offer</button>
+          </div>
+        </div>
+
+        <!-- SCREEN 2: Offer Inquiry View -->
+        <div class="modal-offer-view" id="modalRightOffer">
+          <button class="back-to-summary" id="btnBackToSummaryFromOffer">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+            Back
+          </button>
+          
+          <div class="offer-header" style="text-align: center;">
+            <div class="mobile-offer-context">
+              <img id="offerArtworkImg" src="">
+              <h3 id="offerArtworkTitle" style="font-family: 'Cormorant Garamond', serif; font-size: 1.5rem; margin-bottom: 0.25rem;"></h3>
+              <p id="offerArtworkArtist" style="font-size: 0.85rem; color: var(--gold); text-transform: uppercase; letter-spacing: 0.1em;"></p>
+            </div>
+            <h2 style="font-family: 'Inter', sans-serif; font-size: 1.5rem; letter-spacing: -0.02em;">Select an option</h2>
+            <p style="color: var(--text-muted); font-size: 0.9rem;">Your custom offer for this piece</p>
+          </div>
+
+          <div class="offer-options-grid" id="offerOptionsBox" style="margin: 2rem 0;">
+            <label class="offer-row" style="background: var(--bg2); border: 1px solid var(--border); border-radius: 8px; margin-bottom: 0.75rem; padding: 1rem; display: flex; align-items: center; gap: 1rem;">
+              <input type="radio" name="offerPrice" class="offer-radio" value="100" checked style="accent-color: var(--gold); transform: scale(1.2);">
+              <div class="offer-info-col">
+                <span class="offer-amount-label" id="offerValList" style="font-weight: 600; color: var(--text);"></span>
+                <span class="offer-discount-label" style="font-size: 0.75rem; color: var(--text-muted);">List price</span>
+              </div>
+            </label>
+            <label class="offer-row" style="background: var(--bg2); border: 1px solid var(--border); border-radius: 8px; margin-bottom: 0.75rem; padding: 1rem; display: flex; align-items: center; gap: 1rem;">
+              <input type="radio" name="offerPrice" class="offer-radio" value="90" style="accent-color: var(--gold); transform: scale(1.2);">
+              <div class="offer-info-col">
+                <span class="offer-amount-label" id="offerVal10" style="font-weight: 600; color: var(--text);"></span>
+                <span class="offer-discount-label" style="font-size: 0.75rem; color: var(--text-muted);">10% below the list price</span>
+              </div>
+            </label>
+            <label class="offer-row" style="background: var(--bg2); border: 1px solid var(--border); border-radius: 8px; margin-bottom: 0.75rem; padding: 1rem; display: flex; align-items: center; gap: 1rem;">
+              <input type="radio" name="offerPrice" class="offer-radio" value="80" style="accent-color: var(--gold); transform: scale(1.2);">
+              <div class="offer-info-col">
+                <span class="offer-amount-label" id="offerVal20" style="font-weight: 600; color: var(--text);"></span>
+                <span class="offer-discount-label" style="font-size: 0.75rem; color: var(--text-muted);">20% below the list price</span>
+              </div>
+            </label>
+            <label class="offer-row" style="background: var(--bg2); border: 1px solid var(--border); border-radius: 8px; padding: 1rem; display: flex; align-items: center; gap: 1rem;">
+              <input type="radio" name="offerPrice" class="offer-radio" value="custom" style="accent-color: var(--gold); transform: scale(1.2);">
+              <div class="offer-info-col">
+                <span class="offer-amount-label" style="font-weight: 600; color: var(--text);">Different amount</span>
+              </div>
+            </label>
+          </div>
+
+          <div class="offer-note-area" style="margin-bottom: 2rem;">
+            <label style="font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--gold); margin-bottom: 0.5rem; display: block;">Note (recommended)</label>
+            <textarea id="offerNote" placeholder="Add a note about your offer..." style="width: 100%; min-height: 80px; background: var(--bg3); border: 1px solid var(--border); color: var(--text); padding: 0.75rem; border-radius: 4px; border-bottom: 2px solid var(--gold);"></textarea>
+          </div>
+
+          <div class="modal-offer-buttons" style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+            <button class="btn-action whatsapp" id="btnOfferWA" style="background: #25d366; color: #fff; border-radius: 50px; padding: 0.75rem; font-weight: 600; border: none; display: flex; align-items: center; justify-content: center; gap: 0.5rem;"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"></path></svg>WhatsApp</button>
+            <button class="btn-action email" id="btnOfferEmail" style="background: var(--text); color: var(--bg); border: 1px solid var(--text); border-radius: 50px; padding: 0.75rem; font-weight: 600; display: flex; align-items: center; justify-content: center; gap: 0.5rem;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>Email</button>
+          </div>
+        </div>
+
+        <!-- SCREEN 3: Purchase Choice View -->
+        <div class="modal-purchase-view" id="modalRightPurchase" style="display: none; flex-direction: column; animation: fadeIn 0.4s ease;">
+          <button class="back-to-summary" id="btnBackToSummaryFromPurchase" style="margin-bottom: 2rem; background: none; border: none; color: var(--text-muted); display: flex; align-items: center; gap: 0.5rem; cursor: pointer;">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+            Back to details
+          </button>
+          
+          <div class="offer-header" style="text-align: center; margin-bottom: 3rem;">
+            <div class="mobile-offer-context">
+              <img id="purchaseArtworkImg" src="">
+              <h3 id="purchaseArtworkTitle" style="font-family: 'Cormorant Garamond', serif; font-size: 1.8rem; margin-bottom: 0.25rem;"></h3>
+              <p id="purchaseArtworkArtist" style="font-size: 0.9rem; color: var(--gold); text-transform: uppercase; letter-spacing: 0.1em;"></p>
+            </div>
+            <h2 style="font-family: 'Inter', sans-serif; font-size: 1.8rem; letter-spacing: -0.02em; margin-bottom: 0.75rem;">Proceed with Acquisition</h2>
+            <p style="color: var(--text-muted); font-size: 1rem; line-height: 1.6;">Select your preferred method to finalize the purchase of this unique work. A gallery specialist will guide you through the secure transaction.</p>
+          </div>
+
+          <div class="modal-offer-buttons" style="display: flex; flex-direction: column; gap: 1rem; margin-top: 1rem;">
+            <button class="btn-action whatsapp" id="btnPurchaseWA" style="background: #25d366; color: #fff; border-radius: 12px; padding: 1.25rem; font-size: 1rem; font-weight: 600; border: none; display: flex; align-items: center; justify-content: center; gap: 1rem; width: 100%;"><svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"></path></svg>Inquiry via WhatsApp</button>
+            <button class="btn-action email" id="btnPurchaseEmail" style="background: var(--text); color: var(--bg); border-radius: 12px; padding: 1.25rem; font-size: 1rem; font-weight: 600; border: none; display: flex; align-items: center; justify-content: center; gap: 1rem; width: 100%;"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>Inquiry via Email</button>
+          </div>
+          
+          <div class="binding-notice-box" style="margin-top: 4rem; padding: 1.5rem; background: var(--gold-dim); border-left: 4px solid var(--gold); border-radius: 8px;">
+            <p style="color: var(--text); font-size: 0.85rem; line-height: 1.6; margin: 0;"><strong>Private Acquisition:</strong> This artwork is a unique piece. Your inquiry will be prioritized, and a dedicated curator will handle your acquisition personally.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== FOOTER ===== -->
+  <footer class="footer" id="footer">
+    <div class="footer-top">
+      <div class="footer-brand">
+        <img src="images/logo.jpg" alt="ARTGALZIM Center" class="footer-logo" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';" />
+        <div class="footer-logo-text" style="display: none">ARTGALZIM<br /><small>CENTER</small></div>
+        <p class="footer-tagline">Contemporary African Art<br />in the Heart of Domboshava</p>
+        <div class="footer-social">
+          <a href="https://wa.me/263776330869?text=Hello%20ARTGALZIM%20Center%2C%20I%20discovered%20your%20gallery%20online%20and%20would%20like%20to%20learn%20more%20about%20your%20exhibitions." target="_blank" aria-label="WhatsApp" class="social-link">
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+          </a>
+          <a href="https://www.instagram.com" target="_blank" aria-label="Instagram" class="social-link">
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="5" /><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z" /><line x1="17.5" y1="6.5" x2="17.51" y2="6.5" /></svg>
+          </a>
+          <a href="https://www.facebook.com" target="_blank" aria-label="Facebook" class="social-link">
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z" /></svg>
+          </a>
+        </div>
+      </div>
+      <nav class="footer-nav" style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 2rem;">
+        <div class="footer-col">
+          <h4 class="footer-col-title">Explore</h4>
+          <a href="exhibitions.html">Exhibitions</a>
+          <a href="artworks.html">Artworks</a>
+          <a href="artists.html">Artists</a>
+          <a href="services.html">Services</a>
+        </div>
+        <div class="footer-col">
+          <h4 class="footer-col-title">About</h4>
+          <a href="about.html">Our Story</a>
+          <a href="about.html#mission">Mission &amp; Vision</a>
+          <a href="about.html#team">The Team</a>
+          <a href="privacy-policy.html">Privacy Policy</a>
+        </div>
+        <div class="footer-col">
+          <h4 class="footer-col-title">Support</h4>
+          <a href="donate.html">Donate</a>
+          <a href="owa-technologies.html">OWA TECH</a>
+        </div>
+        <div class="footer-col">
+          <h4 class="footer-col-title">Visit</h4>
+          <a href="visit.html">Plan Your Visit</a>
+          <a href="visit.html#directions">Directions</a>
+          <a href="contact.html">Contact</a>
+        </div>
+      </nav>
+      <div class="footer-contact">
+        <h4 class="footer-col-title">Get in Touch</h4>
+        <p>Mverechena Center, Harare</p>
+        <p><a href="tel:+263776330869">+263 77 633 0869</a></p>
+        <p><a href="mailto:info@artgalzim.com">info@artgalzim.com</a></p>
+      </div>
+    </div>
+    <div class="footer-bottom" style="border-top: 1px solid var(--border); padding: 1.5rem 0; margin-top: 3rem;">
+      <div style="max-width: 1400px; margin: 0 auto; padding: 0 2rem; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
+        <p style="font-size: 0.8rem; color: var(--text-muted);">&copy; 2026 ARTGALZIM CENTER</p>
+        <div style="font-weight: 700; letter-spacing: 0.15em; color: var(--gold); font-size: 0.72rem; text-transform: uppercase;">
+          POWERED BY <a href="owa-technologies.html" style="color: inherit; text-decoration: none; border-bottom: 2px solid var(--gold);">OWA TECHNOLOGIES</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  
+  <!-- ===== WHATSAPP FLOATING BUTTON ===== -->
+  <a
+    href="https://wa.me/263776330869"
+    target="_blank"
+    class="whatsapp-fab"
+    id="whatsappFab"
+    aria-label="Chat on WhatsApp"
+    title="Chat with us on WhatsApp"
+  >
+    <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+     <span class="fab-tooltip">Chat with us</span>
+  </a>
+
+  <!-- ===== BACK TO TOP ===== -->
+  <button class="back-to-top" id="backToTop" aria-label="Back to top">
+    ^
+  </button>
+
+  <script src="js/page-galleries.js"></script>
+  <script src="js/main.js"></script>
+  <script>
+    function openModal(imgSrc, title, artist, medium, size, year, desc, artId, price) {
+      document.getElementById('modalImg').src = imgSrc;
+      document.getElementById('modalTitle').textContent = title;
+      document.getElementById('modalArtist').textContent = artist;
+      document.getElementById('modalMedium').textContent = medium;
+      document.getElementById('modalSize').textContent = size;
+      // document.getElementById('modalYear').textContent = year; // removed from tech grid
+      document.getElementById('modalDesc').textContent = desc;
+      // document.getElementById('modalArtistDetail').textContent = artist; // removed from tech grid
+      
+      // Read More functionality - reset to truncated state
+      const descElement = document.getElementById('modalDesc');
+      const readMoreBtn = document.getElementById('readMoreBtn');
+      const fullDescription = desc;
+      const truncatedLength = 150;
+      
+      if (fullDescription.length > truncatedLength) {
+        descElement.textContent = fullDescription.substring(0, truncatedLength) + '...';
+        readMoreBtn.style.display = 'inline-block';
+        readMoreBtn.textContent = 'Read more';
+        readMoreBtn.onclick = function(e) {
+          e.preventDefault();
+          if (readMoreBtn.textContent === 'Read more') {
+            descElement.textContent = fullDescription;
+            readMoreBtn.textContent = 'Show less';
+          } else {
+            descElement.textContent = fullDescription.substring(0, truncatedLength) + '...';
+            readMoreBtn.textContent = 'Read more';
+          }
+        };
+      } else {
+        descElement.textContent = fullDescription;
+        readMoreBtn.style.display = 'none';
+      }
+      
+      // Update Sidebar Summary
+      document.getElementById('modalArtistRight').textContent = artist;
+      document.getElementById('modalTitleRight').textContent = title;
+      document.getElementById('modalSpecsRight').textContent = size;
+      document.getElementById('modalYearRight').textContent = year;
+      document.getElementById('modalMediumRight').textContent = medium;
+      document.getElementById('modalPriceRight').textContent = price || "Contact for Price";
+
+      // Populate Offer View Context
+      if(document.getElementById('offerArtworkImg')) document.getElementById('offerArtworkImg').src = imgSrc;
+      if(document.getElementById('offerArtworkTitle')) document.getElementById('offerArtworkTitle').textContent = title;
+      if(document.getElementById('offerArtworkArtist')) document.getElementById('offerArtworkArtist').textContent = artist;
+
+      // Populate Purchase View Context
+      if(document.getElementById('purchaseArtworkImg')) document.getElementById('purchaseArtworkImg').src = imgSrc;
+      if(document.getElementById('purchaseArtworkTitle')) document.getElementById('purchaseArtworkTitle').textContent = title;
+      if(document.getElementById('purchaseArtworkArtist')) document.getElementById('purchaseArtworkArtist').textContent = artist;
+
+      // Offer Logic: Parse numeric value from price string (e.g., "$1,500" -> 1500)
+      const numericPrice = price ? parseInt(price.replace(/[^0-9]/g, '')) : 0;
+      const currency = price ? price.charAt(0) : '$'; // Auto-detect currency symbol
+
+      if (numericPrice > 0) {
+        document.getElementById('offerValList').textContent = `${currency}${numericPrice.toLocaleString()}`;
+        document.getElementById('offerVal10').textContent = `${currency}${Math.round(numericPrice * 0.9).toLocaleString()}`;
+        document.getElementById('offerVal20').textContent = `${currency}${Math.round(numericPrice * 0.8).toLocaleString()}`;
+      } else {
+        document.getElementById('offerValList').textContent = "List Price";
+        document.getElementById('offerVal10').textContent = "Discount available";
+        document.getElementById('offerVal20').textContent = "Inquire for details";
+      }
+
+      // Reset Views
+      document.getElementById('modalRightSummary').classList.add('active');
+      document.getElementById('modalRightOffer').classList.remove('active');
+      document.getElementById('modalRightPurchase').classList.remove('active');
+      document.getElementById('offerNote').value = "";
+      
+      const modal = document.getElementById('artworkModal');
+      modal.classList.add('open');
+      document.body.style.overflow = 'hidden';
+
+      // Close modal functionality
+      const closeModal = () => {
+        modal.classList.remove('open');
+        document.body.style.overflow = '';
+      };
+
+      document.getElementById('modalClose').onclick = closeModal;
+      
+      // Close on background click
+      modal.onclick = (e) => {
+        if (e.target === modal) {
+          closeModal();
+        }
+      };
+
+      // Close on Escape key
+      document.addEventListener('keydown', function escapeClose(e) {
+        if (e.key === 'Escape' && modal.classList.contains('open')) {
+          closeModal();
+          document.removeEventListener('keydown', escapeClose);
+        }
+      });
+
+      // View Switching logic
+      const showScreen = (id) => {
+        document.getElementById('modalRightSummary').classList.remove('active');
+        document.getElementById('modalRightOffer').classList.remove('active');
+        document.getElementById('modalRightPurchase').classList.remove('active');
+        
+        document.getElementById(id).classList.add('active');
+        
+        // Reset scroll position when switching screens
+        const modalContent = document.querySelector('.modal-content');
+        if(modalContent) modalContent.scrollTop = 0;
+        const modalRight = document.querySelector('.modal-right');
+        if(modalRight) modalRight.scrollTop = 0;
+      };
+
+      document.getElementById('btnShowOffer').onclick = () => showScreen('modalRightOffer');
+      document.getElementById('btnShowPurchase').onclick = () => showScreen('modalRightPurchase');
+
+      document.getElementById('btnBackToSummaryFromOffer').onclick = () => showScreen('modalRightSummary');
+      document.getElementById('btnBackToSummaryFromPurchase').onclick = () => showScreen('modalRightSummary');
+
+      // Submission Logic
+      const getSelectedOffer = () => {
+        const radios = document.getElementsByName('offerPrice');
+        let val = "";
+        radios.forEach(r => { 
+          if(r.checked) {
+             const label = r.nextElementSibling.querySelector('.offer-amount-label');
+             val = label ? label.textContent : "Custom Amount";
+          }
+        });
+        return val;
+      };
+
+      // WhatsApp Logic
+      const phone = "263776330869";
+      
+      document.getElementById('btnOfferWA').onclick = () => {
+        const offerVal = getSelectedOffer();
+        const note = document.getElementById('offerNote').value;
+        const text = encodeURIComponent(`ARTGALZIM OFFER SUBMISSION\nPiece: ${title}\nArtist: ${artist}\nProposed Price: ${offerVal}\nNote: ${note}`);
+        window.open(`https://wa.me/${phone}?text=${text}`, '_blank');
+      };
+
+      document.getElementById('btnPurchaseWA').onclick = () => {
+        const text = encodeURIComponent(`ARTGALZIM PURCHASE INQUIRY\nPiece: ${title}\nArtist: ${artist}\nPrice: ${price}\nI would like to acquire this work.`);
+        window.open(`https://wa.me/${phone}?text=${text}`, '_blank');
+      };
+
+      // Email Logic
+      document.getElementById('btnOfferEmail').onclick = () => {
+        const offerVal = getSelectedOffer();
+        const note = document.getElementById('offerNote').value;
+        const subject = encodeURIComponent(`Offer: ${title} by ${artist}`);
+        const body = encodeURIComponent(`To Artgalzim Center,\n\nI am submitting a formal offer for:\nPiece: ${title}\nArtist: ${artist}\n\nMy Offer: ${offerVal}\n\nNotes:\n${note}`);
+        window.location.href = `mailto:info@artgalzim.com?subject=${subject}&body=${body}`;
+      };
+
+      document.getElementById('btnPurchaseEmail').onclick = () => {
+        const subject = encodeURIComponent(`Purchase Inquiry: ${title} by ${artist}`);
+        const body = encodeURIComponent(`To Artgalzim Center,\n\nI am interested in purchasing the following work:\nPiece: ${title}\nArtist: ${artist}\nPrice: ${price}\n\nPlease provide payment and shipping instructions.`);
+        window.location.href = `mailto:info@artgalzim.com?subject=${subject}&body=${body}`;
+      };
+
+      // Keep Share Button Logic
+      document.getElementById('btnShare').onclick = () => {
+        const shareData = {
+          title: `Artgalzim Center: ${title} by ${artist}`,
+          text: `Check out "${title}" by ${artist} at ARTGALZIM Center.\n\nArtist: ${artist}\nTitle: ${title}\nMedium: ${medium}\nSize: ${size}\nYear: ${year}`,
+          url: window.location.href
+        };
+        if (navigator.share) {
+          navigator.share(shareData);
+        } else {
+          navigator.clipboard.writeText(shareData.text + "\n" + window.location.href);
+          alert('Copied to clipboard!');
+        }
+      };
+
+      // Tab toggling
+      document.querySelectorAll('.modal-tab-btn').forEach(btn => {
+        btn.onclick = () => {
+          document.querySelectorAll('.modal-tab-btn').forEach(b => b.classList.remove('active'));
+          btn.classList.add('active');
+        };
+      });
+    }
+
+    // Search Functionality
+    const searchInput = document.getElementById('artworkSearch');
+    const cards = document.querySelectorAll('.artwork-card');
+
+    if (searchInput) {
+      searchInput.addEventListener('input', (e) => {
+        const query = e.target.value.toLowerCase();
+        cards.forEach(card => {
+          const artist = card.querySelector('.artwork-artist').textContent.toLowerCase();
+          const title = card.querySelector('.artwork-title').textContent.toLowerCase();
+          const detailsText = card.querySelector('.artwork-details') ? card.querySelector('.artwork-details').textContent.toLowerCase() : "";
+          
+          if (artist.includes(query) || title.includes(query) || detailsText.includes(query)) {
+            card.style.display = '';
+          } else {
+            card.style.display = 'none';
+          }
+        });
+      });
+    }
+
+    document.getElementById('modalClose').addEventListener('click', () => {
+      document.getElementById('artworkModal').classList.remove('open');
+      document.body.style.overflow = '';
+    });
+  </script>
+</body>
+</html>
