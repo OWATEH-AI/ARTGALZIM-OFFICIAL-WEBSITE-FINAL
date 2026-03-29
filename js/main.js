@@ -6,6 +6,128 @@
 (function () {
   "use strict";
 
+  // ---- Master Artwork Metadata Lookup ----
+  // This serves as the source of truth for detailed artworks when they are clicked from dynamic collections.
+  const MASTER_ARTWORK_METADATA = {
+    // KEITH ZENDA
+    "blood-stained veil": {
+      medium: "Mixed media on canvas",
+      size: "100x120cm",
+      year: "2026",
+      desc: "An intense abstract work dominated by a deep red, textured fabric‑like form that appears torn and dripping, set against a gradient background that shifts from fiery red to warm peach tones fading into darkness. The thick impasto suggests blood‑soaked cloth, evoking themes of violence, suffering, and the raw physicality of pain, while the dripping strokes imply wounds and loss, inviting viewers to contemplate anguish and resilience."
+    },
+    "chitenge": {
+      medium: "Mixed media on canvas",
+      size: "135x165cm",
+      year: "2026",
+      desc: "This mixed‑media painting portrays the suffering of young and elderly women during the slavery period. A smooth, red‑painted fabric resembling a woman’s garment (veil/clothes) symbolizes the blood‑stained attire of enslaved women who endured brutality, perished in childbirth, or died along the journey. The intact red fabric against a dark‑to‑light gradient background conveys the physical and emotional scars of these women, highlighting their resilience and the enduring legacy of their experience in slavery."
+    },
+    "red ascendant": {
+      medium: "Mixed media on canvas",
+      size: "120x100cm",
+      year: "2026",
+      desc: "An expressive abstract work featuring a bold, textured red form that dominates the canvas, evoking a sense of movement and energy. The vibrant scarlet shape, rendered with thick impasto strokes, rises against a gradient background that shifts from deep black‑gray to luminous yellow‑white, suggesting tension between intensity and illumination. The layered brushwork invites viewers to interpret the dynamic interplay of form and emotion within the composition."
+    },
+    "goho": {
+      medium: "Oil on canvas",
+      size: "90x60cm",
+      year: "2025",
+      desc: "A stunning celebration of harvest, depicting agricultural abundance and cultural heritage through precise oil technique."
+    },
+    "harvest": {
+      medium: "Oil on canvas",
+      size: "90x60cm",
+      year: "2025",
+      desc: "A stunning celebration of harvest, depicting agricultural abundance and cultural heritage through precise oil technique."
+    },
+    "malume": {
+      medium: "Oil on canvas",
+      size: "160x85cm",
+      year: "2026",
+      desc: "A commanding portrait of an elder, capturing wisdom and history through heavy impasto and realistic features."
+    },
+    "sekuru": {
+       medium: "Oil on canvas",
+       size: "160x85cm",
+       year: "2026",
+       desc: "A commanding portrait of an elder, capturing wisdom and history through heavy impasto and realistic features."
+    },
+    "musha": {
+      medium: "Oil on canvas",
+      size: "167x116cm",
+      year: "2026",
+      desc: "Musha mukadzi — celebrating the strength and central role of women in the home and society."
+    },
+    "mukadzi": {
+       medium: "Oil on canvas",
+       size: "167x116cm",
+       year: "2026",
+       desc: "Musha mukadzi — celebrating the strength and central role of women in the home and society."
+    },
+    "nyika": {
+      medium: "Oil on canvas",
+      size: "Price on request",
+      year: "2025",
+      desc: "A deep exploration of spiritual landscapes and the essence of the Earth."
+    },
+    "sunset": {
+      medium: "Oil on canvas",
+      size: "Oil on canvas",
+      year: "2026",
+      desc: "Captured moments at dusk, reflecting the warmth and shift of light across the landscape."
+    },
+    // WILLARD MAGIGA
+    "tariro": {
+      medium: "Oils on Canvas",
+      size: "90x60cm",
+      year: "2025",
+      desc: "\"Tariro/Hope\" is a powerful emotional and psychological state that involves a feeling of expectation and desire for a certain thing to happen – usually something positive in the future. It’s like having a spark that drives people to keep going, even when things get tough. In the context of this painting, the artwork blend vibrant colors in the headwrap, symbolizing optimism, energy, and renewal. The woman’s confident gaze and bright attire suggest resilience and forward-looking positivity."
+    },
+    "hope": {
+      medium: "Oils on Canvas",
+      size: "90x60cm",
+      year: "2025",
+      desc: "\"Tariro/Hope\" is a powerful emotional and psychological state that involves a feeling of expectation and desire for a certain thing to happen – usually something positive in the future. It’s like having a spark that drives people to keep going, even when things get tough. In the context of this painting, the artwork blend vibrant colors in the headwrap, symbolizing optimism, energy, and renewal. The woman’s confident gaze and bright attire suggest resilience and forward-looking positivity."
+    },
+    "chidochashe": {
+      medium: "Oils on Canvas",
+      size: "90x60cm",
+      year: "2026",
+      desc: "Chidochashe portrays a young woman whose calm, self-possessed gaze is set against a luminous blue ground. Her sculpted face is rendered with refined realism, while the vibrant headwrap erupts in expressive strokes of red, gold, and ochre, suggesting vitality, resilience, and inner strength. Magiga contrasts precision with painterly freedom, allowing colour and gesture to convey emotion beyond likeness. The composition balances elegance and power, presenting the sitter as both contemporary and timeless. Chidochashe—a name associated with hope—becomes a quiet affirmation of dignity, confidence, and forward-looking resolve."
+    },
+    "yevedzai": {
+      medium: "Oils on Canvas",
+      size: "90x60cm",
+      year: "2026",
+      desc: "Yevedzai presents a poised female figure whose steady gaze conveys dignity, self-awareness, and quiet authority. Set against a muted violet ground, the portrait is animated by expressive strokes of yellow, blue, and soft earth tones that flow through her headwrap and garment, suggesting movement, energy, and inner life. Magiga balances realism in the face with painterly abstraction in the surrounding forms, allowing emotion to emerge through colour and texture rather than narrative. The subject appears both contemporary and timeless, embodying strength, elegance, and cultural pride while inviting the viewer into a moment of calm, reflective presence."
+    },
+    // FLORAH MAPHOSA
+    "spiritual guardian": {
+      medium: "Acrylic and oil on canvas",
+      size: "140cm x 100",
+      year: "2025",
+      desc: "A powerful guardian figure embodying spiritual protection and maternal strength, rendered in Maphosa's signature mixed media style."
+    },
+    "heritage unwrapped": {
+      medium: "Mixed media",
+      size: "125x85",
+      year: "2026",
+      desc: "Unfolding layers of history and identity, this piece explores the depth of African cultural heritage."
+    },
+    "heron": {
+      medium: "Oil on Canvas",
+      size: "85x75",
+      year: "2025",
+      desc: "A graceful companion piece exploring the relationship between humans and nature."
+    },
+    "heroin": {
+      medium: "Oil on Canvas",
+      size: "85x75",
+      year: "2025",
+      desc: "A graceful companion piece exploring the relationship between humans and nature."
+    }
+  };
+
   // ---- Preloader ----
   window.addEventListener("load", () => {
     setTimeout(() => {
@@ -420,6 +542,10 @@
         if (isArtworksPage) {
           item.className = "artwork-card reveal";
           const cleanTitle = title.charAt(0).toUpperCase() + title.slice(1);
+          const medium = itemData.medium || "Contemporary Work";
+          const size = itemData.size || "Inquire for Size";
+          const year = itemData.year || "2026";
+          const desc = itemData.description || "Recently added to our collection.";
           
           item.innerHTML = `
             <div class="artwork-img-area">
@@ -429,7 +555,7 @@
             <div class="artwork-meta">
               <p class="artwork-artist">${artist}</p>
               <h3 class="artwork-title">${cleanTitle}</h3>
-              <p class="artwork-details">Contemporary Work</p>
+              <p class="artwork-details">${medium}</p>
               <div class="artwork-card-actions" style="margin-top: 1rem;">
                 <button class="btn btn-outline btn-sm view-details-btn">View Details</button>
               </div>
@@ -441,7 +567,7 @@
           
           const doOpen = () => {
              if (typeof openModal === "function") {
-               openModal(src, cleanTitle, artist, itemData.medium, itemData.size, itemData.year, itemData.description, "dynamic", "Quote on Request");
+               openModal(src, cleanTitle, artist, medium, size, year, desc, "dynamic", "Quote on Request");
              }
           };
           
@@ -635,10 +761,27 @@
         const btn = artDiv.querySelector('.album-view-details-btn');
         if (btn) {
             const lowSrc = src.toLowerCase();
+            const artistName = albumTitle.includes('-') ? albumTitle.split('-')[0].trim().toUpperCase() : albumTitle.toUpperCase();
+            
+            // Student list and Detailed works whitelist
+            const students = ["JONATHAN CHEZANI", "NOMATTER KUTSAWA"];
+            const isStudent = students.includes(artistName);
+            
+            const detailedTitles = [
+                "blood-stained veil", "chitenge", "red ascendant", "goho", "harvest", 
+                "malume", "sekuru", "sunset", "musha", "mukadzi", "nyika",
+                "tariro", "hope", "chidochashe", "yevedzai",
+                "spiritual guardian", "heritage unwrapped", "heron", "heroin"
+            ];
+            
+            const filename = src.split('/').pop().toLowerCase();
+            const isDetailed = detailedTitles.some(dt => filename.includes(dt));
             const isAnonymous = lowSrc.includes('whatsapp') || lowSrc.includes('unnamed') || /^\d+$/.test(src.split('/').pop().split('.')[0]);
             
-            if (isAnonymous) {
+            if (isAnonymous || isStudent || !isDetailed) {
               btn.textContent = 'Inquire to Purchase';
+            } else if (lowSrc.includes('cover')) {
+              // Usually covers are for navigation
             }
 
             btn.addEventListener("click", (e) => {
@@ -649,12 +792,22 @@
                 let filename = src.split('/').pop().replace(/\.[^/.]+$/, "").replace(/[-_]/g, " ");
                 filename = filename.charAt(0).toUpperCase() + filename.slice(1);
                 
-                if (isAnonymous) {
+                if (isAnonymous || isStudent || !isDetailed) {
                   // Show Global Inquiry Choice Box
                   showGlobalInquiry(artist, filename);
                 } else {
+                  // Try to find matching metadata for this piece
+                  const lowFilename = filename.toLowerCase();
+                  const foundKey = Object.keys(MASTER_ARTWORK_METADATA).find(k => lowFilename.includes(k));
+                  const meta = foundKey ? MASTER_ARTWORK_METADATA[foundKey] : {};
+                  
+                  const finalMed = meta.medium || iMeta.medium || 'Contemporary Work';
+                  const finalSize = meta.size || iMeta.size || 'Inquire for Size';
+                  const finalYear = meta.year || iMeta.year || '2026';
+                  const finalDesc = meta.desc || iMeta.description || 'Recently added to our collection.';
+
                   // Add metadata to URL for artworks.html to pick up
-                  const url = `artworks.html?img=${encodeURIComponent(src)}&artist=${encodeURIComponent(artist)}&title=${encodeURIComponent(filename)}&m=${encodeURIComponent(iMeta.medium||'')}&s=${encodeURIComponent(iMeta.size||'')}&y=${encodeURIComponent(iMeta.year||'')}&d=${encodeURIComponent(iMeta.description||'')}`;
+                  const url = `artworks.html?img=${encodeURIComponent(src)}&artist=${encodeURIComponent(artist)}&title=${encodeURIComponent(filename)}&m=${encodeURIComponent(finalMed)}&s=${encodeURIComponent(finalSize)}&y=${encodeURIComponent(finalYear)}&d=${encodeURIComponent(finalDesc)}`;
                   window.location.href = url;
                 }
             });

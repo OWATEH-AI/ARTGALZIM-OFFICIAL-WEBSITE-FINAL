@@ -127,52 +127,27 @@
       <button class="tab-btn" data-target="past">Past</button>
     </div>
 
-    <!-- Current Exhibitions -->
-    <div class="exhibition-list" id="current" style="display:none;">
-      <p style="text-align:center; padding:3rem; color:var(--text-muted); font-size:1.1rem;">There are no current exhibitions as of now.</p>
+  <!-- Current Exhibitions -->
+  <div class="exhibition-list" id="current" style="display:none;">
+    <div class="exh-grid reveal-stagger" id="currentGrid">
+      <!-- Dynamically populated -->
     </div>
+  </div>
 
-    <!-- Upcoming Exhibitions -->
-    <div class="exhibition-list active" id="upcoming" style="display:block;">
-      <div class="exh-grid reveal-stagger">
-        <article class="exh-card">
-          <div class="exh-img-frame">
-            <img src="Customisations/Exhbitition 1.jpeg" alt="Easter Sip And Paint" loading="lazy">
-            <div class="exh-badge soon">05 April 2026</div>
-          </div>
-          <div class="exh-body">
-            <span class="exh-dates">05 Apr 2026, 1pm – 6pm</span>
-            <h3 class="exh-title">Easter Sip And Paint</h3>
-            <p class="exh-participants">Event &nbsp;·&nbsp; Surprise Guest Artist</p>
-            <p class="exh-desc">Join us for an Easter Sip and Paint! Get creative, unwind, and celebrate renewal with friends and family. Domboshava curves touring will inspire your masterpiece!<br>Registration Fee: $15</p>
-            <a href="contact.html" class="exh-cta">Book Your Spot →</a>
-          </div>
-        </article>
-
-        <article class="exh-card exh-card--placeholder">
-          <div class="exh-img-frame exh-img-frame--dark" style="position:relative; overflow:hidden;">
-            <img src="images/domboshava.webp" alt="Late 2026 Poster" style="position:absolute; top:0; left:0; width:100%; height:100%; object-fit:cover; z-index:0; filter: brightness(0.35);">
-            <div class="exh-coming-soon" style="position:absolute; inset:0; z-index:1; display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; padding: 1rem;">
-              <span style="font-size:1.6rem; font-family:'Cormorant Garamond', serif; font-weight:700; color:#fff; text-shadow: 0 4px 10px rgba(0,0,0,0.8); letter-spacing:0.05em; line-height:1.2;">More exhibitions</span>
-              <span style="font-size:1rem; font-weight:600; color:var(--gold); text-shadow: 0 2px 6px rgba(0,0,0,0.8); margin-top:0.5rem; letter-spacing:0.15em; text-transform:uppercase;">coming soon</span>
-            </div>
-          </div>
-          <div class="exh-body">
-            <span class="exh-dates">Late 2026</span>
-            <h3 class="exh-title">To Be Announced</h3>
-            <p class="exh-participants">Open Call &nbsp;·&nbsp; Various Artists</p>
-            <p class="exh-desc">Stay connected with ARTGALZIM CENTER for announcements on our next exhibitions.</p>
-            <a href="contact.html" class="exh-cta">Stay Updated →</a>
-          </div>
-        </article>
-      </div>
+  <!-- Upcoming Exhibitions -->
+  <div class="exhibition-list active" id="upcoming" style="display:block;">
+    <div class="exh-grid reveal-stagger" id="upcomingGrid">
+      <!-- Dynamically populated -->
     </div>
+  </div>
 
-    <!-- Past Exhibitions -->
-    <div class="exhibition-list" id="past" style="display:none;">
-      <p style="text-align:center; padding:3rem; color:var(--text-muted); font-size:1.1rem;">There are no past exhibitions.</p>
+  <!-- Past Exhibitions -->
+  <div class="exhibition-list" id="past" style="display:none;">
+    <div class="exh-grid reveal-stagger" id="pastGrid">
+      <!-- Dynamically populated -->
     </div>
-  </section>
+  </div>
+</section>
 
   <!-- ===== FOOTER ===== -->
   <footer class="footer" id="footer">
@@ -264,17 +239,202 @@
 
   <script type="module" src="/js/page-galleries.js"></script>  <script type="module" src="/js/main.js"></script>
   <script>
-    // ---- Exhibition Tabs ----
-    document.querySelectorAll('.tab-btn').forEach(btn => {
-      btn.addEventListener('click', () => {
-        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-        document.querySelectorAll('.exhibition-list').forEach(l => l.style.display = 'none');
-        btn.classList.add('active');
-        document.getElementById(btn.dataset.target).style.display = 'block';
-      });
-    });
+  // ---- Exhibition Data with Dates ----
+  const exhibitionsData = [
+    {
+      id: 'easter-sip-paint-2026',
+      title: 'Easter Sip And Paint',
+      artist: 'Surprise Guest Artist',
+      category: 'Event',
+      description: 'Join us for an Easter Sip and Paint! Get creative, unwind, and celebrate renewal with friends and family. Domboshava curves touring will inspire your masterpiece!',
+      registrationFee: '$15',
+      image: 'Customisations/Exhbitition 1.jpeg',
+      startDate: '2026-04-05',
+      endDate: '2026-04-05',
+      contactLink: 'contact.html',
+      ctaText: 'Book Your Spot →',
+      timeRange: '1pm – 6pm'
+    },
+    {
+      id: 'tba-late-2026',
+      title: 'To Be Announced',
+      artist: 'Various Artists',
+      category: 'Open Call',
+      description: 'Stay connected with ARTGALZIM CENTER for announcements on our next exhibitions.',
+      image: 'images/domboshava.webp',
+      startDate: '2026-07-01',
+      endDate: '2026-12-31',
+      isPlaceholder: true,
+      contactLink: 'contact.html',
+      ctaText: 'Stay Updated →',
+      timeRange: 'Late 2026'
+    }
+  ];
 
-    // ---- Exhibition Video — instant launch on click ----
+  // ---- Date-based Auto-Categorization ----
+  function categorizeExhibitions() {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    return exhibitionsData.map(exh => {
+      const startDate = new Date(exh.startDate);
+      const endDate = new Date(exh.endDate);
+      startDate.setHours(0, 0, 0, 0);
+      endDate.setHours(23, 59, 59, 999);
+
+      let status;
+      if (today < startDate) {
+        status = 'upcoming';
+      } else if (today >= startDate && today <= endDate) {
+        status = 'current';
+      } else {
+        status = 'past';
+      }
+
+      return { ...exh, status };
+    });
+  }
+
+  function formatDisplayDate(exh) {
+    const start = new Date(exh.startDate);
+    const end = new Date(exh.endDate);
+    const startStr = start.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
+
+    if (exh.startDate === exh.endDate) {
+      // Single day event - date only (no time)
+      return startStr;
+    } else {
+      // Multi-day event
+      const endStr = end.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
+      return `${startStr} – ${endStr}`;
+    }
+  }
+
+  function formatBadgeDate(exh) {
+    const start = new Date(exh.startDate);
+    if (exh.isPlaceholder) {
+      return exh.timeRange || 'TBA';
+    }
+    return start.toLocaleDateString('en-GB', { day: '2-digit', month: 'long', year: 'numeric' });
+  }
+
+  function getBadgeClass(status) {
+    if (status === 'current') return 'now';
+    if (status === 'past') return 'past';
+    return 'soon';
+  }
+
+  function renderExhibitionCard(exh) {
+    const badgeClass = getBadgeClass(exh.status);
+    const displayDate = formatDisplayDate(exh);
+    const badgeDate = formatBadgeDate(exh);
+
+    if (exh.isPlaceholder) {
+      return `
+        <article class="exh-card exh-card--placeholder">
+          <div class="exh-img-frame exh-img-frame--dark" style="position:relative; overflow:hidden;">
+            <img src="${exh.image}" alt="${exh.title}" style="position:absolute; top:0; left:0; width:100%; height:100%; object-fit:cover; z-index:0; filter: brightness(0.35);">
+            <div class="exh-coming-soon" style="position:absolute; inset:0; z-index:1; display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; padding: 1rem;">
+              <span style="font-size:1.6rem; font-family:'Cormorant Garamond', serif; font-weight:700; color:#fff; text-shadow: 0 4px 10px rgba(0,0,0,0.8); letter-spacing:0.05em; line-height:1.2;">More exhibitions</span>
+              <span style="font-size:1rem; font-weight:600; color:var(--gold); text-shadow: 0 2px 6px rgba(0,0,0,0.8); margin-top:0.5rem; letter-spacing:0.15em; text-transform:uppercase;">coming soon</span>
+            </div>
+          </div>
+          <div class="exh-body">
+            <span class="exh-dates">${displayDate}</span>
+            <h3 class="exh-title">${exh.title}</h3>
+            <p class="exh-participants">${exh.category} &nbsp;·&nbsp; ${exh.artist}</p>
+            <p class="exh-desc">${exh.description}</p>
+            <a href="${exh.contactLink}" class="exh-cta">${exh.ctaText}</a>
+          </div>
+        </article>
+      `;
+    }
+
+    const feeText = exh.registrationFee ? `<br>Registration Fee: ${exh.registrationFee}` : '';
+
+    return `
+      <article class="exh-card" data-id="${exh.id}">
+        <div class="exh-img-frame">
+          <img src="${exh.image}" alt="${exh.title}" loading="lazy">
+          <div class="exh-badge ${badgeClass}">${badgeDate}</div>
+        </div>
+        <div class="exh-body">
+          <span class="exh-dates">${displayDate}</span>
+          <h3 class="exh-title">${exh.title}</h3>
+          <p class="exh-participants">${exh.category} &nbsp;·&nbsp; ${exh.artist}</p>
+          <p class="exh-desc">${exh.description}${feeText}</p>
+          <a href="${exh.contactLink}" class="exh-cta">${exh.ctaText}</a>
+        </div>
+      </article>
+    `;
+  }
+
+  function renderEmptyMessage(message) {
+    return `<p style="text-align:center; padding:3rem; color:var(--text-muted); font-size:1.1rem;">${message}</p>`;
+  }
+
+  function populateExhibitions() {
+    const categorized = categorizeExhibitions();
+    const current = categorized.filter(e => e.status === 'current');
+    const upcoming = categorized.filter(e => e.status === 'upcoming');
+    const past = categorized.filter(e => e.status === 'past');
+
+    const currentGrid = document.getElementById('currentGrid');
+    const upcomingGrid = document.getElementById('upcomingGrid');
+    const pastGrid = document.getElementById('pastGrid');
+
+    if (currentGrid) {
+      currentGrid.innerHTML = current.length > 0
+        ? current.map(renderExhibitionCard).join('')
+        : renderEmptyMessage('There are no current exhibitions as of now.');
+    }
+
+    if (upcomingGrid) {
+      upcomingGrid.innerHTML = upcoming.length > 0
+        ? upcoming.map(renderExhibitionCard).join('')
+        : renderEmptyMessage('No upcoming exhibitions scheduled. Stay tuned for announcements!');
+    }
+
+    if (pastGrid) {
+      pastGrid.innerHTML = past.length > 0
+        ? past.map(renderExhibitionCard).join('')
+        : renderEmptyMessage('There are no past exhibitions.');
+    }
+  }
+
+  // Initialize exhibitions on load
+  populateExhibitions();
+
+  // ---- Exhibition Tabs ----
+  document.querySelectorAll('.tab-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+      document.querySelectorAll('.exhibition-list').forEach(l => l.style.display = 'none');
+      btn.classList.add('active');
+      document.getElementById(btn.dataset.target).style.display = 'block';
+    });
+  });
+
+  // Update tab visibility based on available exhibitions
+  function updateTabVisibility() {
+    const categorized = categorizeExhibitions();
+    const hasCurrent = categorized.some(e => e.status === 'current');
+    const hasUpcoming = categorized.some(e => e.status === 'upcoming');
+    const hasPast = categorized.some(e => e.status === 'past');
+
+    // If there are current exhibitions, show that tab first
+    if (hasCurrent) {
+      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+      document.querySelectorAll('.exhibition-list').forEach(l => l.style.display = 'none');
+      document.querySelector('.tab-btn[data-target="current"]').classList.add('active');
+      document.getElementById('current').style.display = 'block';
+    }
+  }
+
+  // Run visibility update after populating
+  updateTabVisibility();
+
+  // ---- Exhibition Video — instant launch on click ----
     const videoWrap = document.getElementById('exhibitionVideoWrap');
     const placeholder = document.getElementById('videoPlaceholder');
     const video = document.getElementById('actualVideo');

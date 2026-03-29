@@ -523,46 +523,37 @@
 <div id="toast"></div>
 
 <script>
-const API = window.location.protocol === 'file:' ? 'http://127.0.0.1:8788' : '';
-const PASS = 'ARTGALZIM2SEE'; // Fallback / Local sync compatibility
+/* ══════════════════════════════════════════════════════
+   ADMIN DASHBOARD — LOCAL ONLY (No Cloudflare connection)
+   All data stored in localStorage. Zero external API calls.
+   ══════════════════════════════════════════════════════ */
+
+const PASS = 'ARTGALZIM2SEE';
+const LS_EXHIBITIONS = 'ag_exhibitions';
+const LS_CONTENT     = 'ag_content';
+
+/* ── helpers ── */
+function lsGet(key, fallback) {
+  try { return JSON.parse(localStorage.getItem(key)) ?? fallback; } catch { return fallback; }
+}
+function lsSet(key, val) { localStorage.setItem(key, JSON.stringify(val)); }
 
 /* ══ AUTH ══════════════════════════════════════ */
-async function checkPW() {
-  const val = document.getElementById('pwInput').value;
-  try {
-    const res = await fetch(API + '/api/auth/login', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ password: val })
-    });
-    const data = await res.json();
-    if (data.ok) {
-      document.getElementById('gate').style.display = 'none';
-      document.getElementById('dashboard').style.display = 'flex';
-      initDashboard();
-    } else {
-      document.getElementById('gateErr').textContent = data.error || 'Incorrect password.';
-      document.getElementById('gateErr').style.display = 'block';
-      document.getElementById('pwInput').value = '';
-    }
-  } catch (e) {
-    // If API isn't available (local dev), fallback to client-side check if needed
-    // but better to rely on server. For local, we expect 'node admin-server.cjs' or similar?
-    // User wants one server, so they'll use wrangler or live.
-    if (val === PASS) {
-      document.getElementById('gate').style.display = 'none';
-      document.getElementById('dashboard').style.display = 'flex';
-      initDashboard();
-    } else {
-      document.getElementById('gateErr').textContent = 'Authentication failed.';
-      document.getElementById('gateErr').style.display = 'block';
-    }
+function checkPW() {
+  const val = document.getElementById('pwInput').value.trim();
+  if (val === PASS) {
+    document.getElementById('gate').style.display = 'none';
+    document.getElementById('dashboard').style.display = 'flex';
+    initDashboard();
+  } else {
+    document.getElementById('gateErr').textContent = 'Incorrect password. Try again.';
+    document.getElementById('gateErr').style.display = 'block';
+    document.getElementById('pwInput').value = '';
   }
 }
 document.getElementById('pwInput').addEventListener('keydown', e => { if (e.key === 'Enter') checkPW(); });
 
-async function logout() {
-  await fetch(API + '/api/auth/logout', { method: 'POST' }).catch(() => {});
+function logout() {
   document.getElementById('dashboard').style.display = 'none';
   document.getElementById('gate').style.display = 'flex';
   document.getElementById('pwInput').value = '';
@@ -576,77 +567,94 @@ function showPanel(id) {
   document.getElementById('panel-' + id).classList.add('active');
   document.getElementById('nav-' + id).classList.add('active');
   document.getElementById('panelTitle').textContent = panelTitles[id] || id;
-  if (id === 'artworks') loadArtists();
+  if (id === 'artworks')    loadArtists();
   if (id === 'exhibitions') loadExhibitions();
-  if (id === 'pages') loadPageContent();
+  if (id === 'pages')       loadPageContent();
 }
 
 /* ══ TOAST ═════════════════════════════════════ */
-function toast(msg, type='success') {
+function toast(msg, type = 'success') {
   const t = document.getElementById('toast');
   t.textContent = msg; t.className = 'show ' + type;
   setTimeout(() => { t.className = ''; }, 3500);
 }
 
-/* ══ SYNC ══════════════════════════════════════ */
-async function triggerSync() {
-  try {
-    await fetch(API + '/api/sync', { method:'POST' });
-    toast('✓ Gallery synced!');
-  } catch {
-    toast('Error triggering sync.', 'error');
-  }
+/* ══ SYNC (local — no-op, just confirms) ═══════ */
+function triggerSync() {
+  toast('✓ Gallery is managed locally — no sync needed.');
 }
 
 /* ══ INIT ══════════════════════════════════════ */
-async function initDashboard() {
-  try {
-    const [artists, exs] = await Promise.all([
-      fetch(API + '/api/artists').then(r => r.json()),
-      fetch(API + '/api/exhibitions').then(r => r.json())
-    ]);
+function initDashboard() {
+  // Build artist list from PageGalleries if available
+  const collections = (window.PageGalleries && window.PageGalleries.artistsCollections)
+    ? window.PageGalleries.artistsCollections : {};
 
-    // Stats
-    let totalArtworks = 0;
-    let totalCats = 0;
-    artists.forEach(a => { a.categories.forEach(c => { totalArtworks += c.imageCount; totalCats++; }); });
-    document.getElementById('stat-artists').textContent = artists.length;
-    document.getElementById('stat-categories').textContent = totalCats;
-    document.getElementById('stat-artworks').textContent = totalArtworks;
-    document.getElementById('stat-exhibitions').textContent = exs.length;
+  // Derive unique artists
+  const artistMap = {};
+  Object.entries(collections).forEach(([key, val]) => {
+    const [artist, cat] = key.split('/');
+    if (!artistMap[artist]) artistMap[artist] = [];
+    artistMap[artist].push({ name: cat, imageCount: val.images.length, images: val.images });
+  });
+  _artists = Object.entries(artistMap).map(([name, categories]) => ({ name, categories }));
 
-    // Artist list for datalist
-    const dl = document.getElementById('artistList');
-    artists.forEach(a => { const opt = document.createElement('option'); opt.value = a.name; dl.appendChild(opt); });
+  const exs = lsGet(LS_EXHIBITIONS, []);
 
-    // Overview collections
-    let html = '<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:0.75rem;">';
-    artists.forEach(a => {
-      a.categories.forEach(c => {
-        html += `<div style="background:var(--bg3);border:1px solid var(--border);border-radius:4px;padding:0.85rem;">
-          <div style="font-size:0.78rem;color:var(--gold);text-transform:uppercase;letter-spacing:0.06em;">${a.name}</div>
-          <div style="font-size:0.9rem;margin-top:0.2rem;">${c.name}</div>
-          <div style="font-size:0.75rem;color:var(--muted);margin-top:0.2rem;">${c.imageCount} image${c.imageCount!==1?'s':''}</div>
-        </div>`;
-      });
-    });
-    html += '</div>';
-    document.getElementById('overviewCollections').innerHTML = html;
+  // Stats
+  let totalArtworks = 0, totalCats = 0;
+  _artists.forEach(a => { a.categories.forEach(c => { totalArtworks += c.imageCount; totalCats++; }); });
+  document.getElementById('stat-artists').textContent    = _artists.length;
+  document.getElementById('stat-categories').textContent = totalCats;
+  document.getElementById('stat-artworks').textContent   = totalArtworks;
+  document.getElementById('stat-exhibitions').textContent = exs.length;
 
-  } catch(e) {
-    document.getElementById('overviewCollections').innerHTML = `<p style="color:var(--red)">⚠ Cloudflare Functions not responding. Make sure you are running with <code>wrangler pages dev</code> or are online.</p>`;
+  // Artist datalist
+  const dl = document.getElementById('artistList');
+  dl.innerHTML = '';
+  _artists.forEach(a => { const opt = document.createElement('option'); opt.value = a.name; dl.appendChild(opt); });
+
+  // Overview collections
+  if (_artists.length === 0) {
+    document.getElementById('overviewCollections').innerHTML =
+      '<p style="color:var(--muted)">No artist collections found in gallery data.</p>';
+    return;
   }
+  let html = '<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:0.75rem;">';
+  _artists.forEach(a => {
+    a.categories.forEach(c => {
+      html += `<div style="background:var(--bg3);border:1px solid var(--border);border-radius:4px;padding:0.85rem;">
+        <div style="font-size:0.78rem;color:var(--gold);text-transform:uppercase;letter-spacing:0.06em;">${a.name}</div>
+        <div style="font-size:0.9rem;margin-top:0.2rem;">${c.name}</div>
+        <div style="font-size:0.75rem;color:var(--muted);margin-top:0.2rem;">${c.imageCount} image${c.imageCount!==1?'s':''}</div>
+      </div>`;
+    });
+  });
+  html += '</div>';
+  document.getElementById('overviewCollections').innerHTML = html;
 }
 
-/* ══ ARTWORKS ══════════════════════════════════ */
+/* ══ ARTWORKS — read-only browse (local files) ══ */
 let _artists = [];
-async function loadArtists() {
-  try {
-    _artists = await fetch(API + '/api/artists').then(r => r.json());
-    // Tabs
-    const tabs = document.getElementById('artistTabs');
-    tabs.innerHTML = _artists.map(a => `<div class="artist-tab" onclick="browseArtist('${a.name}')">${a.name}</div>`).join('');
-  } catch { document.getElementById('artistTabs').innerHTML = '<span style="color:var(--red)">Server not running</span>'; }
+function loadArtists() {
+  // Re-derive from PageGalleries
+  const collections = (window.PageGalleries && window.PageGalleries.artistsCollections) ? window.PageGalleries.artistsCollections : {};
+  const artistMap = {};
+  Object.entries(collections).forEach(([key, val]) => {
+    const [artist, cat] = key.split('/');
+    if (!artistMap[artist]) artistMap[artist] = [];
+    artistMap[artist].push({ name: cat, imageCount: val.images.length, images: val.images });
+  });
+  _artists = Object.entries(artistMap).map(([name, categories]) => ({ name, categories }));
+
+  const tabs = document.getElementById('artistTabs');
+  if (_artists.length === 0) {
+    tabs.innerHTML = '<span style="color:var(--muted)">No artist data available.</span>';
+    return;
+  }
+  tabs.innerHTML = _artists.map(a =>
+    `<div class="artist-tab" onclick="browseArtist('${a.name.replace(/'/g,"\\'")}'">${a.name}</div>`
+  ).join('');
 }
 
 function browseArtist(name) {
@@ -658,18 +666,20 @@ function browseArtist(name) {
   let html = '';
   artist.categories.forEach(cat => {
     html += `<div style="grid-column:1/-1;margin-top:0.5rem;"><h5 style="font-size:0.78rem;color:var(--gold);text-transform:uppercase;letter-spacing:0.1em;margin-bottom:0.5rem;">${cat.name} (${cat.imageCount})</h5></div>`;
+    if (cat.images.length === 0) {
+      html += `<div style="grid-column:1/-1;color:var(--muted);font-size:0.82rem;">No images in this folder.</div>`;
+    }
     cat.images.forEach(src => {
       const fname = src.split('/').pop();
       html += `<div class="img-thumb">
-        <img src="${src}" loading="lazy" onerror="this.src=''">
+        <img src="${src}" loading="lazy" onerror="this.style.opacity='0.3'">
         <div class="img-actions">
           <span class="img-name" title="${fname}">${fname}</span>
-          <button class="del-btn" onclick="deleteArtwork('${name}','${cat.name}','${fname}')" title="Delete">🗑</button>
         </div>
       </div>`;
     });
   });
-  document.getElementById('browseGrid').innerHTML = html || '<p style="color:var(--muted)">No images yet. Upload above.</p>';
+  document.getElementById('browseGrid').innerHTML = html || '<p style="color:var(--muted)">No images found.</p>';
 }
 
 function previewFiles(input) {
@@ -694,70 +704,33 @@ dz.addEventListener('drop', e => {
   fi.files = dt.files; previewFiles(fi);
 });
 
-async function uploadArtworks() {
-  const artist     = document.getElementById('aw-artist').value.trim();
-  const category   = document.getElementById('aw-category').value.trim() || 'Artworks';
-  const medium     = document.getElementById('aw-medium').value.trim();
-  const size       = document.getElementById('aw-size').value.trim();
-  const year       = document.getElementById('aw-year').value.trim();
-  const desc       = document.getElementById('aw-desc').value.trim();
-  const files      = document.getElementById('awFileInput').files;
-  if (!artist) { toast('Please enter an artist name', 'error'); return; }
-  if (!files.length) { toast('Please select images to upload', 'error'); return; }
-
-  const fd = new FormData();
-  fd.append('artist', artist);
-  fd.append('category', category);
-  if (medium) fd.append('medium', medium);
-  if (size)   fd.append('size', size);
-  if (year)   fd.append('year', year);
-  if (desc)   fd.append('description', desc);
-  [...files].forEach(f => fd.append('images', f));
-  try {
-    const res = await fetch(API + '/api/upload?type=artwork', { method:'POST', body: fd }).then(r => r.json());
-    if (res.ok) { toast(`✓ ${res.files.length} image(s) uploaded & gallery synced!`); document.getElementById('awPreview').innerHTML = ''; document.getElementById('awFileInput').value = ''; loadArtists(); }
-    else toast('Upload failed: ' + (res.error||'unknown'), 'error');
-  } catch { toast('Server not running. Start with: node admin-server.cjs', 'error'); }
+function uploadArtworks() {
+  toast('ℹ To add artworks: save image files directly into the ARTISTS folder, then run node sync-gallery.cjs to update the gallery.', 'error');
 }
-
-async function deleteArtwork(artist, category, filename) {
-  if (!confirm(`Delete "${filename}"?`)) return;
-  try {
-    const res = await fetch(API + '/api/artworks', {
-      method:'DELETE', headers:{'Content-Type':'application/json'},
-      body: JSON.stringify({ artist, category, filename })
-    }).then(r => r.json());
-    if (res.ok) { toast('✓ Image deleted.'); browseArtist(artist); }
-    else toast('Delete failed: ' + (res.error||''), 'error');
-  } catch { toast('Server not running', 'error'); }
+function deleteArtwork() {
+  toast('ℹ To remove artworks: delete the file from the ARTISTS folder, then run node sync-gallery.cjs.', 'error');
 }
-
-async function createFolder() {
+function createFolder() {
   const artist   = document.getElementById('new-artist').value.trim();
   const category = document.getElementById('new-category').value.trim() || 'Artworks';
   if (!artist) { toast('Enter an artist name', 'error'); return; }
-  try {
-    const res = await fetch(API + '/api/artists', {
-      method:'POST', headers:{'Content-Type':'application/json'},
-      body: JSON.stringify({ artist, category })
-    }).then(r => r.json());
-    if (res.ok) { toast(`✓ Folder created: ${artist}/${category}`); loadArtists(); }
-    else toast('Error: ' + res.error, 'error');
-  } catch { toast('Server not running', 'error'); }
+  toast(`ℹ Create this folder manually: ARTISTS/${artist}/${category}`, 'error');
 }
 
-/* ══ EXHIBITIONS ═══════════════════════════════ */
+/* ══ EXHIBITIONS (localStorage) ════════════════ */
 let _exhibitions = [];
-async function loadExhibitions() {
-  try {
-    _exhibitions = await fetch(API + '/api/exhibitions').then(r => r.json());
-    renderExhibitions();
-  } catch { document.getElementById('exhibitionList').innerHTML = '<p style="color:var(--red)">Server not running</p>'; }
+function loadExhibitions() {
+  _exhibitions = lsGet(LS_EXHIBITIONS, []);
+  renderExhibitions();
 }
 
 function renderExhibitions() {
-  if (!_exhibitions.length) { document.getElementById('exhibitionList').innerHTML = '<p style="color:var(--muted)">No exhibitions yet. Add one above.</p>'; return; }
-  document.getElementById('exhibitionList').innerHTML = _exhibitions.map(ex => `
+  const el = document.getElementById('exhibitionList');
+  if (!_exhibitions.length) {
+    el.innerHTML = '<p style="color:var(--muted)">No exhibitions yet. Add one above.</p>';
+    return;
+  }
+  el.innerHTML = _exhibitions.map(ex => `
     <div class="ex-item">
       <div class="ex-info">
         <h5>${ex.title || 'Untitled'}</h5>
@@ -774,8 +747,8 @@ function renderExhibitions() {
 
 function clearExForm() {
   ['ex-id','ex-title','ex-artist','ex-location','ex-category','ex-desc'].forEach(id => document.getElementById(id).value = '');
-  document.getElementById('ex-start').value = '';
-  document.getElementById('ex-end').value = '';
+  document.getElementById('ex-start').value  = '';
+  document.getElementById('ex-end').value    = '';
   document.getElementById('ex-status').value = 'upcoming';
   document.getElementById('exFormTitle').textContent = 'Add New Exhibition / Event';
 }
@@ -795,9 +768,10 @@ function editExhibition(id) {
   document.getElementById('panel-exhibitions').scrollTop = 0;
 }
 
-async function saveExhibition() {
+function saveExhibition() {
+  const id = document.getElementById('ex-id').value;
   const payload = {
-    id: document.getElementById('ex-id').value || null,
+    id:          id || ('ex_' + Date.now()),
     title:       document.getElementById('ex-title').value.trim(),
     artist:      document.getElementById('ex-artist').value.trim(),
     startDate:   document.getElementById('ex-start').value,
@@ -808,75 +782,73 @@ async function saveExhibition() {
     description: document.getElementById('ex-desc').value.trim(),
   };
   if (!payload.title) { toast('Title required', 'error'); return; }
-  try {
-    const res = await fetch(API + '/api/exhibitions', {
-      method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(payload)
-    }).then(r => r.json());
-    if (res.ok) { toast('✓ Exhibition saved!'); clearExForm(); loadExhibitions(); }
-    else toast('Error saving', 'error');
-  } catch { toast('Server not running', 'error'); }
+  if (id) {
+    const idx = _exhibitions.findIndex(e => e.id === id);
+    if (idx > -1) _exhibitions[idx] = payload; else _exhibitions.push(payload);
+  } else {
+    _exhibitions.push(payload);
+  }
+  lsSet(LS_EXHIBITIONS, _exhibitions);
+  toast('✓ Exhibition saved!');
+  clearExForm();
+  renderExhibitions();
 }
 
-async function deleteExhibition(id) {
+function deleteExhibition(id) {
   if (!confirm('Delete this exhibition?')) return;
-  try {
-    const res = await fetch(API + '/api/exhibitions/' + id, { method:'DELETE' }).then(r => r.json());
-    if (res.ok) { toast('✓ Exhibition deleted.'); loadExhibitions(); }
-    else toast('Delete failed', 'error');
-  } catch { toast('Server not running', 'error'); }
+  _exhibitions = _exhibitions.filter(e => e.id !== id);
+  lsSet(LS_EXHIBITIONS, _exhibitions);
+  toast('✓ Exhibition deleted.');
+  renderExhibitions();
 }
 
-/* ══ PAGES / CONTENT ═══════════════════════════ */
-async function loadPageContent() {
-  try {
-    const data = await fetch(API + '/api/content').then(r => r.json());
-    if (data.home) {
-      if(data.home.headline) document.getElementById('home-headline').value = data.home.headline;
-      if(data.home.sub) document.getElementById('home-sub').value = data.home.sub;
-      if(data.home.desc) document.getElementById('home-desc').value = data.home.desc;
-    }
-    if (data['artworks-page']) {
-      if(data['artworks-page'].title) document.getElementById('aw-page-title').value = data['artworks-page'].title;
-      if(data['artworks-page'].desc) document.getElementById('aw-page-desc').value = data['artworks-page'].desc;
-    }
-    if (data.services) {
-      if(data.services.title) document.getElementById('svc-title').value = data.services.title;
-      if(data.services.cta) document.getElementById('svc-cta').value = data.services.cta;
-      if(data.services.desc) document.getElementById('svc-desc').value = data.services.desc;
-    }
-  } catch { /* server not running */ }
+/* ══ PAGES / CONTENT (localStorage) ═══════════ */
+function loadPageContent() {
+  const data = lsGet(LS_CONTENT, {});
+  if (data.home) {
+    if (data.home.headline) document.getElementById('home-headline').value = data.home.headline;
+    if (data.home.sub)      document.getElementById('home-sub').value      = data.home.sub;
+    if (data.home.desc)     document.getElementById('home-desc').value     = data.home.desc;
+  }
+  if (data['artworks-page']) {
+    if (data['artworks-page'].title) document.getElementById('aw-page-title').value = data['artworks-page'].title;
+    if (data['artworks-page'].desc)  document.getElementById('aw-page-desc').value  = data['artworks-page'].desc;
+  }
+  if (data.services) {
+    if (data.services.title) document.getElementById('svc-title').value = data.services.title;
+    if (data.services.cta)   document.getElementById('svc-cta').value   = data.services.cta;
+    if (data.services.desc)  document.getElementById('svc-desc').value  = data.services.desc;
+  }
 }
 
-async function savePageContent(page) {
+function savePageContent(page) {
   let payload = {};
   if (page === 'home') {
-    payload = { headline: document.getElementById('home-headline').value, sub: document.getElementById('home-sub').value, desc: document.getElementById('home-desc').value };
+    payload = {
+      headline: document.getElementById('home-headline').value,
+      sub:      document.getElementById('home-sub').value,
+      desc:     document.getElementById('home-desc').value,
+    };
   } else if (page === 'artworks-page') {
-    payload = { title: document.getElementById('aw-page-title').value, desc: document.getElementById('aw-page-desc').value };
+    payload = {
+      title: document.getElementById('aw-page-title').value,
+      desc:  document.getElementById('aw-page-desc').value,
+    };
   } else if (page === 'services') {
-    payload = { title: document.getElementById('svc-title').value, cta: document.getElementById('svc-cta').value, desc: document.getElementById('svc-desc').value };
+    payload = {
+      title: document.getElementById('svc-title').value,
+      cta:   document.getElementById('svc-cta').value,
+      desc:  document.getElementById('svc-desc').value,
+    };
   }
-  try {
-    const res = await fetch(API + '/api/content', {
-      method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ [page]: payload })
-    }).then(r => r.json());
-    if (res.ok) toast('✓ Content saved & published!');
-    else toast('Error saving', 'error');
-  } catch { toast('Server not running', 'error'); }
+  const data = lsGet(LS_CONTENT, {});
+  data[page] = payload;
+  lsSet(LS_CONTENT, data);
+  toast('✓ Content saved locally!');
 }
 
-async function uploadHeroImage(input) {
-  const page = document.getElementById('hero-page').value;
-  const fixName = document.getElementById('hero-fixed-name').value.trim();
-  const fd = new FormData();
-  fd.append('image', input.files[0]);
-  fd.append('page', page);
-  if (fixName) fd.append('fixedName', fixName);
-  try {
-    const res = await fetch(API + '/api/upload?type=hero', { method:'POST', body: fd }).then(r => r.json());
-    if (res.ok) toast(`✓ Hero image uploaded for "${page}" page!`);
-    else toast('Upload failed: ' + res.error, 'error');
-  } catch { toast('Server not running', 'error'); }
+function uploadHeroImage(input) {
+  toast('ℹ To change hero images: replace the file directly in the images/MAIN IMAGES/ folder.', 'error');
 }
 </script>
 </body>
