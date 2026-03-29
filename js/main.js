@@ -374,6 +374,12 @@
               collectionImages.forEach(item => {
                 // item might be a string (from static fallback) or an object (from API)
                 const src = typeof item === 'string' ? item : item.src;
+                
+                // Exclude whatsapp images from appearing in the main artworks grid
+                if (src.toLowerCase().includes('whatsapp')) {
+                  return;
+                }
+                
                 const fileName = src.split('/').pop();
                 const title = fileName.replace(/\.[^/.]+$/, "").replace(/[-_]/g, " ");
                 galleryItems.push({ 
@@ -656,22 +662,35 @@
 
         const imgEl = artDiv.querySelector("img");
         if (imgEl) {
-            imgEl.addEventListener("click", (e) => {
-               e.stopPropagation();
-               const viewer = document.createElement("div");
-               viewer.className = "simple-lightbox";
-               viewer.innerHTML = `<img src="${src}"><button class="lightbox-close">✕</button>`;
-               document.body.appendChild(viewer);
-               
-               requestAnimationFrame(() => {
-                 viewer.classList.add("active");
-               });
-               
-               viewer.querySelector(".lightbox-close").onclick = () => {
-                 viewer.classList.remove("active");
-                 setTimeout(() => viewer.remove(), 300);
-               };
-            });
+            const lowSrc = src.toLowerCase();
+            const isAnonymousItem = lowSrc.includes('whatsapp') || lowSrc.includes('unnamed') || /^\d+$/.test(src.split('/').pop().split('.')[0]);
+            
+            if (isAnonymousItem) {
+                // Remove pointer cursor so it doesn't look clickable
+                imgEl.style.cursor = 'default';
+                imgEl.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    // Optional: could trigger inquiry here, but usually just doing nothing is better 
+                    // since there's an explicit 'Inquire to purchase' button directly below.
+                });
+            } else {
+                imgEl.addEventListener("click", (e) => {
+                   e.stopPropagation();
+                   const viewer = document.createElement("div");
+                   viewer.className = "simple-lightbox";
+                   viewer.innerHTML = `<img src="${src}"><button class="lightbox-close">✕</button>`;
+                   document.body.appendChild(viewer);
+                   
+                   requestAnimationFrame(() => {
+                     viewer.classList.add("active");
+                   });
+                   
+                   viewer.querySelector(".lightbox-close").onclick = () => {
+                     viewer.classList.remove("active");
+                     setTimeout(() => viewer.remove(), 300);
+                   };
+                });
+            }
         }
         grid.appendChild(artDiv);
       });
