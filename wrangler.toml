@@ -17,5 +17,6 @@ bucket_name = "artgalzim-images"
 [vars]
 ADMIN_PASSWORD = "ARTGALZIM2SEE"
 
-# Secrets (set via wrangler secret put)
-# JWT_SECRET = "your-jwt-secret-here"
+# Assets configuration for Cloudflare Pages
+[assets]
+directory = "./dist"
