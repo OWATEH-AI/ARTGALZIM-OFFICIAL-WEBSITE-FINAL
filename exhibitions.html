@@ -89,7 +89,7 @@
   </aside>
   <div class="mobile-overlay" id="mobileOverlay"></div>
 
-  <section class="page-hero" style="background-image: url('Background images/exhibitions/exhibitions_hero.png');">
+  <section class="page-hero" style="background-image: url('Background images/exhibitions/exhibitions_hero.webp');">
     <div class="page-hero-overlay"></div>
     <div class="page-hero-content reveal">
       <span class="section-eyebrow">Program</span>
@@ -97,14 +97,24 @@
       <p class="page-lead">Immersive visual narratives exploring the intersections of Zimbabwean history, mythology, and modern identity.</p>
       
       <div class="page-hero-video-wrap reveal" style="margin-top: 2.5rem;">
-        <div class="video-container" id="exhibitionVideo">
-          <div class="video-placeholder" id="videoPlaceholder">
-            <svg viewBox="0 0 24 24" fill="currentColor" width="48" height="48"><path d="M8 5v14l11-7z"/></svg>
+        <div class="video-container" id="exhibitionVideoWrap">
+          <!-- Play Overlay — clicking launches the video -->
+          <div class="video-placeholder" id="videoPlaceholder" style="cursor:pointer;">
+            <svg viewBox="0 0 24 24" fill="currentColor" width="56" height="56"><path d="M8 5v14l11-7z"/></svg>
             <span>Play Exhibition Trailer</span>
           </div>
-          <video id="actualVideo" style="display: none; width: 100%; height: 100%; object-fit: cover; background: #000;" controls controlsList="nodownload" oncontextmenu="return false;" disablePictureInPicture playsinline>
-            <source src="ART VIDEO/ARTGALZIM VIDZ.mp4" type="video/mp4">
-            Your browser does not support the video tag.
+          <!-- Video: no autoplay, no download, no right-click, embedded only -->
+          <video
+            id="actualVideo"
+            src="videos/ARTGALZIM VIDZ.mp4"
+            style="display:none; width:100%; height:100%; object-fit:cover; background:#000; opacity:0; transition:opacity 0.5s ease;"
+            controls
+            controlsList="nodownload"
+            oncontextmenu="return false;"
+            disablePictureInPicture
+            playsinline
+            preload="metadata"
+          >
           </video>
         </div>
       </div>
@@ -112,137 +122,39 @@
   </section>
   <section class="section pt-0">
     <div class="exhibition-tabs reveal">
-      <button class="tab-btn active" data-target="current">Current</button>
-      <button class="tab-btn" data-target="upcoming">Upcoming</button>
+      <button class="tab-btn" data-target="current">Current</button>
+      <button class="tab-btn active" data-target="upcoming">Upcoming</button>
       <button class="tab-btn" data-target="past">Past</button>
     </div>
 
     <!-- Current Exhibitions -->
-    <div class="exhibition-list active" id="current">
-      <div class="exh-grid reveal-stagger">
-        <article class="exh-card">
-          <div class="exh-img-frame">
-            <img src="images/artwork_1.png" alt="Roots &amp; Visions" loading="lazy">
-            <div class="exh-badge now">Now Open</div>
-          </div>
-          <div class="exh-body">
-            <span class="exh-dates">15 Feb – 30 Apr 2026</span>
-            <h3 class="exh-title">Roots &amp; Visions</h3>
-            <p class="exh-participants">Group Show &nbsp;·&nbsp; 14 Artists</p>
-            <p class="exh-desc">An expansive survey of Zimbabwean contemporary painting and sculpture, exploring identity, transformation, and cultural heritage.</p>
-            <a href="artworks.html" class="exh-cta">View Artworks →</a>
-          </div>
-        </article>
-
-        <article class="exh-card">
-          <div class="exh-img-frame">
-            <img src="images/artwork_3.png" alt="Women in Art" loading="lazy">
-            <div class="exh-badge now">Now Open</div>
-          </div>
-          <div class="exh-body">
-            <span class="exh-dates">1 Mar – 30 Apr 2026</span>
-            <h3 class="exh-title">Women in Art</h3>
-            <p class="exh-participants">Group Show &nbsp;·&nbsp; 6 Artists</p>
-            <p class="exh-desc">Celebrating African women artists whose powerful narratives redefine femininity, resilience, and identity.</p>
-            <a href="artworks.html" class="exh-cta">View Artworks →</a>
-          </div>
-        </article>
-
-        <article class="exh-card">
-          <div class="exh-img-frame">
-            <img src="images/artwork_2.png" alt="Stone &amp; Earth" loading="lazy">
-            <div class="exh-badge now">Now Open</div>
-          </div>
-          <div class="exh-body">
-            <span class="exh-dates">15 Jan – 30 Apr 2026</span>
-            <h3 class="exh-title">Stone &amp; Earth</h3>
-            <p class="exh-participants">Solo Exhibition &nbsp;·&nbsp; Tendai Moyo</p>
-            <p class="exh-desc">A deeply personal showcase of stone and bronze works, dialoguing between traditional carving and modern techniques.</p>
-            <a href="artists.html" class="exh-cta">Meet the Artist →</a>
-          </div>
-        </article>
-
-        <!-- New Mobile Items (making it 6) -->
-        <article class="exh-card mobile-added-item">
-          <div class="exh-img-frame">
-            <img src="images/artwork_4.png" alt="Digital Grids" loading="lazy">
-            <div class="exh-badge now">Now Open</div>
-          </div>
-          <div class="exh-body">
-            <span class="exh-dates">10 Mar – 15 May 2026</span>
-            <h3 class="exh-title">Digital Grids</h3>
-            <p class="exh-participants">New Media &nbsp;·&nbsp; Farai Dziva</p>
-            <p class="exh-desc">Exploring the intersection of traditional weaving patterns and modern algorithmic art.</p>
-            <a href="artworks.html" class="exh-cta">View Space →</a>
-          </div>
-        </article>
-
-        <article class="exh-card mobile-added-item">
-          <div class="exh-img-frame">
-            <img src="images/artwork_5.png" alt="Urban Rhythms" loading="lazy">
-            <div class="exh-badge now">Now Open</div>
-          </div>
-          <div class="exh-body">
-            <span class="exh-dates">5 Apr – 20 Jun 2026</span>
-            <h3 class="exh-title">Urban Rhythms</h3>
-            <p class="exh-participants">Group Show &nbsp;·&nbsp; 5 Artists</p>
-            <p class="exh-desc">A vibrant examination of Harare's bustling energy through the lens of young expressionists.</p>
-            <a href="artworks.html" class="exh-cta">Explore Works →</a>
-          </div>
-        </article>
-
-        <article class="exh-card mobile-added-item">
-          <div class="exh-img-frame">
-            <img src="images/artwork_6.png" alt="Ancestral Clay" loading="lazy">
-            <div class="exh-badge now">Now Open</div>
-          </div>
-          <div class="exh-body">
-            <span class="exh-dates">12 Apr – 30 Jun 2026</span>
-            <h3 class="exh-title">Ancestral Clay</h3>
-            <p class="exh-participants">Ceramics &nbsp;·&nbsp; Nyasha Zvakare</p>
-            <p class="exh-desc">Contemporary sculptural ceramics that reinterpret ancient Shona pottery traditions.</p>
-            <a href="artists.html" class="exh-cta">Meet Artist →</a>
-          </div>
-        </article>
-      </div>
+    <div class="exhibition-list" id="current" style="display:none;">
+      <p style="text-align:center; padding:3rem; color:var(--text-muted); font-size:1.1rem;">There are no current exhibitions as of now.</p>
     </div>
 
     <!-- Upcoming Exhibitions -->
-    <div class="exhibition-list" id="upcoming" style="display:none;">
+    <div class="exhibition-list active" id="upcoming" style="display:block;">
       <div class="exh-grid reveal-stagger">
         <article class="exh-card">
           <div class="exh-img-frame">
-            <img src="images/artwork_4.png" alt="Urban Matrix" loading="lazy">
-            <div class="exh-badge soon">June 2026</div>
+            <img src="Customisations/Exhbitition 1.jpeg" alt="Easter Sip And Paint" loading="lazy">
+            <div class="exh-badge soon">05 April 2026</div>
           </div>
           <div class="exh-body">
-            <span class="exh-dates">10 Jun – 15 Aug 2026</span>
-            <h3 class="exh-title">Urban Matrix</h3>
-            <p class="exh-participants">Solo Exhibition &nbsp;·&nbsp; Farai Dziva</p>
-            <p class="exh-desc">A deep dive into geometric abstractions, unpacking the rapid urbanization of post-colonial spaces.</p>
-            <a href="artists.html" class="exh-cta">About the Artist →</a>
-          </div>
-        </article>
-
-        <article class="exh-card">
-          <div class="exh-img-frame">
-            <img src="images/domboshava.png" alt="Landscape &amp; Memory" loading="lazy">
-            <div class="exh-badge soon">August 2026</div>
-          </div>
-          <div class="exh-body">
-            <span class="exh-dates">20 Aug – 30 Oct 2026</span>
-            <h3 class="exh-title">Landscape &amp; Memory</h3>
-            <p class="exh-participants">Group Show &nbsp;·&nbsp; 9 Artists</p>
-            <p class="exh-desc">Exploration of the Zimbabwean landscape as a living canvas of memory and spirituality.</p>
-            <a href="contact.html" class="exh-cta">Register Interest →</a>
+            <span class="exh-dates">05 Apr 2026, 1pm – 6pm</span>
+            <h3 class="exh-title">Easter Sip And Paint</h3>
+            <p class="exh-participants">Event &nbsp;·&nbsp; Surprise Guest Artist</p>
+            <p class="exh-desc">Join us for an Easter Sip and Paint! Get creative, unwind, and celebrate renewal with friends and family. Domboshava curves touring will inspire your masterpiece!<br>Registration Fee: $15</p>
+            <a href="contact.html" class="exh-cta">Book Your Spot →</a>
           </div>
         </article>
 
         <article class="exh-card exh-card--placeholder">
-          <div class="exh-img-frame exh-img-frame--dark">
-            <div class="exh-coming-soon">
-              <span>More exhibitions</span>
-              <span>coming soon</span>
+          <div class="exh-img-frame exh-img-frame--dark" style="position:relative; overflow:hidden;">
+            <img src="images/domboshava.webp" alt="Late 2026 Poster" style="position:absolute; top:0; left:0; width:100%; height:100%; object-fit:cover; z-index:0; filter: brightness(0.35);">
+            <div class="exh-coming-soon" style="position:absolute; inset:0; z-index:1; display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; padding: 1rem;">
+              <span style="font-size:1.6rem; font-family:'Cormorant Garamond', serif; font-weight:700; color:#fff; text-shadow: 0 4px 10px rgba(0,0,0,0.8); letter-spacing:0.05em; line-height:1.2;">More exhibitions</span>
+              <span style="font-size:1rem; font-weight:600; color:var(--gold); text-shadow: 0 2px 6px rgba(0,0,0,0.8); margin-top:0.5rem; letter-spacing:0.15em; text-transform:uppercase;">coming soon</span>
             </div>
           </div>
           <div class="exh-body">
@@ -253,140 +165,12 @@
             <a href="contact.html" class="exh-cta">Stay Updated →</a>
           </div>
         </article>
-
-        <!-- New Mobile Items -->
-        <article class="exh-card mobile-added-item">
-          <div class="exh-img-frame">
-            <img src="images/artwork_1.png" alt="Myth &amp; Modernity" loading="lazy">
-            <div class="exh-badge soon">Sept 2026</div>
-          </div>
-          <div class="exh-body">
-            <span class="exh-dates">5 Sep – 15 Nov 2026</span>
-            <h3 class="exh-title">Myth &amp; Modernity</h3>
-            <p class="exh-participants">Group Show &nbsp;·&nbsp; 7 Artists</p>
-            <p class="exh-desc">How ancient myths continue to shape contemporary lives through experimental works.</p>
-            <a href="artworks.html" class="exh-cta">More Info →</a>
-          </div>
-        </article>
-
-        <article class="exh-card mobile-added-item">
-          <div class="exh-img-frame">
-            <img src="images/artwork_3.png" alt="Textile Tales" loading="lazy">
-            <div class="exh-badge soon">Oct 2026</div>
-          </div>
-          <div class="exh-body">
-            <span class="exh-dates">20 Oct – 20 Dec 2026</span>
-            <h3 class="exh-title">Textile Tales</h3>
-            <p class="exh-participants">Mixed Media &nbsp;·&nbsp; 4 Artists</p>
-            <p class="exh-desc">Focus on the history of Zimbabwean weaving brought into the present with modern themes.</p>
-            <a href="artworks.html" class="exh-cta">Details →</a>
-          </div>
-        </article>
-
-        <article class="exh-card mobile-added-item">
-          <div class="exh-img-frame">
-            <img src="images/hero_gallery.png" alt="Light &amp; Shadow" loading="lazy">
-            <div class="exh-badge soon">Nov 2026</div>
-          </div>
-          <div class="exh-body">
-            <span class="exh-dates">1 Nov – 31 Dec 2026</span>
-            <h3 class="exh-title">Light &amp; Shadow</h3>
-            <p class="exh-participants">Photography &nbsp;·&nbsp; Solo Show</p>
-            <p class="exh-desc">A monochromatic journey through Mashonaland East, capturing quiet moments.</p>
-            <a href="artworks.html" class="exh-cta">Explore →</a>
-          </div>
-        </article>
       </div>
     </div>
 
     <!-- Past Exhibitions -->
     <div class="exhibition-list" id="past" style="display:none;">
-      <div class="exh-grid reveal-stagger">
-        <article class="exh-card">
-          <div class="exh-img-frame">
-            <img src="images/hero_gallery.png" alt="Domboshava Awakens" loading="lazy">
-            <div class="exh-badge past">Ended</div>
-          </div>
-          <div class="exh-body">
-            <span class="exh-dates">Sep – Dec 2025</span>
-            <h3 class="exh-title">Domboshava Awakens</h3>
-            <p class="exh-participants">Inaugural Show &nbsp;·&nbsp; 8 Artists</p>
-            <p class="exh-desc">Celebrating the opening of ARTGALZIM CENTER — defining the gallery's vision.</p>
-            <a href="about.html" class="exh-cta">Read Our Story →</a>
-          </div>
-        </article>
-
-        <article class="exh-card">
-          <div class="exh-img-frame">
-            <img src="images/artwork_3.png" alt="Voices Unheard" loading="lazy">
-            <div class="exh-badge past">Ended</div>
-          </div>
-          <div class="exh-body">
-            <span class="exh-dates">Nov 2024 – Jan 2025</span>
-            <h3 class="exh-title">Voices Unheard</h3>
-            <p class="exh-participants">Group Show &nbsp;·&nbsp; 5 Artists</p>
-            <p class="exh-desc">Visual language to stories rarely told — exploring grief, joy, and defiance.</p>
-            <a href="about.html" class="exh-cta">Our Mission →</a>
-          </div>
-        </article>
-
-        <article class="exh-card">
-          <div class="exh-img-frame">
-            <img src="images/artwork_2.png" alt="Shona Reborn" loading="lazy">
-            <div class="exh-badge past">Ended</div>
-          </div>
-          <div class="exh-body">
-            <span class="exh-dates">Jul – Sep 2024</span>
-            <h3 class="exh-title">Shona Reborn</h3>
-            <p class="exh-participants">Solo Exhibition &nbsp;·&nbsp; Tendai Moyo</p>
-            <p class="exh-desc">Retrospective of earliest stone carvings, tracing the origins of a practice.</p>
-            <a href="artists.html" class="exh-cta">View Artist →</a>
-          </div>
-        </article>
-
-        <!-- New Mobile Items -->
-        <article class="exh-card mobile-added-item">
-          <div class="exh-img-frame">
-            <img src="images/artwork_1.png" alt="Patterns of Life" loading="lazy">
-            <div class="exh-badge past">Ended</div>
-          </div>
-          <div class="exh-body">
-            <span class="exh-dates">Mar – May 2024</span>
-            <h3 class="exh-title">Patterns of Life</h3>
-            <p class="exh-participants">Textile &nbsp;·&nbsp; 3 Artists</p>
-            <p class="exh-desc">Diversity of Zimbabwean weaving and its role in everyday life and ceremony.</p>
-            <a href="about.html" class="exh-cta">Read More →</a>
-          </div>
-        </article>
-
-        <article class="exh-card mobile-added-item">
-          <div class="exh-img-frame">
-            <img src="images/artwork_4.png" alt="Cityscape Dreams" loading="lazy">
-            <div class="exh-badge past">Ended</div>
-          </div>
-          <div class="exh-body">
-            <span class="exh-dates">Jan – Feb 2024</span>
-            <h3 class="exh-title">Cityscape Dreams</h3>
-            <p class="exh-participants">Painting &nbsp;·&nbsp; Solo Show</p>
-            <p class="exh-desc">Urban landscapes that blur the line between reality and memory.</p>
-            <a href="about.html" class="exh-cta">View Archive →</a>
-          </div>
-        </article>
-
-        <article class="exh-card mobile-added-item">
-          <div class="exh-img-frame">
-            <img src="images/artwork_5.png" alt="Bronze &amp; Bone" loading="lazy">
-            <div class="exh-badge past">Ended</div>
-          </div>
-          <div class="exh-body">
-            <span class="exh-dates">Oct – Dec 2023</span>
-            <h3 class="exh-title">Bronze &amp; Bone</h3>
-            <p class="exh-participants">Sculpture &nbsp;·&nbsp; Tendai Moyo</p>
-            <p class="exh-desc">Early experimental works combining salvaged metal and organic materials.</p>
-            <a href="artists.html" class="exh-cta">Artist Bio →</a>
-          </div>
-        </article>
-      </div>
+      <p style="text-align:center; padding:3rem; color:var(--text-muted); font-size:1.1rem;">There are no past exhibitions.</p>
     </div>
   </section>
 
@@ -398,15 +182,18 @@
         <div class="footer-logo-text" style="display: none">ARTGALZIM<br /><small>CENTER</small></div>
         <p class="footer-tagline">Contemporary African Art<br />in the Heart of Domboshava</p>
         <div class="footer-social">
-          <a href="https://wa.me/263776330869" target="_blank" aria-label="WhatsApp" class="social-link">
+          <a href="https://wa.me/263776330869?text=Hello%20ARTGALZIM%20Center%2C%20I%20discovered%20your%20gallery%20online%20and%20would%20like%20to%20learn%20more%20about%20your%20exhibitions." target="_blank" aria-label="WhatsApp" class="social-link">
             <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
           </a>
           <a href="https://www.instagram.com" target="_blank" aria-label="Instagram" class="social-link">
             <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="5" /><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z" /><line x1="17.5" y1="6.5" x2="17.51" y2="6.5" /></svg>
           </a>
+          <a href="https://www.facebook.com" target="_blank" aria-label="Facebook" class="social-link">
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z" /></svg>
+          </a>
         </div>
       </div>
-      <nav class="footer-nav" style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 2rem;">
+      <nav class="footer-nav">
         <div class="footer-col">
           <h4 class="footer-col-title">Explore</h4>
           <a href="exhibitions.html">Exhibitions</a>
@@ -419,22 +206,55 @@
           <a href="about.html">Our Story</a>
           <a href="about.html#mission">Mission &amp; Vision</a>
           <a href="about.html#team">The Team</a>
+          <a href="privacy-policy.html">Privacy Policy</a>
         </div>
         <div class="footer-col">
           <h4 class="footer-col-title">Support</h4>
           <a href="donate.html">Donate</a>
+          <a href="owa-technologies.html">OWA TECH</a>
         </div>
         <div class="footer-col">
           <h4 class="footer-col-title">Visit</h4>
           <a href="visit.html">Plan Your Visit</a>
+          <a href="visit.html#directions">Directions</a>
           <a href="contact.html">Contact</a>
         </div>
       </nav>
+      <div class="footer-contact">
+        <h4 class="footer-col-title">Get in Touch</h4>
+        <p>Mverechena Center, Harare</p>
+        <p><a href="tel:+263776330869">+263 77 633 0869</a></p>
+        <p><a href="mailto:info@artgalzim.com">info@artgalzim.com</a></p>
+      </div>
     </div>
-    <div class="footer-bottom">
-      <p>&copy; 2026 ARTGALZIM CENTER. Powered by OWA TECHNOLOGIES</p>
+    <div class="footer-bottom" style="border-top: 1px solid var(--border); padding: 0.8rem 0; margin-top: 1.5rem;">
+      <div style="max-width: 1400px; margin: 0 auto; padding: 0 2rem; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
+        <p style="font-size: 0.8rem; color: var(--text-muted); cursor: default; user-select: none;" id="adminSecretTrigger">&copy; 2026 ARTGALZIM CENTER</p>
+        <div style="font-weight: 700; letter-spacing: 0.15em; color: var(--gold); font-size: 0.72rem; text-transform: uppercase;">
+          POWERED BY <a href="owa-technologies.html" style="color: inherit; text-decoration: none; border-bottom: 2px solid var(--gold);">OWA TECHNOLOGIES</a>
+        </div>
+      </div>
     </div>
   </footer>
+  
+  <!-- Global Choice Box (Popup) for inquiry method -->
+  <div id="inquiryChoiceBox" class="inquiry-choice-overlay" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 30000; align-items: center; justify-content: center;">
+    <div class="inquiry-choice-content" style="background: var(--bg2); padding: 2.5rem; border-radius: 12px; position: relative; max-width: 400px; width: 90%; text-align: center; border: 1px solid var(--border); box-shadow: 0 25px 50px rgba(0,0,0,0.5);">
+      <button class="choice-close" id="closeChoiceBox" style="position: absolute; top: 1rem; right: 1rem; background: none; border: none; font-size: 1.5rem; color: var(--text-muted); cursor: pointer;">✕</button>
+      <h4 style="margin-bottom: 1rem; font-family: 'Cormorant Garamond', serif; font-size: 1.4rem; color: var(--text);">Select Contact Method</h4>
+      <p style="margin-bottom: 2rem; font-size: 0.9rem; color: var(--text-muted);">How would you like to continue with your inquiry?</p>
+      <div class="choice-buttons" style="display: flex; flex-direction: column; gap: 1rem;">
+        <button class="choice-btn wa" id="btnChoiceWA" style="padding: 1rem; border-radius: 8px; border: none; background: #25D366; color: #fff; font-weight: 600; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 0.75rem;">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.335-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"></path></svg>
+          <span>WhatsApp Inquiry</span>
+        </button>
+        <button class="choice-btn gmail" id="btnChoiceGmail" style="padding: 1rem; border-radius: 8px; border: 1px solid var(--border); background: #EA4335; color: #fff; font-weight: 600; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 0.75rem;">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
+          <span>Gmail Inquiry</span>
+        </button>
+      </div>
+    </div>
+  </div>
 
   <a href="https://wa.me/263776330869" target="_blank" class="whatsapp-fab" id="whatsappFab">
     <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
@@ -442,8 +262,9 @@
 
   <button class="back-to-top" id="backToTop">^</button>
 
-  <script src="js/main.js"></script>
+  <script src="js/page-galleries.js"></script>  <script src="js/main.js"></script>
   <script>
+    // ---- Exhibition Tabs ----
     document.querySelectorAll('.tab-btn').forEach(btn => {
       btn.addEventListener('click', () => {
         document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
@@ -452,16 +273,42 @@
         document.getElementById(btn.dataset.target).style.display = 'block';
       });
     });
-    const exhibitionVideo = document.getElementById('exhibitionVideo');
-    if (exhibitionVideo) {
-      exhibitionVideo.addEventListener('click', function() {
-        const placeholder = document.getElementById('videoPlaceholder');
-        const video = document.getElementById('actualVideo');
-        if (placeholder && video && placeholder.style.display !== 'none') {
+
+    // ---- Exhibition Video — instant launch on click ----
+    const videoWrap = document.getElementById('exhibitionVideoWrap');
+    const placeholder = document.getElementById('videoPlaceholder');
+    const video = document.getElementById('actualVideo');
+
+    if (videoWrap && placeholder && video) {
+      // Launch video when whole container is clicked
+      videoWrap.addEventListener('click', function () {
+        if (placeholder.style.display !== 'none') {
+          // 1. Hide placeholder and show video
           placeholder.style.display = 'none';
           video.style.display = 'block';
-          video.play();
+          
+          // 2. Load and play
+          video.load();
+          video.play().then(() => {
+            video.style.opacity = '1';
+          }).catch(err => {
+             console.error("Video play failed:", err);
+             // Still show it even if play is blocked by browser policy
+             video.style.opacity = '1';
+          });
+        } else {
+          // Subsequent clicks toggle play/pause
+          if (video.paused) {
+            video.play();
+          } else {
+            video.pause();
+          }
         }
+      });
+
+      // Allow controls interaction without bubbling
+      video.addEventListener('click', function (e) {
+        e.stopPropagation();
       });
     }
   </script>

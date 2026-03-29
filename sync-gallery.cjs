@@ -2,6 +2,7 @@ const fs = require('fs');
 const path = require('path');
 
 const baseDir = path.join(__dirname, 'images', 'MAIN IMAGES');
+const artistsDir = path.join(__dirname, 'ARTISTS');
 const outputDir = path.join(__dirname, 'js');
 const outputFile = path.join(outputDir, 'page-galleries.js');
 
@@ -10,6 +11,7 @@ const folders = ['home', 'exhibitions', 'artists', 'artworks', 'about', 'visit',
 function getImages() {
     const galleryData = {};
 
+    // Standard folders
     folders.forEach(folder => {
         const folderPath = path.join(baseDir, folder);
         if (fs.existsSync(folderPath)) {
@@ -25,8 +27,53 @@ function getImages() {
         }
     });
 
+    // Hero Animation Folder
+    const heroPath = path.join(__dirname, 'HERO ANIMATION');
+    if (fs.existsSync(heroPath)) {
+        const files = fs.readdirSync(heroPath);
+        galleryData.hero = files.filter(file => {
+            const ext = path.extname(file).toLowerCase();
+            return ['.png', '.jpg', '.jpeg', '.webp', '.gif', '.JPG'].includes(ext);
+        }).map(file => `HERO ANIMATION/${file}`);
+    } else {
+        galleryData.hero = [];
+    }
+
+    // Artist Collections
+    galleryData.artistsCollections = {};
+    if (fs.existsSync(artistsDir)) {
+        const artistFolders = fs.readdirSync(artistsDir);
+        artistFolders.forEach(artist => {
+            const artistPath = path.join(artistsDir, artist);
+            if (fs.lstatSync(artistPath).isDirectory()) {
+                const categories = fs.readdirSync(artistPath);
+                categories.forEach(category => {
+                    const categoryPath = path.join(artistPath, category);
+                    if (fs.lstatSync(categoryPath).isDirectory()) {
+                        const files = fs.readdirSync(categoryPath);
+                        const images = files.filter(file => {
+                            const ext = path.extname(file).toLowerCase();
+                            return ['.png', '.jpg', '.jpeg', '.webp', '.gif'].includes(ext);
+                        }).map(file => `ARTISTS/${artist}/${category}/${file}`);
+                        
+                        // Find a cover image (e.g. cover.png, cover.jpg, or anything starting with "cover")
+                        const coverFile = files.find(file => file.toLowerCase().startsWith('cover'));
+                        const coverPath = coverFile ? `ARTISTS/${artist}/${category}/${coverFile}` : (images.length > 0 ? images[0] : null);
+
+                        // Storage Key: e.g. "WILLARD MAGIGA/Abstracts"
+                        galleryData.artistsCollections[`${artist}/${category}`] = {
+                            images: images,
+                            cover: coverPath
+                        };
+                    }
+                });
+            }
+        });
+    }
+
     return galleryData;
 }
+
 
 function generateConfig() {
     const data = getImages();
@@ -47,7 +94,9 @@ if (typeof window !== 'undefined') {
 
     fs.writeFileSync(outputFile, content);
     console.log('✓ Gallery configuration updated in js/page-galleries.js');
-    console.log('Folders scanned in MAIN IMAGES:', Object.keys(data).map(k => `${k} (${data[k].length})`).join(', '));
+    console.log('Folders scanned in MAIN IMAGES:', folders.length);
+    console.log('Artist categories found:', Object.keys(data.artistsCollections).length);
 }
 
 generateConfig();
+

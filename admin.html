@@ -1,0 +1,883 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>ARTGALZIM — Admin Dashboard</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+  <style>
+    :root {
+      --bg:      #0a0a0a;
+      --bg2:     #111111;
+      --bg3:     #1a1a1a;
+      --surface: #161616;
+      --border:  rgba(255,255,255,0.08);
+      --text:    #f0ede8;
+      --muted:   #888880;
+      --gold:    #c9a84c;
+      --gold-d:  rgba(201,168,76,0.15);
+      --red:     #e05252;
+      --green:   #52c27a;
+      --r:       6px;
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body { background: var(--bg); color: var(--text); font-family: 'Inter', sans-serif; font-size: 14px; line-height: 1.6; display: flex; height: 100vh; overflow: hidden; }
+
+    /* ── Gate screen ── */
+    #gate {
+      position: fixed; inset: 0; z-index: 9999;
+      background: #050505;
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      gap: 2rem;
+    }
+    #gate h1 { font-family: 'Cormorant Garamond', serif; font-size: 2.6rem; color: var(--gold); letter-spacing: 0.15em; }
+    #gate p { color: var(--muted); font-size: 0.85rem; letter-spacing: 0.1em; text-transform: uppercase; }
+    #gate input {
+      background: var(--bg2); border: 1px solid var(--border); color: var(--text);
+      padding: 0.9rem 1.5rem; border-radius: 4px; font-size: 1rem; font-family: inherit;
+      width: 320px; text-align: center; letter-spacing: 0.15em;
+      outline: none; transition: border-color 0.3s;
+    }
+    #gate input:focus { border-color: var(--gold); }
+    #gate button {
+      background: var(--gold); color: #000; border: none;
+      padding: 0.9rem 2.5rem; border-radius: 4px;
+      font-family: 'Inter', sans-serif; font-weight: 600; font-size: 0.85rem;
+      letter-spacing: 0.12em; text-transform: uppercase; cursor: pointer;
+      transition: opacity 0.3s;
+    }
+    #gate button:hover { opacity: 0.85; }
+    #gate .gate-err { color: var(--red); font-size: 0.82rem; display: none; }
+    #gate .gate-logo-wrap { text-align: center; }
+    #gate .gate-logo-wrap img { width: 72px; height: 72px; object-fit: contain; border-radius: 4px; opacity: 0.85; }
+
+    /* ── Sidebar ── */
+    #sidebar {
+      width: 230px; flex-shrink: 0;
+      background: var(--bg2); border-right: 1px solid var(--border);
+      display: flex; flex-direction: column; overflow-y: auto;
+    }
+    .sb-brand {
+      padding: 1.4rem 1.5rem 1rem;
+      border-bottom: 1px solid var(--border);
+    }
+    .sb-brand h2 { font-family: 'Cormorant Garamond', serif; font-size: 1.25rem; color: var(--gold); }
+    .sb-brand p  { font-size: 0.72rem; color: var(--muted); letter-spacing: 0.08em; text-transform: uppercase; }
+    .sb-nav { padding: 1rem 0; flex: 1; }
+    .sb-nav a {
+      display: flex; align-items: center; gap: 0.75rem;
+      padding: 0.7rem 1.5rem; color: var(--muted);
+      text-decoration: none; font-size: 0.82rem; font-weight: 500;
+      letter-spacing: 0.04em; cursor: pointer;
+      border-left: 2px solid transparent;
+      transition: all 0.2s;
+    }
+    .sb-nav a:hover  { color: var(--text); background: var(--bg3); }
+    .sb-nav a.active { color: var(--gold); border-left-color: var(--gold); background: var(--gold-d); }
+    .sb-nav .sb-section { font-size: 0.65rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.12em; padding: 1rem 1.5rem 0.25rem; opacity: 0.6; }
+    .sb-footer { padding: 1rem 1.5rem; border-top: 1px solid var(--border); }
+    .sb-footer button {
+      background: none; border: 1px solid var(--border); color: var(--muted);
+      padding: 0.5rem 1rem; border-radius: 4px; font-family: inherit;
+      font-size: 0.78rem; cursor: pointer; width: 100%; transition: all 0.2s;
+    }
+    .sb-footer button:hover { border-color: var(--red); color: var(--red); }
+
+    /* ── Main content area ── */
+    #main { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
+    #topbar {
+      padding: 1rem 2rem; border-bottom: 1px solid var(--border);
+      background: var(--bg2); display: flex; justify-content: space-between; align-items: center;
+    }
+    #topbar h3 { font-family: 'Cormorant Garamond', serif; font-size: 1.4rem; color: var(--text); }
+    #topbar .sync-btn {
+      background: var(--gold-d); border: 1px solid var(--gold); color: var(--gold);
+      padding: 0.5rem 1.25rem; border-radius: 4px; font-family: inherit; font-size: 0.8rem;
+      cursor: pointer; letter-spacing: 0.08em; text-transform: uppercase; font-weight: 600;
+      transition: all 0.3s;
+    }
+    #topbar .sync-btn:hover { background: var(--gold); color: #000; }
+    #content { flex: 1; overflow-y: auto; padding: 2rem; }
+
+    /* ── Panels ── */
+    .panel { display: none; }
+    .panel.active { display: block; }
+
+    /* ── Cards / Grids ── */
+    .card {
+      background: var(--bg2); border: 1px solid var(--border);
+      border-radius: var(--r); padding: 1.5rem; margin-bottom: 1.5rem;
+    }
+    .card h4 { font-family: 'Cormorant Garamond', serif; font-size: 1.15rem; color: var(--gold); margin-bottom: 1rem; }
+    .card-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 1rem; }
+    .img-thumb {
+      background: var(--bg3); border: 1px solid var(--border); border-radius: 4px; overflow: hidden;
+      display: flex; flex-direction: column;
+    }
+    .img-thumb img { width: 100%; aspect-ratio: 1; object-fit: cover; }
+    .img-thumb .img-actions { padding: 0.5rem; display: flex; justify-content: space-between; align-items: center; }
+    .img-thumb .img-name { font-size: 0.72rem; color: var(--muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 80%; }
+    .img-thumb .del-btn { background: none; border: none; color: var(--red); cursor: pointer; font-size: 1rem; }
+
+    /* ── Forms ── */
+    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1rem; }
+    .form-row.one { grid-template-columns: 1fr; }
+    .form-row.three { grid-template-columns: 1fr 1fr 1fr; }
+    label { display: block; font-size: 0.75rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 0.35rem; }
+    input[type=text], input[type=date], textarea, select {
+      width: 100%; background: var(--bg3); border: 1px solid var(--border);
+      color: var(--text); padding: 0.7rem 0.9rem; border-radius: 4px;
+      font-family: inherit; font-size: 0.9rem; outline: none;
+      transition: border-color 0.2s;
+    }
+    input:focus, textarea:focus, select:focus { border-color: var(--gold); }
+    textarea { resize: vertical; min-height: 90px; }
+    select option { background: #1a1a1a; }
+    .btn-primary {
+      background: var(--gold); color: #000; border: none;
+      padding: 0.75rem 2rem; border-radius: 4px; font-family: inherit;
+      font-weight: 600; font-size: 0.82rem; letter-spacing: 0.1em;
+      text-transform: uppercase; cursor: pointer; transition: opacity 0.2s;
+    }
+    .btn-primary:hover { opacity: 0.85; }
+    .btn-outline {
+      background: none; border: 1px solid var(--border); color: var(--muted);
+      padding: 0.65rem 1.5rem; border-radius: 4px; font-family: inherit;
+      font-size: 0.82rem; cursor: pointer; transition: all 0.2s;
+    }
+    .btn-outline:hover { border-color: var(--gold); color: var(--gold); }
+    .btn-danger {
+      background: none; border: 1px solid var(--red); color: var(--red);
+      padding: 0.5rem 1rem; border-radius: 4px; font-family: inherit;
+      font-size: 0.78rem; cursor: pointer; transition: all 0.2s;
+    }
+    .btn-danger:hover { background: var(--red); color: #fff; }
+
+    /* ── Upload zone ── */
+    .drop-zone {
+      border: 2px dashed var(--border); border-radius: var(--r);
+      padding: 2.5rem; text-align: center; cursor: pointer;
+      transition: border-color 0.3s, background 0.3s;
+    }
+    .drop-zone:hover, .drop-zone.drag-over { border-color: var(--gold); background: var(--gold-d); }
+    .drop-zone p { color: var(--muted); font-size: 0.85rem; }
+    .drop-zone span { color: var(--gold); font-weight: 600; }
+
+    /* ── Stats row ── */
+    .stats-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem; margin-bottom: 1.5rem; }
+    .stat-card { background: var(--bg2); border: 1px solid var(--border); border-radius: var(--r); padding: 1.25rem 1.5rem; }
+    .stat-card .num { font-family: 'Cormorant Garamond', serif; font-size: 2rem; color: var(--gold); line-height: 1; }
+    .stat-card .lbl { font-size: 0.72rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.1em; margin-top: 0.25rem; }
+
+    /* ── Exhibition list ── */
+    .ex-item {
+      background: var(--bg3); border: 1px solid var(--border); border-radius: 4px;
+      padding: 1rem 1.25rem; margin-bottom: 0.75rem;
+      display: flex; justify-content: space-between; align-items: flex-start; gap: 1rem;
+    }
+    .ex-item .ex-info h5 { font-size: 0.95rem; color: var(--text); font-weight: 500; }
+    .ex-item .ex-info p  { font-size: 0.78rem; color: var(--muted); margin-top: 0.2rem; }
+    .ex-item .ex-badge {
+      font-size: 0.68rem; padding: 0.2rem 0.6rem; border-radius: 20px;
+      text-transform: uppercase; letter-spacing: 0.08em; white-space: nowrap;
+      margin-top: 0.25rem;
+    }
+    .ex-badge.upcoming { background: rgba(201,168,76,0.15); color: var(--gold); }
+    .ex-badge.active   { background: rgba(82,194,122,0.15); color: var(--green); }
+    .ex-badge.past     { background: rgba(255,255,255,0.06); color: var(--muted); }
+
+    /* ── Toast ── */
+    #toast {
+      position: fixed; bottom: 2rem; right: 2rem; z-index: 99999;
+      background: var(--bg3); border: 1px solid var(--border); border-radius: 4px;
+      padding: 0.85rem 1.5rem; font-size: 0.85rem; color: var(--text);
+      transform: translateY(120%); transition: transform 0.4s ease;
+      max-width: 320px;
+    }
+    #toast.show { transform: translateY(0); }
+    #toast.success { border-color: var(--green); color: var(--green); }
+    #toast.error   { border-color: var(--red);   color: var(--red); }
+
+    /* ── Artist selector tabs ── */
+    .artist-tabs { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-bottom: 1.25rem; }
+    .artist-tab {
+      background: var(--bg3); border: 1px solid var(--border); color: var(--muted);
+      padding: 0.45rem 1rem; border-radius: 30px; font-size: 0.78rem; cursor: pointer;
+      transition: all 0.2s;
+    }
+    .artist-tab.active { background: var(--gold-d); border-color: var(--gold); color: var(--gold); }
+
+    /* ── Responsive scrollbar ── */
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+
+    /* ── Separator ── */
+    .sep { border: none; border-top: 1px solid var(--border); margin: 1.25rem 0; }
+  </style>
+</head>
+<body>
+
+<!-- ═══════════════ GATE / LOGIN ═══════════════ -->
+<div id="gate">
+  <div class="gate-logo-wrap">
+    <img src="images/logo.jpg" alt="ARTGALZIM" onerror="this.style.display='none'">
+  </div>
+  <h1>ARTGALZIM</h1>
+  <p>Admin Dashboard — Enter password to continue</p>
+  <input type="password" id="pwInput" placeholder="Password" autocomplete="off"/>
+  <button onclick="checkPW()">Access Dashboard</button>
+  <p class="gate-err" id="gateErr">Incorrect password. Try again.</p>
+</div>
+
+<!-- ═══════════════ DASHBOARD ═══════════════ -->
+<div id="dashboard" style="display:none; flex:1; overflow:hidden; display:flex; width:100%;">
+
+  <!-- Sidebar -->
+  <div id="sidebar">
+    <div class="sb-brand">
+      <h2>ARTGALZIM</h2>
+      <p>Admin Panel</p>
+    </div>
+    <nav class="sb-nav">
+      <div class="sb-section">Overview</div>
+      <a onclick="showPanel('overview')" class="active" id="nav-overview">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+        Overview
+      </a>
+
+      <div class="sb-section">Content</div>
+      <a onclick="showPanel('artworks')" id="nav-artworks">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+        Artworks &amp; Artists
+      </a>
+      <a onclick="showPanel('exhibitions')" id="nav-exhibitions">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+        Exhibitions &amp; Events
+      </a>
+      <a onclick="showPanel('pages')" id="nav-pages">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+        Pages &amp; Content
+      </a>
+    </nav>
+    <div class="sb-footer">
+      <button onclick="logout()">Lock Dashboard</button>
+    </div>
+  </div>
+
+  <!-- Main -->
+  <div id="main">
+    <div id="topbar">
+      <h3 id="panelTitle">Overview</h3>
+      <button class="sync-btn" onclick="triggerSync()">⟳ Sync Gallery</button>
+    </div>
+    <div id="content">
+
+      <!-- ── OVERVIEW PANEL ── -->
+      <div class="panel active" id="panel-overview">
+        <div class="stats-row" id="statsRow">
+          <div class="stat-card"><div class="num" id="stat-artists">–</div><div class="lbl">Artists</div></div>
+          <div class="stat-card"><div class="num" id="stat-categories">–</div><div class="lbl">Collections</div></div>
+          <div class="stat-card"><div class="num" id="stat-artworks">–</div><div class="lbl">Artworks</div></div>
+          <div class="stat-card"><div class="num" id="stat-exhibitions">–</div><div class="lbl">Exhibitions</div></div>
+        </div>
+        <div class="card">
+          <h4>Quick Actions</h4>
+          <div style="display:flex; gap:1rem; flex-wrap:wrap;">
+            <button class="btn-primary" onclick="showPanel('artworks')">Upload Artworks</button>
+            <button class="btn-outline" onclick="showPanel('exhibitions')">Add Exhibition</button>
+            <button class="btn-outline" onclick="showPanel('pages')">Edit Page Content</button>
+            <button class="btn-outline" onclick="triggerSync()">Sync Gallery to Frontend</button>
+          </div>
+        </div>
+        <div class="card">
+          <h4>Recent Artist Collections</h4>
+          <div id="overviewCollections" style="color:var(--muted); font-size:0.85rem;">Loading...</div>
+        </div>
+      </div>
+
+      <!-- ── ARTWORKS PANEL ── -->
+      <div class="panel" id="panel-artworks">
+        <div class="card">
+          <h4>Upload New Artwork Images</h4>
+          <div class="form-row">
+            <div>
+              <label>Artist Name</label>
+              <input type="text" id="aw-artist" placeholder="e.g. KEITH ZENDA" list="artistList"/>
+              <datalist id="artistList"></datalist>
+            </div>
+            <div>
+              <label>Category / Folder</label>
+              <input type="text" id="aw-category" placeholder="e.g. Abstract, Artworks, Portraits"/>
+            </div>
+          </div>
+          <div class="form-row three">
+            <div>
+              <label>Medium</label>
+              <input type="text" id="aw-medium" placeholder="e.g. Oil on Canvas"/>
+            </div>
+            <div>
+              <label>Size</label>
+              <input type="text" id="aw-size" placeholder="e.g. 100 x 120 cm"/>
+            </div>
+            <div>
+              <label>Year</label>
+              <input type="text" id="aw-year" placeholder="e.g. 2026"/>
+            </div>
+          </div>
+          <div class="form-row one">
+            <div>
+              <label>Description</label>
+              <textarea id="aw-desc" placeholder="Artist statement or technical breakdown..."></textarea>
+            </div>
+          </div>
+          <div class="drop-zone" id="awDropZone" onclick="document.getElementById('awFileInput').click()">
+            <p>Drop artwork images here or <span>click to browse</span></p>
+            <p style="margin-top:0.5rem; font-size:0.75rem;">PNG, JPG, WEBP supported</p>
+          </div>
+          <input type="file" id="awFileInput" multiple accept="image/*" style="display:none" onchange="previewFiles(this)"/>
+          <div id="awPreview" style="display:grid; grid-template-columns:repeat(auto-fill,minmax(120px,1fr)); gap:0.75rem; margin-top:1rem;"></div>
+          <div style="margin-top:1rem;">
+            <button class="btn-primary" onclick="uploadArtworks()">Upload &amp; Sync to Gallery</button>
+          </div>
+        </div>
+
+        <div class="card">
+          <h4>Create New Artist or Category Folder</h4>
+          <div class="form-row">
+            <div>
+              <label>New Artist Name</label>
+              <input type="text" id="new-artist" placeholder="e.g. JOHN SITHOLE"/>
+            </div>
+            <div>
+              <label>Category (optional)</label>
+              <input type="text" id="new-category" placeholder="e.g. Abstracts"/>
+            </div>
+          </div>
+          <button class="btn-primary" onclick="createFolder()">Create Folder</button>
+        </div>
+
+        <div class="card">
+          <h4>Browse &amp; Manage Existing Artworks</h4>
+          <div class="artist-tabs" id="artistTabs">Loading...</div>
+          <div class="card-grid" id="browseGrid" style="margin-top:0.5rem;">Select an artist above.</div>
+        </div>
+      </div>
+
+      <!-- ── EXHIBITIONS PANEL ── -->
+      <div class="panel" id="panel-exhibitions">
+        <div class="card">
+          <h4 id="exFormTitle">Add New Exhibition / Event</h4>
+          <input type="hidden" id="ex-id"/>
+          <div class="form-row">
+            <div>
+              <label>Exhibition Title</label>
+              <input type="text" id="ex-title" placeholder="e.g. Roots &amp; Rhythms"/>
+            </div>
+            <div>
+              <label>Artist / Curator</label>
+              <input type="text" id="ex-artist" placeholder="e.g. Willard Magiga"/>
+            </div>
+          </div>
+          <div class="form-row three">
+            <div>
+              <label>Start Date</label>
+              <input type="date" id="ex-start"/>
+            </div>
+            <div>
+              <label>End Date</label>
+              <input type="date" id="ex-end"/>
+            </div>
+            <div>
+              <label>Status</label>
+              <select id="ex-status">
+                <option value="upcoming">Upcoming</option>
+                <option value="active">Active Now</option>
+                <option value="past">Past</option>
+              </select>
+            </div>
+          </div>
+          <div class="form-row">
+            <div>
+              <label>Location</label>
+              <input type="text" id="ex-location" placeholder="e.g. Main Gallery, Domboshava"/>
+            </div>
+            <div>
+              <label>Category / Medium</label>
+              <input type="text" id="ex-category" placeholder="e.g. Oil on Canvas, Mixed Media"/>
+            </div>
+          </div>
+          <div class="form-row one">
+            <div>
+              <label>Description</label>
+              <textarea id="ex-desc" placeholder="Describe the exhibition, theme, participating artists…"></textarea>
+            </div>
+          </div>
+          <div style="display:flex; gap:1rem; align-items:center;">
+            <button class="btn-primary" onclick="saveExhibition()">Save Exhibition</button>
+            <button class="btn-outline" onclick="clearExForm()">Clear</button>
+          </div>
+        </div>
+
+        <div class="card">
+          <h4>All Exhibitions</h4>
+          <div id="exhibitionList" style="color:var(--muted); font-size:0.85rem;">Loading...</div>
+        </div>
+      </div>
+
+      <!-- ── PAGES PANEL ── -->
+      <div class="panel" id="panel-pages">
+        <div class="card">
+          <h4>Homepage — Hero Section</h4>
+          <div class="form-row">
+            <div>
+              <label>Main Headline</label>
+              <input type="text" id="home-headline" placeholder="Where Art Breathes…"/>
+            </div>
+            <div>
+              <label>Sub-headline / Tagline</label>
+              <input type="text" id="home-sub" placeholder="Contemporary African Art"/>
+            </div>
+          </div>
+          <div class="form-row one">
+            <div>
+              <label>Hero Description</label>
+              <textarea id="home-desc" placeholder="Gallery description shown below the headline…"></textarea>
+            </div>
+          </div>
+          <button class="btn-primary" onclick="savePageContent('home')">Save Homepage Content</button>
+        </div>
+
+        <div class="card">
+          <h4>Artworks Page — Intro Text</h4>
+          <div class="form-row one">
+            <div>
+              <label>Section Title</label>
+              <input type="text" id="aw-page-title" placeholder="Our Collection"/>
+            </div>
+          </div>
+          <div class="form-row one">
+            <div>
+              <label>Intro Description</label>
+              <textarea id="aw-page-desc" placeholder="Description shown above the artworks grid…"></textarea>
+            </div>
+          </div>
+          <button class="btn-primary" onclick="savePageContent('artworks-page')">Save Artworks Page Text</button>
+        </div>
+
+        <div class="card">
+          <h4>Services Page — Content</h4>
+          <div class="form-row">
+            <div>
+              <label>Services Headline</label>
+              <input type="text" id="svc-title" placeholder="What We Offer"/>
+            </div>
+            <div>
+              <label>CTA Button Label</label>
+              <input type="text" id="svc-cta" placeholder="Book a Consultation"/>
+            </div>
+          </div>
+          <div class="form-row one">
+            <div>
+              <label>Services Description</label>
+              <textarea id="svc-desc" placeholder="Describe your services…"></textarea>
+            </div>
+          </div>
+          <button class="btn-primary" onclick="savePageContent('services')">Save Services Content</button>
+        </div>
+
+        <div class="card">
+          <h4>Upload Hero / Banner Images for Pages</h4>
+          <p style="color:var(--muted); font-size:0.82rem; margin-bottom:1rem;">Replaces a specific page's hero background image.</p>
+          <div class="form-row">
+            <div>
+              <label>Target Page</label>
+              <select id="hero-page">
+                <option value="home">Home</option>
+                <option value="artists">Artists</option>
+                <option value="artworks">Artworks</option>
+                <option value="exhibitions">Exhibitions</option>
+                <option value="about">About</option>
+                <option value="visit">Visit</option>
+                <option value="contact">Contact</option>
+                <option value="services">Services</option>
+              </select>
+            </div>
+            <div>
+              <label>Fixed Filename (optional)</label>
+              <input type="text" id="hero-fixed-name" placeholder="hero.jpg (leave blank to keep original name)"/>
+            </div>
+          </div>
+          <div class="drop-zone" onclick="document.getElementById('heroFileInput').click()">
+            <p>Click to choose hero image for the selected page</p>
+          </div>
+          <input type="file" id="heroFileInput" accept="image/*" style="display:none" onchange="uploadHeroImage(this)"/>
+        </div>
+      </div>
+
+    </div><!-- #content -->
+  </div><!-- #main -->
+</div><!-- #dashboard -->
+
+<div id="toast"></div>
+
+<script>
+const API = window.location.protocol === 'file:' ? 'http://127.0.0.1:8788' : '';
+const PASS = 'ARTGALZIM2SEE'; // Fallback / Local sync compatibility
+
+/* ══ AUTH ══════════════════════════════════════ */
+async function checkPW() {
+  const val = document.getElementById('pwInput').value;
+  try {
+    const res = await fetch(API + '/api/auth/login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ password: val })
+    });
+    const data = await res.json();
+    if (data.ok) {
+      document.getElementById('gate').style.display = 'none';
+      document.getElementById('dashboard').style.display = 'flex';
+      initDashboard();
+    } else {
+      document.getElementById('gateErr').textContent = data.error || 'Incorrect password.';
+      document.getElementById('gateErr').style.display = 'block';
+      document.getElementById('pwInput').value = '';
+    }
+  } catch (e) {
+    // If API isn't available (local dev), fallback to client-side check if needed
+    // but better to rely on server. For local, we expect 'node admin-server.cjs' or similar?
+    // User wants one server, so they'll use wrangler or live.
+    if (val === PASS) {
+      document.getElementById('gate').style.display = 'none';
+      document.getElementById('dashboard').style.display = 'flex';
+      initDashboard();
+    } else {
+      document.getElementById('gateErr').textContent = 'Authentication failed.';
+      document.getElementById('gateErr').style.display = 'block';
+    }
+  }
+}
+document.getElementById('pwInput').addEventListener('keydown', e => { if (e.key === 'Enter') checkPW(); });
+
+async function logout() {
+  await fetch(API + '/api/auth/logout', { method: 'POST' }).catch(() => {});
+  document.getElementById('dashboard').style.display = 'none';
+  document.getElementById('gate').style.display = 'flex';
+  document.getElementById('pwInput').value = '';
+}
+
+/* ══ PANEL NAV ═════════════════════════════════ */
+const panelTitles = { overview:'Overview', artworks:'Artworks & Artists', exhibitions:'Exhibitions & Events', pages:'Pages & Content' };
+function showPanel(id) {
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.sb-nav a').forEach(a => a.classList.remove('active'));
+  document.getElementById('panel-' + id).classList.add('active');
+  document.getElementById('nav-' + id).classList.add('active');
+  document.getElementById('panelTitle').textContent = panelTitles[id] || id;
+  if (id === 'artworks') loadArtists();
+  if (id === 'exhibitions') loadExhibitions();
+  if (id === 'pages') loadPageContent();
+}
+
+/* ══ TOAST ═════════════════════════════════════ */
+function toast(msg, type='success') {
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.className = 'show ' + type;
+  setTimeout(() => { t.className = ''; }, 3500);
+}
+
+/* ══ SYNC ══════════════════════════════════════ */
+async function triggerSync() {
+  try {
+    await fetch(API + '/api/sync', { method:'POST' });
+    toast('✓ Gallery synced!');
+  } catch {
+    toast('Error triggering sync.', 'error');
+  }
+}
+
+/* ══ INIT ══════════════════════════════════════ */
+async function initDashboard() {
+  try {
+    const [artists, exs] = await Promise.all([
+      fetch(API + '/api/artists').then(r => r.json()),
+      fetch(API + '/api/exhibitions').then(r => r.json())
+    ]);
+
+    // Stats
+    let totalArtworks = 0;
+    let totalCats = 0;
+    artists.forEach(a => { a.categories.forEach(c => { totalArtworks += c.imageCount; totalCats++; }); });
+    document.getElementById('stat-artists').textContent = artists.length;
+    document.getElementById('stat-categories').textContent = totalCats;
+    document.getElementById('stat-artworks').textContent = totalArtworks;
+    document.getElementById('stat-exhibitions').textContent = exs.length;
+
+    // Artist list for datalist
+    const dl = document.getElementById('artistList');
+    artists.forEach(a => { const opt = document.createElement('option'); opt.value = a.name; dl.appendChild(opt); });
+
+    // Overview collections
+    let html = '<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:0.75rem;">';
+    artists.forEach(a => {
+      a.categories.forEach(c => {
+        html += `<div style="background:var(--bg3);border:1px solid var(--border);border-radius:4px;padding:0.85rem;">
+          <div style="font-size:0.78rem;color:var(--gold);text-transform:uppercase;letter-spacing:0.06em;">${a.name}</div>
+          <div style="font-size:0.9rem;margin-top:0.2rem;">${c.name}</div>
+          <div style="font-size:0.75rem;color:var(--muted);margin-top:0.2rem;">${c.imageCount} image${c.imageCount!==1?'s':''}</div>
+        </div>`;
+      });
+    });
+    html += '</div>';
+    document.getElementById('overviewCollections').innerHTML = html;
+
+  } catch(e) {
+    document.getElementById('overviewCollections').innerHTML = `<p style="color:var(--red)">⚠ Cloudflare Functions not responding. Make sure you are running with <code>wrangler pages dev</code> or are online.</p>`;
+  }
+}
+
+/* ══ ARTWORKS ══════════════════════════════════ */
+let _artists = [];
+async function loadArtists() {
+  try {
+    _artists = await fetch(API + '/api/artists').then(r => r.json());
+    // Tabs
+    const tabs = document.getElementById('artistTabs');
+    tabs.innerHTML = _artists.map(a => `<div class="artist-tab" onclick="browseArtist('${a.name}')">${a.name}</div>`).join('');
+  } catch { document.getElementById('artistTabs').innerHTML = '<span style="color:var(--red)">Server not running</span>'; }
+}
+
+function browseArtist(name) {
+  document.querySelectorAll('.artist-tab').forEach(t => t.classList.remove('active'));
+  const tab = [...document.querySelectorAll('.artist-tab')].find(t => t.textContent === name);
+  if (tab) tab.classList.add('active');
+  const artist = _artists.find(a => a.name === name);
+  if (!artist) return;
+  let html = '';
+  artist.categories.forEach(cat => {
+    html += `<div style="grid-column:1/-1;margin-top:0.5rem;"><h5 style="font-size:0.78rem;color:var(--gold);text-transform:uppercase;letter-spacing:0.1em;margin-bottom:0.5rem;">${cat.name} (${cat.imageCount})</h5></div>`;
+    cat.images.forEach(src => {
+      const fname = src.split('/').pop();
+      html += `<div class="img-thumb">
+        <img src="${src}" loading="lazy" onerror="this.src=''">
+        <div class="img-actions">
+          <span class="img-name" title="${fname}">${fname}</span>
+          <button class="del-btn" onclick="deleteArtwork('${name}','${cat.name}','${fname}')" title="Delete">🗑</button>
+        </div>
+      </div>`;
+    });
+  });
+  document.getElementById('browseGrid').innerHTML = html || '<p style="color:var(--muted)">No images yet. Upload above.</p>';
+}
+
+function previewFiles(input) {
+  const prev = document.getElementById('awPreview');
+  prev.innerHTML = '';
+  [...input.files].forEach(f => {
+    const url = URL.createObjectURL(f);
+    prev.innerHTML += `<div class="img-thumb"><img src="${url}" style="aspect-ratio:1;object-fit:cover;">
+      <div class="img-actions"><span class="img-name">${f.name}</span></div></div>`;
+  });
+}
+
+// Drag & drop
+const dz = document.getElementById('awDropZone');
+dz.addEventListener('dragover', e => { e.preventDefault(); dz.classList.add('drag-over'); });
+dz.addEventListener('dragleave', () => dz.classList.remove('drag-over'));
+dz.addEventListener('drop', e => {
+  e.preventDefault(); dz.classList.remove('drag-over');
+  const dt = new DataTransfer();
+  [...e.dataTransfer.files].forEach(f => dt.items.add(f));
+  const fi = document.getElementById('awFileInput');
+  fi.files = dt.files; previewFiles(fi);
+});
+
+async function uploadArtworks() {
+  const artist     = document.getElementById('aw-artist').value.trim();
+  const category   = document.getElementById('aw-category').value.trim() || 'Artworks';
+  const medium     = document.getElementById('aw-medium').value.trim();
+  const size       = document.getElementById('aw-size').value.trim();
+  const year       = document.getElementById('aw-year').value.trim();
+  const desc       = document.getElementById('aw-desc').value.trim();
+  const files      = document.getElementById('awFileInput').files;
+  if (!artist) { toast('Please enter an artist name', 'error'); return; }
+  if (!files.length) { toast('Please select images to upload', 'error'); return; }
+
+  const fd = new FormData();
+  fd.append('artist', artist);
+  fd.append('category', category);
+  if (medium) fd.append('medium', medium);
+  if (size)   fd.append('size', size);
+  if (year)   fd.append('year', year);
+  if (desc)   fd.append('description', desc);
+  [...files].forEach(f => fd.append('images', f));
+  try {
+    const res = await fetch(API + '/api/upload?type=artwork', { method:'POST', body: fd }).then(r => r.json());
+    if (res.ok) { toast(`✓ ${res.files.length} image(s) uploaded & gallery synced!`); document.getElementById('awPreview').innerHTML = ''; document.getElementById('awFileInput').value = ''; loadArtists(); }
+    else toast('Upload failed: ' + (res.error||'unknown'), 'error');
+  } catch { toast('Server not running. Start with: node admin-server.cjs', 'error'); }
+}
+
+async function deleteArtwork(artist, category, filename) {
+  if (!confirm(`Delete "${filename}"?`)) return;
+  try {
+    const res = await fetch(API + '/api/artworks', {
+      method:'DELETE', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({ artist, category, filename })
+    }).then(r => r.json());
+    if (res.ok) { toast('✓ Image deleted.'); browseArtist(artist); }
+    else toast('Delete failed: ' + (res.error||''), 'error');
+  } catch { toast('Server not running', 'error'); }
+}
+
+async function createFolder() {
+  const artist   = document.getElementById('new-artist').value.trim();
+  const category = document.getElementById('new-category').value.trim() || 'Artworks';
+  if (!artist) { toast('Enter an artist name', 'error'); return; }
+  try {
+    const res = await fetch(API + '/api/artists', {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({ artist, category })
+    }).then(r => r.json());
+    if (res.ok) { toast(`✓ Folder created: ${artist}/${category}`); loadArtists(); }
+    else toast('Error: ' + res.error, 'error');
+  } catch { toast('Server not running', 'error'); }
+}
+
+/* ══ EXHIBITIONS ═══════════════════════════════ */
+let _exhibitions = [];
+async function loadExhibitions() {
+  try {
+    _exhibitions = await fetch(API + '/api/exhibitions').then(r => r.json());
+    renderExhibitions();
+  } catch { document.getElementById('exhibitionList').innerHTML = '<p style="color:var(--red)">Server not running</p>'; }
+}
+
+function renderExhibitions() {
+  if (!_exhibitions.length) { document.getElementById('exhibitionList').innerHTML = '<p style="color:var(--muted)">No exhibitions yet. Add one above.</p>'; return; }
+  document.getElementById('exhibitionList').innerHTML = _exhibitions.map(ex => `
+    <div class="ex-item">
+      <div class="ex-info">
+        <h5>${ex.title || 'Untitled'}</h5>
+        <p>${ex.artist || ''} ${ex.location ? '· ' + ex.location : ''}</p>
+        <p>${ex.startDate || ''} ${ex.endDate ? '→ ' + ex.endDate : ''}</p>
+        <span class="ex-badge ${ex.status || 'upcoming'}">${ex.status || 'upcoming'}</span>
+      </div>
+      <div style="display:flex;gap:0.5rem;flex-shrink:0;">
+        <button class="btn-outline" style="font-size:0.75rem;padding:0.4rem 0.85rem;" onclick="editExhibition('${ex.id}')">Edit</button>
+        <button class="btn-danger" onclick="deleteExhibition('${ex.id}')">Delete</button>
+      </div>
+    </div>`).join('');
+}
+
+function clearExForm() {
+  ['ex-id','ex-title','ex-artist','ex-location','ex-category','ex-desc'].forEach(id => document.getElementById(id).value = '');
+  document.getElementById('ex-start').value = '';
+  document.getElementById('ex-end').value = '';
+  document.getElementById('ex-status').value = 'upcoming';
+  document.getElementById('exFormTitle').textContent = 'Add New Exhibition / Event';
+}
+
+function editExhibition(id) {
+  const ex = _exhibitions.find(e => e.id === id); if (!ex) return;
+  document.getElementById('ex-id').value       = ex.id;
+  document.getElementById('ex-title').value    = ex.title || '';
+  document.getElementById('ex-artist').value   = ex.artist || '';
+  document.getElementById('ex-start').value    = ex.startDate || '';
+  document.getElementById('ex-end').value      = ex.endDate || '';
+  document.getElementById('ex-status').value   = ex.status || 'upcoming';
+  document.getElementById('ex-location').value = ex.location || '';
+  document.getElementById('ex-category').value = ex.category || '';
+  document.getElementById('ex-desc').value     = ex.description || '';
+  document.getElementById('exFormTitle').textContent = 'Edit Exhibition';
+  document.getElementById('panel-exhibitions').scrollTop = 0;
+}
+
+async function saveExhibition() {
+  const payload = {
+    id: document.getElementById('ex-id').value || null,
+    title:       document.getElementById('ex-title').value.trim(),
+    artist:      document.getElementById('ex-artist').value.trim(),
+    startDate:   document.getElementById('ex-start').value,
+    endDate:     document.getElementById('ex-end').value,
+    status:      document.getElementById('ex-status').value,
+    location:    document.getElementById('ex-location').value.trim(),
+    category:    document.getElementById('ex-category').value.trim(),
+    description: document.getElementById('ex-desc').value.trim(),
+  };
+  if (!payload.title) { toast('Title required', 'error'); return; }
+  try {
+    const res = await fetch(API + '/api/exhibitions', {
+      method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(payload)
+    }).then(r => r.json());
+    if (res.ok) { toast('✓ Exhibition saved!'); clearExForm(); loadExhibitions(); }
+    else toast('Error saving', 'error');
+  } catch { toast('Server not running', 'error'); }
+}
+
+async function deleteExhibition(id) {
+  if (!confirm('Delete this exhibition?')) return;
+  try {
+    const res = await fetch(API + '/api/exhibitions/' + id, { method:'DELETE' }).then(r => r.json());
+    if (res.ok) { toast('✓ Exhibition deleted.'); loadExhibitions(); }
+    else toast('Delete failed', 'error');
+  } catch { toast('Server not running', 'error'); }
+}
+
+/* ══ PAGES / CONTENT ═══════════════════════════ */
+async function loadPageContent() {
+  try {
+    const data = await fetch(API + '/api/content').then(r => r.json());
+    if (data.home) {
+      if(data.home.headline) document.getElementById('home-headline').value = data.home.headline;
+      if(data.home.sub) document.getElementById('home-sub').value = data.home.sub;
+      if(data.home.desc) document.getElementById('home-desc').value = data.home.desc;
+    }
+    if (data['artworks-page']) {
+      if(data['artworks-page'].title) document.getElementById('aw-page-title').value = data['artworks-page'].title;
+      if(data['artworks-page'].desc) document.getElementById('aw-page-desc').value = data['artworks-page'].desc;
+    }
+    if (data.services) {
+      if(data.services.title) document.getElementById('svc-title').value = data.services.title;
+      if(data.services.cta) document.getElementById('svc-cta').value = data.services.cta;
+      if(data.services.desc) document.getElementById('svc-desc').value = data.services.desc;
+    }
+  } catch { /* server not running */ }
+}
+
+async function savePageContent(page) {
+  let payload = {};
+  if (page === 'home') {
+    payload = { headline: document.getElementById('home-headline').value, sub: document.getElementById('home-sub').value, desc: document.getElementById('home-desc').value };
+  } else if (page === 'artworks-page') {
+    payload = { title: document.getElementById('aw-page-title').value, desc: document.getElementById('aw-page-desc').value };
+  } else if (page === 'services') {
+    payload = { title: document.getElementById('svc-title').value, cta: document.getElementById('svc-cta').value, desc: document.getElementById('svc-desc').value };
+  }
+  try {
+    const res = await fetch(API + '/api/content', {
+      method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ [page]: payload })
+    }).then(r => r.json());
+    if (res.ok) toast('✓ Content saved & published!');
+    else toast('Error saving', 'error');
+  } catch { toast('Server not running', 'error'); }
+}
+
+async function uploadHeroImage(input) {
+  const page = document.getElementById('hero-page').value;
+  const fixName = document.getElementById('hero-fixed-name').value.trim();
+  const fd = new FormData();
+  fd.append('image', input.files[0]);
+  fd.append('page', page);
+  if (fixName) fd.append('fixedName', fixName);
+  try {
+    const res = await fetch(API + '/api/upload?type=hero', { method:'POST', body: fd }).then(r => r.json());
+    if (res.ok) toast(`✓ Hero image uploaded for "${page}" page!`);
+    else toast('Upload failed: ' + res.error, 'error');
+  } catch { toast('Server not running', 'error'); }
+}
+</script>
+</body>
+</html>
