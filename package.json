@@ -15,6 +15,7 @@
     "express": "^5.2.1",
     "multer": "^2.1.1",
     "sharp": "^0.34.5",
-    "vite": "^5.0.0"
+    "vite": "^5.0.0",
+    "vite-plugin-static-copy": "^4.0.0"
   }
 }

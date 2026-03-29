@@ -1,0 +1,14 @@
+
+Background images/exhibition-bg.jpg referenced in Background images/exhibition-bg.jpg didn't resolve at build time, it will remain unchanged to be resolved at runtime
+x Build failed in 402ms
+error during build:
+[vite-plugin-static-copy:build] No file was found to copy on ARTISTS/* src.
+    at collectCopyTargets (file:///C:/Users/LYKART06/Downloads/MY%20WEBSITES%20PROJ/ARTGALZIM%20WEB/node_modules/vite-plugin-static-copy/dist/index.js:611:51)
+    at async copyAll (file:///C:/Users/LYKART06/Downloads/MY%20WEBSITES%20PROJ/ARTGALZIM%20WEB/node_modules/vite-plugin-static-copy/dist/index.js:653:22)
+    at async Object.writeBundle (file:///C:/Users/LYKART06/Downloads/MY%20WEBSITES%20PROJ/ARTGALZIM%20WEB/node_modules/vite-plugin-static-copy/dist/index.js:1060:19)
+    at async Promise.all (index 0)
+    at async PluginDriver.hookParallel (file:///C:/Users/LYKART06/Downloads/MY%20WEBSITES%20PROJ/ARTGALZIM%20WEB/node_modules/rollup/dist/es/shared/node-entry.js:22481:9)
+    at async file:///C:/Users/LYKART06/Downloads/MY%20WEBSITES%20PROJ/ARTGALZIM%20WEB/node_modules/rollup/dist/es/shared/node-entry.js:23565:13
+    at async catchUnfinishedHookActions (file:///C:/Users/LYKART06/Downloads/MY%20WEBSITES%20PROJ/ARTGALZIM%20WEB/node_modules/rollup/dist/es/shared/node-entry.js:22925:16)
+    at async build (file:///C:/Users/LYKART06/Downloads/MY%20WEBSITES%20PROJ/ARTGALZIM%20WEB/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:65715:16)
+    at async CAC.<anonymous> (file:///C:/Users/LYKART06/Downloads/MY%20WEBSITES%20PROJ/ARTGALZIM%20WEB/node_modules/vite/dist/node/cli.js:829:5)
