@@ -19,7 +19,7 @@ function getImages() {
             const images = files.filter(file => {
                 const ext = path.extname(file).toLowerCase();
                 return ['.png', '.jpg', '.jpeg', '.webp', '.gif'].includes(ext);
-            }).map(file => `images/MAIN IMAGES/${folder}/${file}`);
+            }).map(file => `/images/MAIN IMAGES/${folder}/${file}`);
             
             galleryData[folder] = images;
         } else {
@@ -34,7 +34,7 @@ function getImages() {
         galleryData.hero = files.filter(file => {
             const ext = path.extname(file).toLowerCase();
             return ['.png', '.jpg', '.jpeg', '.webp', '.gif', '.JPG'].includes(ext);
-        }).map(file => `HERO ANIMATION/${file}`);
+        }).map(file => `/HERO ANIMATION/${file}`);
     } else {
         galleryData.hero = [];
     }
@@ -54,11 +54,11 @@ function getImages() {
                         const images = files.filter(file => {
                             const ext = path.extname(file).toLowerCase();
                             return ['.png', '.jpg', '.jpeg', '.webp', '.gif'].includes(ext);
-                        }).map(file => `ARTISTS/${artist}/${category}/${file}`);
+                        }).map(file => `/ARTISTS/${artist}/${category}/${file}`);
                         
                         // Find a cover image (e.g. cover.png, cover.jpg, or anything starting with "cover")
                         const coverFile = files.find(file => file.toLowerCase().startsWith('cover'));
-                        const coverPath = coverFile ? `ARTISTS/${artist}/${category}/${coverFile}` : (images.length > 0 ? images[0] : null);
+                        const coverPath = coverFile ? `/ARTISTS/${artist}/${category}/${coverFile}` : (images.length > 0 ? images[0] : null);
 
                         // Storage Key: e.g. "WILLARD MAGIGA/Abstracts"
                         galleryData.artistsCollections[`${artist}/${category}`] = {

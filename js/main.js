@@ -209,12 +209,22 @@
   function initHeroSlider() {
     if (!heroSlidesContainer) return;
     
-    // Get images from HERO ANIMATION via PageGalleries
+    // Get images from HERO ANIMATION via PageGalleries with a small delay if not ready
+    if (!window.PageGalleries && !window.heroRetryCount) {
+      window.heroRetryCount = 0;
+    }
+    
+    if (!window.PageGalleries && window.heroRetryCount < 10) {
+      window.heroRetryCount++;
+      setTimeout(initHeroSlider, 100);
+      return;
+    }
+
     const images = (window.PageGalleries && window.PageGalleries.hero) || [];
     
     if (images.length === 0) {
       // Fallback if no images in HERO ANIMATION folder
-      const fallback = ['images/artwork_1.webp', 'images/domboshava.webp', 'images/hero_gallery.webp'];
+      const fallback = ['/images/artwork_1.webp', '/images/domboshava.webp', '/images/hero_gallery.webp'];
       fallback.forEach((src, idx) => {
         const slide = document.createElement("div");
         slide.className = `hero-slide ${idx === 0 ? 'active' : ''}`;
@@ -222,25 +232,31 @@
         heroSlidesContainer.appendChild(slide);
       });
     } else {
+      // Clear container first in case of retry
+      heroSlidesContainer.innerHTML = '';
       images.forEach((img, idx) => {
-      const slide = document.createElement("div");
-      slide.className = "hero-slide";
-      
-      // Add specific positioning classes based on filename
-      const lowerImg = img.toLowerCase();
-      if (lowerImg.includes("mwana")) slide.classList.add("focus-face");
-      if (lowerImg.includes("musha mukadzi")) slide.classList.add("focus-face");
-      if (lowerImg.includes("tariro")) slide.classList.add("focus-face");
-      if (lowerImg.includes("yevedzai")) slide.classList.add("focus-face");
-      if (lowerImg.includes("chitenge")) slide.classList.add("focus-face");
-      if (lowerImg.includes("red ascendant")) slide.classList.add("focus-face");
-      if (lowerImg.includes("art gallery frontview")) slide.classList.add("focus-center");
-      
-      const encImg = img.split('/').map(encodeURIComponent).join('/');
-      slide.style.backgroundImage = `url('${encImg}')`;
-      if (idx === 0) slide.classList.add("active");
-      heroSlidesContainer.appendChild(slide);
-    });
+        const slide = document.createElement("div");
+        slide.className = "hero-slide";
+        
+        // Add specific positioning classes based on filename
+        const lowerImg = img.toLowerCase();
+        if (lowerImg.includes("mwana")) slide.classList.add("focus-face");
+        if (lowerImg.includes("musha mukadzi")) slide.classList.add("focus-face");
+        if (lowerImg.includes("tariro")) slide.classList.add("focus-face");
+        if (lowerImg.includes("yevedzai")) slide.classList.add("focus-face");
+        if (lowerImg.includes("chitenge")) slide.classList.add("focus-face");
+        if (lowerImg.includes("red ascendant")) slide.classList.add("focus-face");
+        if (lowerImg.includes("art gallery frontview")) slide.classList.add("focus-center");
+        
+        // Handle absolute paths starting with /
+        const parts = img.split('/');
+        const encParts = parts.map(p => p ? encodeURIComponent(p) : '');
+        const encImg = encParts.join('/');
+        
+        slide.style.backgroundImage = `url('${encImg}')`;
+        if (idx === 0) slide.classList.add("active");
+        heroSlidesContainer.appendChild(slide);
+      });
     }
 
     slides = document.querySelectorAll(".hero-slide");

@@ -27,19 +27,23 @@ export default defineConfig({
       targets: [
         {
           src: 'ARTISTS/**/*',
-          dest: 'ARTISTS'
+          dest: 'ARTISTS',
+          allowEmpty: true
         },
         {
           src: 'images/**/*',
-          dest: 'images'
+          dest: 'images',
+          allowEmpty: true
         },
         {
           src: 'HERO ANIMATION/**/*',
-          dest: 'HERO ANIMATION'
+          dest: 'HERO ANIMATION',
+          allowEmpty: true
         },
         {
           src: 'Background images/**/*',
-          dest: 'Background images'
+          dest: 'Background images',
+          allowEmpty: true
         }
       ]
     })
