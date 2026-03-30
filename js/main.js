@@ -128,12 +128,27 @@
     }
   };
 
-  // ---- Preloader ----
+  // Disable scrolling while preloader is active to prevent background scrolling/glitching
+  document.documentElement.style.overflow = "hidden";
+  document.body.style.overflow = "hidden";
+
   window.addEventListener("load", () => {
+    // We allow a slightly shorter but still premium delay to improve perceived speed on slower networks
     setTimeout(() => {
       const pre = document.getElementById("preloader");
-      if (pre) pre.classList.add("hidden");
-    }, 2200);
+      if (pre) {
+        pre.classList.add("hidden");
+        // Re-enable scrolling
+        document.documentElement.style.overflow = "";
+        document.body.style.overflow = "";
+        
+        // Trigger a tiny scroll or resize to wake up IntersectionObservers on mobile
+        setTimeout(() => {
+          window.dispatchEvent(new Event('scroll'));
+          window.dispatchEvent(new Event('resize'));
+        }, 100);
+      }
+    }, 1800); // Reduced from 2200 to 1800 for better perceived speed
   });
 
   // Custom cursor removed (User requested original browser cursor)
@@ -328,7 +343,11 @@
         }
       });
     },
-    { threshold: 0.12, rootMargin: "0px 0px -60px 0px" },
+    { 
+      // More lenient threshold and margin for mobile/tablet 
+      threshold: 0.05, 
+      rootMargin: "0px 0px -20px 0px" 
+    },
   );
   revealEls.forEach((el) => observer.observe(el));
 

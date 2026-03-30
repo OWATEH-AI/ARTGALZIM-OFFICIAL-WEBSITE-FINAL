@@ -63,6 +63,7 @@ body {
   font-weight: 400;
   line-height: 1.6;
   overflow-x: hidden;
+  overscroll-behavior-y: none; /* Prevents back-scroll glitching at the bottom of the page */
   transition:
     background var(--transition),
     color var(--transition);
@@ -3010,6 +3011,17 @@ h3 {
 .artwork-meta {
   padding-left: 0 !important;
   border-left: none !important;
+}
+@media (max-width: 1024px) {
+  .artwork-meta {
+    padding: 0 1.25rem !important;
+    text-align: center !important;
+  }
+  .artwork-card-actions {
+    display: flex !important;
+    justify-content: center !important;
+    margin-top: 1.25rem !important;
+  }
 }
 .artwork-title {
   font-size: 1.1rem !important;
