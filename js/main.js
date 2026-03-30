@@ -236,7 +236,8 @@
       if (lowerImg.includes("red ascendant")) slide.classList.add("focus-face");
       if (lowerImg.includes("art gallery frontview")) slide.classList.add("focus-center");
       
-      slide.style.backgroundImage = `url('${img}')`;
+      const encImg = img.split('/').map(encodeURIComponent).join('/');
+      slide.style.backgroundImage = `url('${encImg}')`;
       if (idx === 0) slide.classList.add("active");
       heroSlidesContainer.appendChild(slide);
     });
