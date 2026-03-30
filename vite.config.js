@@ -44,6 +44,11 @@ export default defineConfig({
           src: 'Background images/**/*',
           dest: 'Background images',
           allowEmpty: true
+        },
+        {
+          src: 'Customisations/**/*',
+          dest: 'Customisations',
+          allowEmpty: true
         }
       ]
     })

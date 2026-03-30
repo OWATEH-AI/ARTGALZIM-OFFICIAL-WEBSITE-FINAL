@@ -1,21 +1,36 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en" data-theme="dark">
-<head>
-  <meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Exhibitions - ARTGALZIM CENTER | Domboshava, Zimbabwe</title>
-  <meta name="description" content="View past, present, and upcoming contemporary African art exhibitions at ARTGALZIM Center."/>
-  <link rel="preconnect" href="https://fonts.googleapis.com"/>
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
-  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Inter:wght@300;400;500;600&family=Playfair+Display:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet"/>
-  <link rel="stylesheet" href="css/style.css"/>
-</head>
-<body class="page-exhibitions">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Exhibitions - ARTGALZIM CENTER | Domboshava, Zimbabwe</title>
+    <meta
+      name="description"
+      content="View past, present, and upcoming contemporary African art exhibitions at ARTGALZIM Center."
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Inter:wght@300;400;500;600&family=Playfair+Display:ital,wght@0,400;0,700;1,400&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="css/style.css" />
+  </head>
+  <body class="page-exhibitions">
     <!-- ===== PRELOADER ===== -->
     <div id="preloader">
       <div class="preloader-inner">
         <div class="preloader-logo">
-          <img src="images/logo.jpg" alt="ARTGALZIM Center Logo" id="preloader-logo-img"
-            onerror="this.style.display='none'; document.querySelector('.preloader-text-logo').style.display='block';" />
+          <img
+            src="images/logo.jpg"
+            alt="ARTGALZIM Center Logo"
+            id="preloader-logo-img"
+            onerror="
+              this.style.display = 'none';
+              document.querySelector('.preloader-text-logo').style.display =
+                'block';
+            "
+          />
           <div class="preloader-text-logo" style="display: none">ARTGALZIM</div>
         </div>
         <div class="preloader-bar"><div class="preloader-fill"></div></div>
@@ -23,314 +38,666 @@
       </div>
     </div>
 
-  <header class="navbar" id="navbar">
-    <div class="nav-container">
-      <a href="index.html" class="nav-logo" aria-label="ARTGALZIM CENTER Home">
-        <img src="images/logo.jpg" alt="ARTGALZIM Center" class="logo-img" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
-        <div class="nav-site-name">
-          <span class="name-main">ARTGALZIM</span>
-          <span class="name-sub">CENTER</span>
-        </div>
-      </a>
-      <nav class="nav-links" id="navLinks">
-        <a href="index.html" class="nav-link">Home</a>
-        <a href="exhibitions.html" class="nav-link active">Exhibitions</a>
-        <a href="artists.html" class="nav-link">Artists</a>
-        <a href="artworks.html" class="nav-link">Artworks</a>
-        <a href="about.html" class="nav-link">About</a>
-        <a href="visit.html" class="nav-link">Visit</a>
-        <a href="contact.html" class="nav-link nav-link-cta">Contact</a>
-      </nav>
-      <div class="nav-controls">
-        <a href="donate.html" class="donate-btn-link" aria-label="Donate">
-           <span class="donate-text">Donate</span>
-           <svg class="donate-icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 12 20 22 4 22 4 12"></polyline><rect x="2" y="7" width="20" height="5"></rect><line x1="12" y1="22" x2="12" y2="7"></line><path d="M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7z"></path><path d="M12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7z"></path></svg>
-        </a>
-        <button class="theme-toggle" id="themeToggle" aria-label="Toggle dark/light mode">
-          <svg class="icon-sun" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
-          <svg class="icon-moon" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
-        </button>
-        <button class="panel-toggle" id="panelToggle" aria-label="Open Options"><span></span><span></span><span></span></button>
-      </div>
-    </div>
-  </header>
-
-  <aside class="sidebar-drawer" id="rightSidebar">
-    <div class="sidebar-drawer-header">
-      <div class="sidebar-drawer-logo">ARTGALZIM <span>Center</span></div>
-      <button class="sidebar-close-btn" id="sidebarCloseBtn" aria-label="Close menu">✕</button>
-    </div>
-    <div class="sidebar-drawer-body">
-      <div class="sidebar-nav-section">
-        <h4>Explore & Services</h4>
-        <div class="sidebar-nav-links">
-          <a href="index.html" class="sidebar-nav-link">Home</a>
-          <a href="exhibitions.html" class="sidebar-nav-link active">Exhibitions</a>
-          <a href="artists.html" class="sidebar-nav-link">Artists</a>
-          <a href="artworks.html" class="sidebar-nav-link">Artworks</a>
-          <a href="about.html" class="sidebar-nav-link">About Us</a>
-          <a href="services.html" class="sidebar-nav-link">Services</a>
-          <a href="visit.html" class="sidebar-nav-link">Plan Your Visit</a>
-          <a href="contact.html" class="sidebar-nav-link">Contact</a>
-          <a href="donate.html" class="sidebar-nav-link">Donate & Support</a>
-          <a href="owa-technologies.html" class="sidebar-nav-link">OWA TECHNOLOGIES</a>
-        </div>
-      </div>
-      <div class="sidebar-info-section">
-        <h4>Location</h4>
-        <p>Mverechena Business Center<br/>Domboshava, Zimbabwe</p>
-      </div>
-      <div class="sidebar-info-section">
-        <h4>Call or Email</h4>
-        <p><a href="tel:+263776330869">+263 77 633 0869</a></p>
-        <p><a href="mailto:info@artgalzim.com">info@artgalzim.com</a></p>
-      </div>
-    </div>
-  </aside>
-  <div class="mobile-overlay" id="mobileOverlay"></div>
-
-  <section class="page-hero" style="background-image: url('Background images/exhibitions/exhibitions_hero.webp');">
-    <div class="page-hero-overlay"></div>
-    <div class="page-hero-content reveal">
-      <span class="section-eyebrow">Program</span>
-      <h1 class="page-title">Exhibitions</h1>
-      <p class="page-lead">Immersive visual narratives exploring the intersections of Zimbabwean history, mythology, and modern identity.</p>
-      
-      <div class="page-hero-video-wrap reveal" style="margin-top: 2.5rem;">
-        <div class="video-container" id="exhibitionVideoWrap">
-          <!-- Play Overlay — clicking launches the video -->
-          <div class="video-placeholder" id="videoPlaceholder" style="cursor:pointer;">
-            <svg viewBox="0 0 24 24" fill="currentColor" width="56" height="56"><path d="M8 5v14l11-7z"/></svg>
-            <span>Play Exhibition Trailer</span>
+    <header class="navbar" id="navbar">
+      <div class="nav-container">
+        <a
+          href="index.html"
+          class="nav-logo"
+          aria-label="ARTGALZIM CENTER Home"
+        >
+          <img
+            src="images/logo.jpg"
+            alt="ARTGALZIM Center"
+            class="logo-img"
+            onerror="
+              this.style.display = 'none';
+              this.nextElementSibling.style.display = 'flex';
+            "
+          />
+          <div class="nav-site-name">
+            <span class="name-main">ARTGALZIM</span>
+            <span class="name-sub">CENTER</span>
           </div>
-          <!-- Video: no autoplay, no download, no right-click, embedded only -->
-          <video
-            id="actualVideo"
-            src="videos/ARTGALZIM VIDZ.mp4"
-            style="display:none; width:100%; height:100%; object-fit:cover; background:#000; opacity:0; transition:opacity 0.5s ease;"
-            controls
-            controlsList="nodownload"
-            oncontextmenu="return false;"
-            disablePictureInPicture
-            playsinline
-            preload="metadata"
+        </a>
+        <nav class="nav-links" id="navLinks">
+          <a href="index.html" class="nav-link">Home</a>
+          <a href="exhibitions.html" class="nav-link active">Exhibitions</a>
+          <a href="artists.html" class="nav-link">Artists</a>
+          <a href="artworks.html" class="nav-link">Artworks</a>
+          <a href="about.html" class="nav-link">About</a>
+          <a href="visit.html" class="nav-link">Visit</a>
+          <a href="contact.html" class="nav-link nav-link-cta">Contact</a>
+        </nav>
+        <div class="nav-controls">
+          <a href="donate.html" class="donate-btn-link" aria-label="Donate">
+            <span class="donate-text">Donate</span>
+            <svg
+              class="donate-icon"
+              xmlns="http://www.w3.org/2000/svg"
+              width="20"
+              height="20"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <polyline points="20 12 20 22 4 22 4 12"></polyline>
+              <rect x="2" y="7" width="20" height="5"></rect>
+              <line x1="12" y1="22" x2="12" y2="7"></line>
+              <path d="M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7z"></path>
+              <path d="M12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7z"></path>
+            </svg>
+          </a>
+          <button
+            class="theme-toggle"
+            id="themeToggle"
+            aria-label="Toggle dark/light mode"
           >
-          </video>
+            <svg
+              class="icon-sun"
+              xmlns="http://www.w3.org/2000/svg"
+              width="18"
+              height="18"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+            >
+              <circle cx="12" cy="12" r="5" />
+              <line x1="12" y1="1" x2="12" y2="3" />
+              <line x1="12" y1="21" x2="12" y2="23" />
+              <line x1="4.22" y1="4.22" x2="5.64" y2="5.64" />
+              <line x1="18.36" y1="18.36" x2="19.78" y2="19.78" />
+              <line x1="1" y1="12" x2="3" y2="12" />
+              <line x1="21" y1="12" x2="23" y2="12" />
+              <line x1="4.22" y1="19.78" x2="5.64" y2="18.36" />
+              <line x1="18.36" y1="5.64" x2="19.78" y2="4.22" />
+            </svg>
+            <svg
+              class="icon-moon"
+              xmlns="http://www.w3.org/2000/svg"
+              width="18"
+              height="18"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+            >
+              <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
+            </svg>
+          </button>
+          <button
+            class="panel-toggle"
+            id="panelToggle"
+            aria-label="Open Options"
+          >
+            <span></span><span></span><span></span>
+          </button>
         </div>
       </div>
-    </div>
-  </section>
-  <section class="section pt-0">
-    <div class="exhibition-tabs reveal">
-      <button class="tab-btn" data-target="current">Current</button>
-      <button class="tab-btn active" data-target="upcoming">Upcoming</button>
-      <button class="tab-btn" data-target="past">Past</button>
-    </div>
+    </header>
 
-  <!-- Current Exhibitions -->
-  <div class="exhibition-list" id="current" style="display:none;">
-    <div class="exh-grid reveal-stagger" id="currentGrid">
-      <!-- Dynamically populated -->
-    </div>
-  </div>
-
-  <!-- Upcoming Exhibitions -->
-  <div class="exhibition-list active" id="upcoming" style="display:block;">
-    <div class="exh-grid reveal-stagger" id="upcomingGrid">
-      <!-- Dynamically populated -->
-    </div>
-  </div>
-
-  <!-- Past Exhibitions -->
-  <div class="exhibition-list" id="past" style="display:none;">
-    <div class="exh-grid reveal-stagger" id="pastGrid">
-      <!-- Dynamically populated -->
-    </div>
-  </div>
-</section>
-
-  <!-- ===== FOOTER ===== -->
-  <footer class="footer" id="footer">
-    <div class="footer-top">
-      <div class="footer-brand">
-        <img src="images/logo.jpg" alt="ARTGALZIM Center" class="footer-logo" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';" />
-        <div class="footer-logo-text" style="display: none">ARTGALZIM<br /><small>CENTER</small></div>
-        <p class="footer-tagline">Contemporary African Art<br />in the Heart of Domboshava</p>
-        <div class="footer-social">
-          <a href="https://wa.me/263776330869?text=Hello%20ARTGALZIM%20Center%2C%20I%20discovered%20your%20gallery%20online%20and%20would%20like%20to%20learn%20more%20about%20your%20exhibitions." target="_blank" aria-label="WhatsApp" class="social-link">
-            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
-          </a>
-          <a href="https://www.instagram.com" target="_blank" aria-label="Instagram" class="social-link">
-            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="5" /><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z" /><line x1="17.5" y1="6.5" x2="17.51" y2="6.5" /></svg>
-          </a>
-          <a href="https://www.facebook.com" target="_blank" aria-label="Facebook" class="social-link">
-            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z" /></svg>
-          </a>
-        </div>
-      </div>
-      <nav class="footer-nav">
-        <div class="footer-col">
-          <h4 class="footer-col-title">Explore</h4>
-          <a href="exhibitions.html">Exhibitions</a>
-          <a href="artworks.html">Artworks</a>
-          <a href="artists.html">Artists</a>
-          <a href="services.html">Services</a>
-        </div>
-        <div class="footer-col">
-          <h4 class="footer-col-title">About</h4>
-          <a href="about.html">Our Story</a>
-          <a href="about.html#mission">Mission &amp; Vision</a>
-          <a href="about.html#team">The Team</a>
-          <a href="privacy-policy.html">Privacy Policy</a>
-        </div>
-        <div class="footer-col">
-          <h4 class="footer-col-title">Support</h4>
-          <a href="donate.html">Donate</a>
-          <a href="owa-technologies.html">OWA TECH</a>
-        </div>
-        <div class="footer-col">
-          <h4 class="footer-col-title">Visit</h4>
-          <a href="visit.html">Plan Your Visit</a>
-          <a href="visit.html#directions">Directions</a>
-          <a href="contact.html">Contact</a>
-        </div>
-      </nav>
-      <div class="footer-contact">
-        <h4 class="footer-col-title">Get in Touch</h4>
-        <p>Mverechena Center, Harare</p>
-        <p><a href="tel:+263776330869">+263 77 633 0869</a></p>
-        <p><a href="mailto:info@artgalzim.com">info@artgalzim.com</a></p>
-      </div>
-    </div>
-    <div class="footer-bottom" style="border-top: 1px solid var(--border); padding: 0.8rem 0; margin-top: 1.5rem;">
-      <div style="max-width: 1400px; margin: 0 auto; padding: 0 2rem; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
-        <p style="font-size: 0.8rem; color: var(--text-muted); cursor: default; user-select: none;" id="adminSecretTrigger">&copy; 2026 ARTGALZIM CENTER</p>
-        <div style="font-weight: 700; letter-spacing: 0.15em; color: var(--gold); font-size: 0.72rem; text-transform: uppercase;">
-          POWERED BY <a href="owa-technologies.html" style="color: inherit; text-decoration: none; border-bottom: 2px solid var(--gold);">OWA TECHNOLOGIES</a>
-        </div>
-      </div>
-    </div>
-  </footer>
-  
-  <!-- Global Choice Box (Popup) for inquiry method -->
-  <div id="inquiryChoiceBox" class="inquiry-choice-overlay" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 30000; align-items: center; justify-content: center;">
-    <div class="inquiry-choice-content" style="background: var(--bg2); padding: 2.5rem; border-radius: 12px; position: relative; max-width: 400px; width: 90%; text-align: center; border: 1px solid var(--border); box-shadow: 0 25px 50px rgba(0,0,0,0.5);">
-      <button class="choice-close" id="closeChoiceBox" style="position: absolute; top: 1rem; right: 1rem; background: none; border: none; font-size: 1.5rem; color: var(--text-muted); cursor: pointer;">✕</button>
-      <h4 style="margin-bottom: 1rem; font-family: 'Cormorant Garamond', serif; font-size: 1.4rem; color: var(--text);">Select Contact Method</h4>
-      <p style="margin-bottom: 2rem; font-size: 0.9rem; color: var(--text-muted);">How would you like to continue with your inquiry?</p>
-      <div class="choice-buttons" style="display: flex; flex-direction: column; gap: 1rem;">
-        <button class="choice-btn wa" id="btnChoiceWA" style="padding: 1rem; border-radius: 8px; border: none; background: #25D366; color: #fff; font-weight: 600; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 0.75rem;">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.335-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"></path></svg>
-          <span>WhatsApp Inquiry</span>
-        </button>
-        <button class="choice-btn gmail" id="btnChoiceGmail" style="padding: 1rem; border-radius: 8px; border: 1px solid var(--border); background: #EA4335; color: #fff; font-weight: 600; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 0.75rem;">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
-          <span>Gmail Inquiry</span>
+    <aside class="sidebar-drawer" id="rightSidebar">
+      <div class="sidebar-drawer-header">
+        <div class="sidebar-drawer-logo">ARTGALZIM <span>Center</span></div>
+        <button
+          class="sidebar-close-btn"
+          id="sidebarCloseBtn"
+          aria-label="Close menu"
+        >
+          ✕
         </button>
       </div>
+      <div class="sidebar-drawer-body">
+        <div class="sidebar-nav-section">
+          <h4>Explore & Services</h4>
+          <div class="sidebar-nav-links">
+            <a href="index.html" class="sidebar-nav-link">Home</a>
+            <a href="exhibitions.html" class="sidebar-nav-link active"
+              >Exhibitions</a
+            >
+            <a href="artists.html" class="sidebar-nav-link">Artists</a>
+            <a href="artworks.html" class="sidebar-nav-link">Artworks</a>
+            <a href="about.html" class="sidebar-nav-link">About Us</a>
+            <a href="services.html" class="sidebar-nav-link">Services</a>
+            <a href="visit.html" class="sidebar-nav-link">Plan Your Visit</a>
+            <a href="contact.html" class="sidebar-nav-link">Contact</a>
+            <a href="donate.html" class="sidebar-nav-link">Donate & Support</a>
+            <a href="owa-technologies.html" class="sidebar-nav-link"
+              >OWA TECHNOLOGIES</a
+            >
+          </div>
+        </div>
+        <div class="sidebar-info-section">
+          <h4>Location</h4>
+          <p>Mverechena Business Center<br />Domboshava, Zimbabwe</p>
+        </div>
+        <div class="sidebar-info-section">
+          <h4>Call or Email</h4>
+          <p><a href="tel:+263776330869">+263 77 633 0869</a></p>
+          <p><a href="mailto:info@artgalzim.com">info@artgalzim.com</a></p>
+        </div>
+      </div>
+    </aside>
+    <div class="mobile-overlay" id="mobileOverlay"></div>
+
+    <section
+      class="page-hero"
+      style="
+        background-image: url(&quot;Background images/exhibitions/exhibitions_hero.webp&quot;);
+      "
+    >
+      <div class="page-hero-overlay"></div>
+      <div class="page-hero-content reveal">
+        <span class="section-eyebrow">Program</span>
+        <h1 class="page-title">Exhibitions</h1>
+        <p class="page-lead">
+          Immersive visual narratives exploring the intersections of Zimbabwean
+          history, mythology, and modern identity.
+        </p>
+
+        <div class="page-hero-video-wrap reveal" style="margin-top: 2.5rem">
+          <div class="video-container" id="exhibitionVideoWrap">
+            <!-- Play Overlay — clicking launches the video -->
+            <div
+              class="video-placeholder"
+              id="videoPlaceholder"
+              style="cursor: pointer"
+            >
+              <svg
+                viewBox="0 0 24 24"
+                fill="currentColor"
+                width="56"
+                height="56"
+              >
+                <path d="M8 5v14l11-7z" />
+              </svg>
+              <span>Play Exhibition Trailer</span>
+            </div>
+            <!-- Video: no autoplay, no download, no right-click, embedded only -->
+            <video
+              id="actualVideo"
+              src="videos/ARTGALZIM VIDZ.mp4"
+              style="
+                display: none;
+                width: 100%;
+                height: 100%;
+                object-fit: cover;
+                background: #000;
+                opacity: 0;
+                transition: opacity 0.5s ease;
+              "
+              controls
+              controlsList="nodownload"
+              oncontextmenu="return false;"
+              disablePictureInPicture
+              playsinline
+              preload="metadata"
+            ></video>
+          </div>
+        </div>
+      </div>
+    </section>
+    <section class="section pt-0">
+      <div class="exhibition-tabs reveal">
+        <button class="tab-btn" data-target="current">Current</button>
+        <button class="tab-btn active" data-target="upcoming">Upcoming</button>
+        <button class="tab-btn" data-target="past">Past</button>
+      </div>
+
+      <!-- Current Exhibitions -->
+      <div class="exhibition-list" id="current" style="display: none">
+        <div class="exh-grid reveal-stagger" id="currentGrid">
+          <!-- Dynamically populated -->
+        </div>
+      </div>
+
+      <!-- Upcoming Exhibitions -->
+      <div class="exhibition-list active" id="upcoming" style="display: block">
+        <div class="exh-grid reveal-stagger" id="upcomingGrid">
+          <!-- Dynamically populated -->
+        </div>
+      </div>
+
+      <!-- Past Exhibitions -->
+      <div class="exhibition-list" id="past" style="display: none">
+        <div class="exh-grid reveal-stagger" id="pastGrid">
+          <!-- Dynamically populated -->
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== FOOTER ===== -->
+    <footer class="footer" id="footer">
+      <div class="footer-top">
+        <div class="footer-brand">
+          <img
+            src="images/logo.jpg"
+            alt="ARTGALZIM Center"
+            class="footer-logo"
+            onerror="
+              this.style.display = 'none';
+              this.nextElementSibling.style.display = 'block';
+            "
+          />
+          <div class="footer-logo-text" style="display: none">
+            ARTGALZIM<br /><small>CENTER</small>
+          </div>
+          <p class="footer-tagline">
+            Contemporary African Art<br />in the Heart of Domboshava
+          </p>
+          <div class="footer-social">
+            <a
+              href="https://wa.me/263776330869?text=Hello%20ARTGALZIM%20Center%2C%20I%20discovered%20your%20gallery%20online%20and%20would%20like%20to%20learn%20more%20about%20your%20exhibitions."
+              target="_blank"
+              aria-label="WhatsApp"
+              class="social-link"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="18"
+                height="18"
+                viewBox="0 0 24 24"
+                fill="currentColor"
+              >
+                <path
+                  d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"
+                />
+              </svg>
+            </a>
+            <a
+              href="https://www.instagram.com"
+              target="_blank"
+              aria-label="Instagram"
+              class="social-link"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="18"
+                height="18"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+              >
+                <rect x="2" y="2" width="20" height="20" rx="5" />
+                <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z" />
+                <line x1="17.5" y1="6.5" x2="17.51" y2="6.5" />
+              </svg>
+            </a>
+            <a
+              href="https://www.facebook.com"
+              target="_blank"
+              aria-label="Facebook"
+              class="social-link"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="18"
+                height="18"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+              >
+                <path
+                  d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"
+                />
+              </svg>
+            </a>
+          </div>
+        </div>
+        <nav class="footer-nav">
+          <div class="footer-col">
+            <h4 class="footer-col-title">Explore</h4>
+            <a href="exhibitions.html">Exhibitions</a>
+            <a href="artworks.html">Artworks</a>
+            <a href="artists.html">Artists</a>
+            <a href="services.html">Services</a>
+          </div>
+          <div class="footer-col">
+            <h4 class="footer-col-title">About</h4>
+            <a href="about.html">Our Story</a>
+            <a href="about.html#mission">Mission &amp; Vision</a>
+            <a href="about.html#team">The Team</a>
+            <a href="privacy-policy.html">Privacy Policy</a>
+          </div>
+          <div class="footer-col">
+            <h4 class="footer-col-title">Support</h4>
+            <a href="donate.html">Donate</a>
+            <a href="owa-technologies.html">OWA TECH</a>
+          </div>
+          <div class="footer-col">
+            <h4 class="footer-col-title">Visit</h4>
+            <a href="visit.html">Plan Your Visit</a>
+            <a href="visit.html#directions">Directions</a>
+            <a href="contact.html">Contact</a>
+          </div>
+        </nav>
+        <div class="footer-contact">
+          <h4 class="footer-col-title">Get in Touch</h4>
+          <p>Mverechena Center, Harare</p>
+          <p><a href="tel:+263776330869">+263 77 633 0869</a></p>
+          <p><a href="mailto:info@artgalzim.com">info@artgalzim.com</a></p>
+        </div>
+      </div>
+      <div
+        class="footer-bottom"
+        style="
+          border-top: 1px solid var(--border);
+          padding: 0.8rem 0;
+          margin-top: 1.5rem;
+        "
+      >
+        <div
+          style="
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+          "
+        >
+          <p
+            style="
+              font-size: 0.8rem;
+              color: var(--text-muted);
+              cursor: default;
+              user-select: none;
+            "
+            id="adminSecretTrigger"
+          >
+            &copy; 2026 ARTGALZIM CENTER
+          </p>
+          <div
+            style="
+              font-weight: 700;
+              letter-spacing: 0.15em;
+              color: var(--gold);
+              font-size: 0.72rem;
+              text-transform: uppercase;
+            "
+          >
+            POWERED BY
+            <a
+              href="owa-technologies.html"
+              style="
+                color: inherit;
+                text-decoration: none;
+                border-bottom: 2px solid var(--gold);
+              "
+              >OWA TECHNOLOGIES</a
+            >
+          </div>
+        </div>
+      </div>
+    </footer>
+
+    <!-- Global Choice Box (Popup) for inquiry method -->
+    <div
+      id="inquiryChoiceBox"
+      class="inquiry-choice-overlay"
+      style="
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.8);
+        z-index: 30000;
+        align-items: center;
+        justify-content: center;
+      "
+    >
+      <div
+        class="inquiry-choice-content"
+        style="
+          background: var(--bg2);
+          padding: 2.5rem;
+          border-radius: 12px;
+          position: relative;
+          max-width: 400px;
+          width: 90%;
+          text-align: center;
+          border: 1px solid var(--border);
+          box-shadow: 0 25px 50px rgba(0, 0, 0, 0.5);
+        "
+      >
+        <button
+          class="choice-close"
+          id="closeChoiceBox"
+          style="
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            color: var(--text-muted);
+            cursor: pointer;
+          "
+        >
+          ✕
+        </button>
+        <h4
+          style="
+            margin-bottom: 1rem;
+            font-family: &quot;Cormorant Garamond&quot;, serif;
+            font-size: 1.4rem;
+            color: var(--text);
+          "
+        >
+          Select Contact Method
+        </h4>
+        <p
+          style="
+            margin-bottom: 2rem;
+            font-size: 0.9rem;
+            color: var(--text-muted);
+          "
+        >
+          How would you like to continue with your inquiry?
+        </p>
+        <div
+          class="choice-buttons"
+          style="display: flex; flex-direction: column; gap: 1rem"
+        >
+          <button
+            class="choice-btn wa"
+            id="btnChoiceWA"
+            style="
+              padding: 1rem;
+              border-radius: 8px;
+              border: none;
+              background: #25d366;
+              color: #fff;
+              font-weight: 600;
+              cursor: pointer;
+              display: flex;
+              align-items: center;
+              justify-content: center;
+              gap: 0.75rem;
+            "
+          >
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+              <path
+                d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.335-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"
+              ></path>
+            </svg>
+            <span>WhatsApp Inquiry</span>
+          </button>
+          <button
+            class="choice-btn gmail"
+            id="btnChoiceGmail"
+            style="
+              padding: 1rem;
+              border-radius: 8px;
+              border: 1px solid var(--border);
+              background: #ea4335;
+              color: #fff;
+              font-weight: 600;
+              cursor: pointer;
+              display: flex;
+              align-items: center;
+              justify-content: center;
+              gap: 0.75rem;
+            "
+          >
+            <svg
+              width="20"
+              height="20"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+            >
+              <path
+                d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"
+              ></path>
+              <polyline points="22,6 12,13 2,6"></polyline>
+            </svg>
+            <span>Gmail Inquiry</span>
+          </button>
+        </div>
+      </div>
     </div>
-  </div>
 
-  <a href="https://wa.me/263776330869" target="_blank" class="whatsapp-fab" id="whatsappFab">
-    <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
-  </a>
+    <a
+      href="https://wa.me/263776330869"
+      target="_blank"
+      class="whatsapp-fab"
+      id="whatsappFab"
+    >
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        width="28"
+        height="28"
+        viewBox="0 0 24 24"
+        fill="currentColor"
+      >
+        <path
+          d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"
+        />
+      </svg>
+    </a>
 
-  <button class="back-to-top" id="backToTop">^</button>
+    <button class="back-to-top" id="backToTop">^</button>
 
-  <script type="module" src="/js/page-galleries.js"></script>  <script type="module" src="/js/main.js"></script>
-  <script>
-  // ---- Exhibition Data with Dates ----
-  const exhibitionsData = [
-    {
-      id: 'easter-sip-paint-2026',
-      title: 'Easter Sip And Paint',
-      artist: 'Surprise Guest Artist',
-      category: 'Event',
-      description: 'Join us for an Easter Sip and Paint! Get creative, unwind, and celebrate renewal with friends and family. Domboshava curves touring will inspire your masterpiece!',
-      registrationFee: '$15',
-      image: 'Customisations/Exhbitition 1.jpeg',
-      startDate: '2026-04-05',
-      endDate: '2026-04-05',
-      contactLink: 'contact.html',
-      ctaText: 'Book Your Spot →',
-      timeRange: '1pm – 6pm'
-    },
-    {
-      id: 'tba-late-2026',
-      title: 'To Be Announced',
-      artist: 'Various Artists',
-      category: 'Open Call',
-      description: 'Stay connected with ARTGALZIM CENTER for announcements on our next exhibitions.',
-      image: 'images/domboshava.webp',
-      startDate: '2026-07-01',
-      endDate: '2026-12-31',
-      isPlaceholder: true,
-      contactLink: 'contact.html',
-      ctaText: 'Stay Updated →',
-      timeRange: 'Late 2026'
-    }
-  ];
+    <script type="module" src="/js/page-galleries.js"></script>
+    <script type="module" src="/js/main.js"></script>
+    <script>
+      // ---- Exhibition Data with Dates ----
+      const exhibitionsData = [
+        {
+          id: "easter-sip-paint-2026",
+          title: "Easter Sip And Paint",
+          artist: "Surprise Guest Artist",
+          category: "Event",
+          description:
+            "Join us for an Easter Sip and Paint! Get creative, unwind, and celebrate renewal with friends and family. Domboshava curves touring will inspire your masterpiece!",
+          registrationFee: "$15",
+          image: "/Customisations/Exhbitition 1.jpeg",
+          startDate: "2026-04-05",
+          endDate: "2026-04-05",
+          contactLink: "contact.html",
+          ctaText: "Book Your Spot →",
+          timeRange: "1pm – 6pm",
+        },
+        {
+          id: "tba-late-2026",
+          title: "To Be Announced",
+          artist: "Various Artists",
+          category: "Open Call",
+          description:
+            "Stay connected with ARTGALZIM CENTER for announcements on our next exhibitions.",
+          image: "images/domboshava.webp",
+          startDate: "2026-07-01",
+          endDate: "2026-12-31",
+          isPlaceholder: true,
+          contactLink: "contact.html",
+          ctaText: "Stay Updated →",
+          timeRange: "Late 2026",
+        },
+      ];
 
-  // ---- Date-based Auto-Categorization ----
-  function categorizeExhibitions() {
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
+      // ---- Date-based Auto-Categorization ----
+      function categorizeExhibitions() {
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
 
-    return exhibitionsData.map(exh => {
-      const startDate = new Date(exh.startDate);
-      const endDate = new Date(exh.endDate);
-      startDate.setHours(0, 0, 0, 0);
-      endDate.setHours(23, 59, 59, 999);
+        return exhibitionsData.map((exh) => {
+          const startDate = new Date(exh.startDate);
+          const endDate = new Date(exh.endDate);
+          startDate.setHours(0, 0, 0, 0);
+          endDate.setHours(23, 59, 59, 999);
 
-      let status;
-      if (today < startDate) {
-        status = 'upcoming';
-      } else if (today >= startDate && today <= endDate) {
-        status = 'current';
-      } else {
-        status = 'past';
+          let status;
+          if (today < startDate) {
+            status = "upcoming";
+          } else if (today >= startDate && today <= endDate) {
+            status = "current";
+          } else {
+            status = "past";
+          }
+
+          return { ...exh, status };
+        });
       }
 
-      return { ...exh, status };
-    });
-  }
+      function formatDisplayDate(exh) {
+        const start = new Date(exh.startDate);
+        const end = new Date(exh.endDate);
+        const startStr = start.toLocaleDateString("en-GB", {
+          day: "numeric",
+          month: "short",
+          year: "numeric",
+        });
 
-  function formatDisplayDate(exh) {
-    const start = new Date(exh.startDate);
-    const end = new Date(exh.endDate);
-    const startStr = start.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
+        if (exh.startDate === exh.endDate) {
+          // Single day event - date only (no time)
+          return startStr;
+        } else {
+          // Multi-day event
+          const endStr = end.toLocaleDateString("en-GB", {
+            day: "numeric",
+            month: "short",
+            year: "numeric",
+          });
+          return `${startStr} – ${endStr}`;
+        }
+      }
 
-    if (exh.startDate === exh.endDate) {
-      // Single day event - date only (no time)
-      return startStr;
-    } else {
-      // Multi-day event
-      const endStr = end.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
-      return `${startStr} – ${endStr}`;
-    }
-  }
+      function formatBadgeDate(exh) {
+        const start = new Date(exh.startDate);
+        if (exh.isPlaceholder) {
+          return exh.timeRange || "TBA";
+        }
+        return start.toLocaleDateString("en-GB", {
+          day: "2-digit",
+          month: "long",
+          year: "numeric",
+        });
+      }
 
-  function formatBadgeDate(exh) {
-    const start = new Date(exh.startDate);
-    if (exh.isPlaceholder) {
-      return exh.timeRange || 'TBA';
-    }
-    return start.toLocaleDateString('en-GB', { day: '2-digit', month: 'long', year: 'numeric' });
-  }
+      function getBadgeClass(status) {
+        if (status === "current") return "now";
+        if (status === "past") return "past";
+        return "soon";
+      }
 
-  function getBadgeClass(status) {
-    if (status === 'current') return 'now';
-    if (status === 'past') return 'past';
-    return 'soon';
-  }
+      function renderExhibitionCard(exh) {
+        const badgeClass = getBadgeClass(exh.status);
+        const displayDate = formatDisplayDate(exh);
+        const badgeDate = formatBadgeDate(exh);
 
-  function renderExhibitionCard(exh) {
-    const badgeClass = getBadgeClass(exh.status);
-    const displayDate = formatDisplayDate(exh);
-    const badgeDate = formatBadgeDate(exh);
-
-    if (exh.isPlaceholder) {
-      return `
+        if (exh.isPlaceholder) {
+          return `
         <article class="exh-card exh-card--placeholder">
           <div class="exh-img-frame exh-img-frame--dark" style="position:relative; overflow:hidden;">
             <img src="${exh.image}" alt="${exh.title}" style="position:absolute; top:0; left:0; width:100%; height:100%; object-fit:cover; z-index:0; filter: brightness(0.35);">
@@ -348,11 +715,13 @@
           </div>
         </article>
       `;
-    }
+        }
 
-    const feeText = exh.registrationFee ? `<br>Registration Fee: ${exh.registrationFee}` : '';
+        const feeText = exh.registrationFee
+          ? `<br>Registration Fee: ${exh.registrationFee}`
+          : "";
 
-    return `
+        return `
       <article class="exh-card" data-id="${exh.id}">
         <div class="exh-img-frame">
           <img src="${exh.image}" alt="${exh.title}" loading="lazy">
@@ -367,110 +736,130 @@
         </div>
       </article>
     `;
-  }
+      }
 
-  function renderEmptyMessage(message) {
-    return `<p style="text-align:center; padding:3rem; color:var(--text-muted); font-size:1.1rem;">${message}</p>`;
-  }
+      function renderEmptyMessage(message) {
+        return `<p style="text-align:center; padding:3rem; color:var(--text-muted); font-size:1.1rem;">${message}</p>`;
+      }
 
-  function populateExhibitions() {
-    const categorized = categorizeExhibitions();
-    const current = categorized.filter(e => e.status === 'current');
-    const upcoming = categorized.filter(e => e.status === 'upcoming');
-    const past = categorized.filter(e => e.status === 'past');
+      function populateExhibitions() {
+        const categorized = categorizeExhibitions();
+        const current = categorized.filter((e) => e.status === "current");
+        const upcoming = categorized.filter((e) => e.status === "upcoming");
+        const past = categorized.filter((e) => e.status === "past");
 
-    const currentGrid = document.getElementById('currentGrid');
-    const upcomingGrid = document.getElementById('upcomingGrid');
-    const pastGrid = document.getElementById('pastGrid');
+        const currentGrid = document.getElementById("currentGrid");
+        const upcomingGrid = document.getElementById("upcomingGrid");
+        const pastGrid = document.getElementById("pastGrid");
 
-    if (currentGrid) {
-      currentGrid.innerHTML = current.length > 0
-        ? current.map(renderExhibitionCard).join('')
-        : renderEmptyMessage('There are no current exhibitions as of now.');
-    }
-
-    if (upcomingGrid) {
-      upcomingGrid.innerHTML = upcoming.length > 0
-        ? upcoming.map(renderExhibitionCard).join('')
-        : renderEmptyMessage('No upcoming exhibitions scheduled. Stay tuned for announcements!');
-    }
-
-    if (pastGrid) {
-      pastGrid.innerHTML = past.length > 0
-        ? past.map(renderExhibitionCard).join('')
-        : renderEmptyMessage('There are no past exhibitions.');
-    }
-  }
-
-  // Initialize exhibitions on load
-  populateExhibitions();
-
-  // ---- Exhibition Tabs ----
-  document.querySelectorAll('.tab-btn').forEach(btn => {
-    btn.addEventListener('click', () => {
-      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-      document.querySelectorAll('.exhibition-list').forEach(l => l.style.display = 'none');
-      btn.classList.add('active');
-      document.getElementById(btn.dataset.target).style.display = 'block';
-    });
-  });
-
-  // Update tab visibility based on available exhibitions
-  function updateTabVisibility() {
-    const categorized = categorizeExhibitions();
-    const hasCurrent = categorized.some(e => e.status === 'current');
-    const hasUpcoming = categorized.some(e => e.status === 'upcoming');
-    const hasPast = categorized.some(e => e.status === 'past');
-
-    // If there are current exhibitions, show that tab first
-    if (hasCurrent) {
-      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-      document.querySelectorAll('.exhibition-list').forEach(l => l.style.display = 'none');
-      document.querySelector('.tab-btn[data-target="current"]').classList.add('active');
-      document.getElementById('current').style.display = 'block';
-    }
-  }
-
-  // Run visibility update after populating
-  updateTabVisibility();
-
-  // ---- Exhibition Video — instant launch on click ----
-    const videoWrap = document.getElementById('exhibitionVideoWrap');
-    const placeholder = document.getElementById('videoPlaceholder');
-    const video = document.getElementById('actualVideo');
-
-    if (videoWrap && placeholder && video) {
-      // Launch video when whole container is clicked
-      videoWrap.addEventListener('click', function () {
-        if (placeholder.style.display !== 'none') {
-          // 1. Hide placeholder and show video
-          placeholder.style.display = 'none';
-          video.style.display = 'block';
-          
-          // 2. Load and play
-          video.load();
-          video.play().then(() => {
-            video.style.opacity = '1';
-          }).catch(err => {
-             console.error("Video play failed:", err);
-             // Still show it even if play is blocked by browser policy
-             video.style.opacity = '1';
-          });
-        } else {
-          // Subsequent clicks toggle play/pause
-          if (video.paused) {
-            video.play();
-          } else {
-            video.pause();
-          }
+        if (currentGrid) {
+          currentGrid.innerHTML =
+            current.length > 0
+              ? current.map(renderExhibitionCard).join("")
+              : renderEmptyMessage(
+                  "There are no current exhibitions as of now.",
+                );
         }
+
+        if (upcomingGrid) {
+          upcomingGrid.innerHTML =
+            upcoming.length > 0
+              ? upcoming.map(renderExhibitionCard).join("")
+              : renderEmptyMessage(
+                  "No upcoming exhibitions scheduled. Stay tuned for announcements!",
+                );
+        }
+
+        if (pastGrid) {
+          pastGrid.innerHTML =
+            past.length > 0
+              ? past.map(renderExhibitionCard).join("")
+              : renderEmptyMessage("There are no past exhibitions.");
+        }
+      }
+
+      // Initialize exhibitions on load
+      populateExhibitions();
+
+      // ---- Exhibition Tabs ----
+      document.querySelectorAll(".tab-btn").forEach((btn) => {
+        btn.addEventListener("click", () => {
+          document
+            .querySelectorAll(".tab-btn")
+            .forEach((b) => b.classList.remove("active"));
+          document
+            .querySelectorAll(".exhibition-list")
+            .forEach((l) => (l.style.display = "none"));
+          btn.classList.add("active");
+          document.getElementById(btn.dataset.target).style.display = "block";
+        });
       });
 
-      // Allow controls interaction without bubbling
-      video.addEventListener('click', function (e) {
-        e.stopPropagation();
-      });
-    }
-  </script>
-</body>
+      // Update tab visibility based on available exhibitions
+      function updateTabVisibility() {
+        const categorized = categorizeExhibitions();
+        const hasCurrent = categorized.some((e) => e.status === "current");
+        const hasUpcoming = categorized.some((e) => e.status === "upcoming");
+        const hasPast = categorized.some((e) => e.status === "past");
+
+        // If there are current exhibitions, show that tab first
+        if (hasCurrent) {
+          document
+            .querySelectorAll(".tab-btn")
+            .forEach((b) => b.classList.remove("active"));
+          document
+            .querySelectorAll(".exhibition-list")
+            .forEach((l) => (l.style.display = "none"));
+          document
+            .querySelector('.tab-btn[data-target="current"]')
+            .classList.add("active");
+          document.getElementById("current").style.display = "block";
+        }
+      }
+
+      // Run visibility update after populating
+      updateTabVisibility();
+
+      // ---- Exhibition Video — instant launch on click ----
+      const videoWrap = document.getElementById("exhibitionVideoWrap");
+      const placeholder = document.getElementById("videoPlaceholder");
+      const video = document.getElementById("actualVideo");
+
+      if (videoWrap && placeholder && video) {
+        // Launch video when whole container is clicked
+        videoWrap.addEventListener("click", function () {
+          if (placeholder.style.display !== "none") {
+            // 1. Hide placeholder and show video
+            placeholder.style.display = "none";
+            video.style.display = "block";
+
+            // 2. Load and play
+            video.load();
+            video
+              .play()
+              .then(() => {
+                video.style.opacity = "1";
+              })
+              .catch((err) => {
+                console.error("Video play failed:", err);
+                // Still show it even if play is blocked by browser policy
+                video.style.opacity = "1";
+              });
+          } else {
+            // Subsequent clicks toggle play/pause
+            if (video.paused) {
+              video.play();
+            } else {
+              video.pause();
+            }
+          }
+        });
+
+        // Allow controls interaction without bubbling
+        video.addEventListener("click", function (e) {
+          e.stopPropagation();
+        });
+      }
+    </script>
+  </body>
 </html>
