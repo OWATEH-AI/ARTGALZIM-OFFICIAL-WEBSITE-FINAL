@@ -1,5 +1,6 @@
 import { defineConfig } from 'vite';
 import { exec } from 'child_process';
+import { viteStaticCopy } from 'vite-plugin-static-copy';
 
 const watchGalleryPlugin = () => {
   return {
@@ -20,7 +21,29 @@ const watchGalleryPlugin = () => {
 };
 
 export default defineConfig({
-  plugins: [watchGalleryPlugin()],
+  plugins: [
+    watchGalleryPlugin(),
+    viteStaticCopy({
+      targets: [
+        {
+          src: 'ARTISTS/**/*',
+          dest: 'ARTISTS'
+        },
+        {
+          src: 'images/**/*',
+          dest: 'images'
+        },
+        {
+          src: 'HERO ANIMATION/**/*',
+          dest: 'HERO ANIMATION'
+        },
+        {
+          src: 'Background images/**/*',
+          dest: 'Background images'
+        }
+      ]
+    })
+  ],
   server: {
     port: 5299,
     strictPort: true,    // always use 5299 — dedicated ARTGALZIM port
@@ -54,3 +77,4 @@ export default defineConfig({
     }
   }
 });
+
