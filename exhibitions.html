@@ -616,13 +616,14 @@
           category: "Open Call",
           description:
             "Stay connected with ARTGALZIM CENTER for announcements on our next exhibitions.",
-          image: "images/domboshava.webp",
+          image: "/images/MAIN IMAGES/home/Art Gallery Frontview jpeg.jpeg",
           startDate: "2026-07-01",
           endDate: "2026-12-31",
           isPlaceholder: true,
+          displayDateOverride: "Follow our socials for updates",
           contactLink: "contact.html",
           ctaText: "Stay Updated →",
-          timeRange: "Late 2026",
+          timeRange: "Upcoming",
         },
       ];
 
@@ -697,6 +698,7 @@
         const badgeDate = formatBadgeDate(exh);
 
         if (exh.isPlaceholder) {
+          const finalDisplayDate = exh.displayDateOverride || displayDate;
           return `
         <article class="exh-card exh-card--placeholder">
           <div class="exh-img-frame exh-img-frame--dark" style="position:relative; overflow:hidden;">
@@ -707,7 +709,7 @@
             </div>
           </div>
           <div class="exh-body">
-            <span class="exh-dates">${displayDate}</span>
+            <span class="exh-dates">${finalDisplayDate}</span>
             <h3 class="exh-title">${exh.title}</h3>
             <p class="exh-participants">${exh.category} &nbsp;·&nbsp; ${exh.artist}</p>
             <p class="exh-desc">${exh.description}</p>
