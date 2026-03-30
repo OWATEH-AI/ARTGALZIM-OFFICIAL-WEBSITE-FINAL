@@ -916,13 +916,24 @@ h3 {
   border: 1px solid rgba(255, 255, 255, 0.5);
   transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
 }
+[data-theme="light"] .btn-outline {
+  color: var(--text);
+  border: 1px solid rgba(0, 0, 0, 0.3);
+}
 .btn-outline:hover {
   background: rgba(255, 255, 255, 0.1);
   border-color: #fff;
   transform: translateY(-2px);
 }
+[data-theme="light"] .btn-outline:hover {
+  background: rgba(0, 0, 0, 0.05);
+  border-color: var(--text);
+}
 .btn-outline::before {
   background: rgba(255, 255, 255, 0.1);
+}
+[data-theme="light"] .btn-outline::before {
+  background: rgba(0, 0, 0, 0.05);
 }
 .btn-outline-light {
   background: transparent;
@@ -3012,9 +3023,9 @@ h3 {
   padding-left: 0 !important;
   border-left: none !important;
 }
-@media (max-width: 1024px) {
+@media (max-width: 768px) {
   .artwork-meta {
-    padding: 0 1.25rem !important;
+    padding: 0 !important;
     text-align: center !important;
   }
   .artwork-card-actions {
