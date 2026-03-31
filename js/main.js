@@ -148,7 +148,7 @@
           window.dispatchEvent(new Event('resize'));
         }, 100);
       }
-    }, 1800); // Reduced from 2200 to 1800 for better perceived speed
+    }, 1550); // 1.4s animation + 150ms buffer for smooth transition
   });
 
   // Custom cursor removed (User requested original browser cursor)
