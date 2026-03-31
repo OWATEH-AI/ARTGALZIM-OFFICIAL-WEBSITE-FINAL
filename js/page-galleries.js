@@ -31,18 +31,16 @@ const PageGalleries = {
   "blog": [],
   "hero": [
     "/HERO ANIMATION/Art Gallery Frontview jpeg.jpeg",
+    "/HERO ANIMATION/648847535_122118621525180817_6612687623118786557_n.jpg",
     "/HERO ANIMATION/Blood-Stained Veil.jpeg",
     "/HERO ANIMATION/Chitenge (Women Garment).jpeg",
-    "/HERO ANIMATION/Drawing_2.jpeg",
     "/HERO ANIMATION/Goho (Harvest) .jpeg",
     "/HERO ANIMATION/Musha Mukadzi.jpeg",
     "/HERO ANIMATION/mwana.jpeg",
     "/HERO ANIMATION/Red Ascendant.jpeg",
-    "/HERO ANIMATION/Tariro (Hope).jpeg",
     "/HERO ANIMATION/WhatsApp Image 2026-03-14 at 15.10.40.jpeg",
     "/HERO ANIMATION/WhatsApp Image 2026-03-17 at 09.56.03.jpeg",
-    "/HERO ANIMATION/WhatsApp Image 2026-03-27 at 20.59.56.jpeg",
-    "/HERO ANIMATION/Yevedzai.jpeg"
+    "/HERO ANIMATION/WhatsApp Image 2026-03-27 at 20.59.56.jpeg"
   ],
   "artistsCollections": {
     "DIVINE KUMIRAI/Artworks": {

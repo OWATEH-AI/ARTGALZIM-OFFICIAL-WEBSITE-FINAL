@@ -31,10 +31,21 @@ function getImages() {
     const heroPath = path.join(__dirname, 'HERO ANIMATION');
     if (fs.existsSync(heroPath)) {
         const files = fs.readdirSync(heroPath);
-        galleryData.hero = files.filter(file => {
+        let heroFiles = files.filter(file => {
             const ext = path.extname(file).toLowerCase();
             return ['.png', '.jpg', '.jpeg', '.webp', '.gif', '.JPG'].includes(ext);
         }).map(file => `/HERO ANIMATION/${file}`);
+        
+        // Ensure "Art Gallery Frontview" is always the first item
+        heroFiles.sort((a, b) => {
+            const aIsFrontview = a.toLowerCase().includes("art gallery frontview");
+            const bIsFrontview = b.toLowerCase().includes("art gallery frontview");
+            if (aIsFrontview && !bIsFrontview) return -1;
+            if (!aIsFrontview && bIsFrontview) return 1;
+            return 0;
+        });
+        
+        galleryData.hero = heroFiles;
     } else {
         galleryData.hero = [];
     }
