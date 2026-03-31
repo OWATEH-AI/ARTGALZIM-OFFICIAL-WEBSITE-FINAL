@@ -525,38 +525,50 @@
 
       if (pageKey === "artworks") {
         if (window.PageGalleries && window.PageGalleries.artistsCollections) {
+          const addedTitles = new Set();
           Object.keys(window.PageGalleries.artistsCollections).forEach(key => {
-            if (key.toLowerCase().endsWith('/artworks')) {
-              const artistName = key.split('/')[0];
+            const artistName = key.split('/')[0];
+            const category = key.split('/')[1]?.toLowerCase() || "";
+            
+            // Only render Keith Zenda and Florah Maphosa
+            const allowedArtists = ["KEITH ZENDA", "FLORAH MAPHOSA"];
+            if (!allowedArtists.includes(artistName.toUpperCase())) {
+              return;
+            }
+            // Skip commissions category from the main gallery
+            if (category === "commissions") {
+              return;
+            }
+            
+            const collectionImages = window.PageGalleries.artistsCollections[key].images || [];
+            collectionImages.forEach(item => {
+              const src = typeof item === 'string' ? item : item.src;
               
-              // Only render Keith Zenda artworks on the artworks.html page
-              if (artistName.toUpperCase() !== "KEITH ZENDA") {
+              // Exclude whatsapp images from appearing in the main artworks grid
+              if (src.toLowerCase().includes('whatsapp')) {
                 return;
               }
               
-              const collectionImages = window.PageGalleries.artistsCollections[key].images || [];
-              collectionImages.forEach(item => {
-                // item might be a string (from static fallback) or an object (from API)
-                const src = typeof item === 'string' ? item : item.src;
-                
-                // Exclude whatsapp images from appearing in the main artworks grid
-                if (src.toLowerCase().includes('whatsapp')) {
-                  return;
-                }
-                
-                const fileName = src.split('/').pop();
-                const title = fileName.replace(/\.[^/.]+$/, "").replace(/[-_]/g, " ");
-                galleryItems.push({ 
-                  src, 
-                  artist: artistName, 
-                  title: title,
-                  medium: item.medium || "Contemporary Work",
-                  size: item.size || "Inquire for Size",
-                  year: item.year || "2026",
-                  description: item.description || "Recently added to our collection."
-                });
+              const fileName = src.split('/').pop();
+              const title = fileName.replace(/\.[^/.]+$/, "").replace(/[-_]/g, " ");
+              
+              // Prevent duplicate artworks if they exist in multiple folders
+              const cleanTitle = title.trim().toLowerCase();
+              if (addedTitles.has(cleanTitle)) {
+                return;
+              }
+              addedTitles.add(cleanTitle);
+
+              galleryItems.push({ 
+                src, 
+                artist: artistName, 
+                title: title,
+                medium: item.medium || "Contemporary Work",
+                size: item.size || "Inquire for Size",
+                year: item.year || "2026",
+                description: item.description || "Recently added to our collection."
               });
-            }
+            });
           });
         }
       } else {
