@@ -4231,6 +4231,10 @@ h3 {
   margin-bottom: 4rem;
 }
 
+.ap-artist-section:last-child {
+  margin-bottom: 0;
+}
+
 /* Section heading */
 .ap-section-heading {
   font-family: 'Cormorant Garamond', serif;

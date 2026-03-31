@@ -528,6 +528,12 @@
           Object.keys(window.PageGalleries.artistsCollections).forEach(key => {
             if (key.toLowerCase().endsWith('/artworks')) {
               const artistName = key.split('/')[0];
+              
+              // Only render Keith Zenda artworks on the artworks.html page
+              if (artistName.toUpperCase() !== "KEITH ZENDA") {
+                return;
+              }
+              
               const collectionImages = window.PageGalleries.artistsCollections[key].images || [];
               collectionImages.forEach(item => {
                 // item might be a string (from static fallback) or an object (from API)
@@ -799,9 +805,7 @@
             const lowSrc = src.toLowerCase();
             const artistName = albumTitle.includes('-') ? albumTitle.split('-')[0].trim().toUpperCase() : albumTitle.toUpperCase();
             
-            // Student list and Detailed works whitelist
-            const students = ["JONATHAN CHEZANI", "NOMATTER KUTSAWA"];
-            const isStudent = students.includes(artistName);
+            // Detailed works whitelist
             
             const detailedTitles = [
                 "blood-stained veil", "chitenge", "red ascendant", "goho", "harvest", 
@@ -813,8 +817,7 @@
             const filename = src.split('/').pop().toLowerCase();
             const isDetailed = detailedTitles.some(dt => filename.includes(dt));
             const isAnonymous = lowSrc.includes('whatsapp') || lowSrc.includes('unnamed') || /^\d+$/.test(src.split('/').pop().split('.')[0]);
-            
-            if (isAnonymous || isStudent || !isDetailed) {
+            if (isAnonymous || !isDetailed) {
               btn.textContent = 'Inquire to Purchase';
             } else if (lowSrc.includes('cover')) {
               // Usually covers are for navigation
@@ -827,8 +830,7 @@
                 
                 let filename = src.split('/').pop().replace(/\.[^/.]+$/, "").replace(/[-_]/g, " ");
                 filename = filename.charAt(0).toUpperCase() + filename.slice(1);
-                
-                if (isAnonymous || isStudent || !isDetailed) {
+                if (isAnonymous || !isDetailed) {
                   // Show Global Inquiry Choice Box
                   showGlobalInquiry(artist, filename);
                 } else {
