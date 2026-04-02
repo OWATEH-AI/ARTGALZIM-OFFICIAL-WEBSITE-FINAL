@@ -314,6 +314,24 @@ h3 {
 }
 
 /* Donate Button in Nav */
+@keyframes navDonatePulse {
+  0% { box-shadow: 0 0 0 0 rgba(201, 168, 76, 0.4); transform: scale(1); border-color: var(--gold); color: var(--gold); }
+  50% { box-shadow: 0 0 0 8px rgba(201, 168, 76, 0); transform: scale(1.03); border-color: transparent; color: var(--text); }
+  100% { box-shadow: 0 0 0 0 rgba(201, 168, 76, 0); transform: scale(1); border-color: var(--gold); color: var(--gold); }
+}
+
+@keyframes boxPulse {
+  0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(201, 168, 76, 0); }
+  50% { transform: scale(1.01); box-shadow: 0 0 30px 5px rgba(201, 168, 76, 0.1); }
+  100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(201, 168, 76, 0); }
+}
+
+.attention-pulse-box {
+  animation: boxPulse 4s infinite ease-in-out;
+  transition: all 0.3s ease;
+}
+
+
 .donate-btn-link {
   display: flex;
   align-items: center;
@@ -321,18 +339,23 @@ h3 {
   font-size: 0.75rem;
   letter-spacing: 0.12em;
   text-transform: uppercase;
-  color: var(--text-muted);
-  font-weight: 500;
+  color: var(--gold);
+  font-weight: 600;
   transition: all 0.3s ease;
   padding: 0.5rem 0.8rem;
-  border-radius: var(--radius);
-  border: 1px solid transparent;
+  border-radius: 4px;
+  border: 1px solid var(--gold);
+  animation: navDonatePulse 2.5s infinite ease-in-out;
+  background: rgba(201, 168, 76, 0.05);
 }
 .donate-btn-link:hover {
-  color: var(--gold);
-  border-color: var(--gold-dim);
-  background: var(--gold-dim);
+  color: var(--bg);
+  border-color: var(--gold);
+  background: var(--gold);
+  animation: none;
+  transform: scale(1.05);
 }
+
 .donate-icon {
   display: none;
 }
@@ -345,14 +368,31 @@ h3 {
     display: block;
     color: var(--gold);
   }
-  .donate-btn-link {
-    padding: 8px;
-    border-radius: 50%;
-    border: 1px solid var(--border);
-  }
-  .donate-btn-link:hover {
-    border-color: var(--gold);
-  }
+  
+.donate-btn-link {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.75rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--gold);
+  font-weight: 600;
+  transition: all 0.3s ease;
+  padding: 0.5rem 0.8rem;
+  border-radius: 4px;
+  border: 1px solid var(--gold);
+  animation: navDonatePulse 2.5s infinite ease-in-out;
+  background: rgba(201, 168, 76, 0.05);
+}
+.donate-btn-link:hover {
+  color: var(--bg);
+  border-color: var(--gold);
+  background: var(--gold);
+  animation: none;
+  transform: scale(1.05);
+}
+
 }
 
 /* Theme Toggle */
@@ -3023,17 +3063,94 @@ h3 {
   padding-left: 0 !important;
   border-left: none !important;
 }
+/* Tablet devices - 769px to 1100px */
+@media (max-width: 1100px) and (min-width: 769px) {
+  .artworks-grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+    justify-items: center !important;
+  }
+  .artwork-card {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    width: 100% !important;
+    margin: 0 auto !important;
+  }
+}
+
+/* Mobile devices - up to 768px */
 @media (max-width: 768px) {
+  .artworks-grid {
+    grid-template-columns: 1fr !important;
+    justify-items: center !important;
+  }
+  .artwork-card {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    width: 100% !important;
+    max-width: 340px !important;
+    margin: 0 auto !important;
+  }
+  .artwork-img-area {
+    width: 100% !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+  }
+  .artwork-img-area img {
+    object-fit: cover !important;
+    object-position: center center !important;
+  }
   .artwork-meta {
     padding: 0 !important;
     text-align: center !important;
+    width: 100% !important;
   }
   .artwork-card-actions {
     display: flex !important;
     justify-content: center !important;
     margin-top: 1.25rem !important;
+    width: 100% !important;
   }
 }
+
+/* Extra small devices - phones under 480px */
+@media (max-width: 480px) {
+  .artworks-grid {
+    grid-template-columns: 1fr !important;
+    justify-items: center !important;
+    padding: 1.5rem 4% 3rem !important;
+    gap: 2rem !important;
+  }
+  .artwork-card {
+    width: 100% !important;
+    max-width: 300px !important;
+    margin: 0 auto !important;
+  }
+  .artwork-img-area {
+    width: 100% !important;
+  }
+}
+
+/* Very small devices - phones under 360px */
+@media (max-width: 360px) {
+  .artworks-grid {
+    padding: 1rem 3% 2rem !important;
+    gap: 1.5rem !important;
+  }
+  .artwork-card {
+    max-width: 280px !important;
+  }
+}
+
+/* Ultra small devices - phones under 320px */
+@media (max-width: 320px) {
+  .artwork-card {
+    max-width: 260px !important;
+  }
+}
+
 .artwork-title {
   font-size: 1.1rem !important;
   font-style: italic;
@@ -3870,7 +3987,7 @@ h3 {
     flex-direction: column;
     width: 100% !important;
     margin-bottom: 1rem;
-    background: var(--bg) !important;
+    background-color: var(--bg) !important;
     border: none !important; /* Cleaner look for independent blocks */
     border-bottom: 1px solid var(--border) !important;
     border-radius: 0; /* Full bleed looks better when independent */
@@ -4740,9 +4857,15 @@ h3 {
 
 /* Targeting the dropdown options */
 .form-select option {
-  background-color: #1a1a1a; 
+  background-color: #111111;
   color: #f0ede8;
   padding: 10px;
+}
+
+/* Force browser to use dark color scheme for native dropdown popup */
+[data-theme="dark"] .form-select,
+[data-theme="dark"] select {
+  color-scheme: dark;
 }
 
 /* Adjust for Light Mode if needed */
@@ -4754,7 +4877,81 @@ h3 {
 }
 
 [data-theme="light"] .form-select option {
-  background-color: #ffffff;
+  background-color: #f5f0e8;
   color: #1a1a18;
+}
+
+[data-theme="light"] .form-select,
+[data-theme="light"] select {
+  color-scheme: light;
+}
+
+
+/* Placeholder Dimming */
+::placeholder {
+  color: var(--text) !important;
+  opacity: 0.35 !important;
+}
+
+::-webkit-input-placeholder {
+  color: var(--text) !important;
+  opacity: 0.35 !important;
+}
+
+::-moz-placeholder {
+  color: var(--text) !important;
+  opacity: 0.35 !important;
+}
+
+:-ms-input-placeholder {
+  color: var(--text) !important;
+  opacity: 0.35 !important;
+}
+
+::-ms-input-placeholder {
+  color: var(--text) !important;
+  opacity: 0.35 !important;
+}
+
+.form-select:invalid {
+  color: var(--text) !important;
+  opacity: 0.35 !important;
+}
+
+/* Also style options to make sure they are NOT dim when opened */
+.form-select option {
+  background-color: #111111 !important;
+  color: #f0ede8 !important;
+  opacity: 1 !important;
+}
+
+/* Ensuring text color consistency for typed values */
+.form-group input, 
+.form-group textarea, 
+.form-select {
+  color: var(--text) !important;
+}
+
+/* Full Box Styling for Form Inputs (Overrides bottom-border styling) */
+.form-group input,
+.form-group textarea,
+.form-select {
+  background-color: var(--bg) !important;
+  border: 1px solid var(--border) !important;
+  border-radius: 8px !important;
+  padding: 1rem 1.25rem !important;
+  color: var(--text) !important;
+  transition: border-color 0.3s, box-shadow 0.3s, background 0.3s !important;
+  width: 100% !important;
+}
+
+/* Enhancing input focuses for boxed inputs */
+.form-group input:focus,
+.form-group textarea:focus,
+.form-select:focus {
+  border-color: var(--gold) !important;
+  background-color: var(--bg2) !important;
+  box-shadow: 0 0 0 3px var(--gold-dim) !important;
+  outline: none !important;
 }
 
