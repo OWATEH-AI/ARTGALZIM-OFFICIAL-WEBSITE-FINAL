@@ -49,6 +49,16 @@ export default defineConfig({
           src: 'Customisations/**/*',
           dest: 'Customisations',
           allowEmpty: true
+        },
+        {
+          src: 'robots.txt',
+          dest: '.',
+          allowEmpty: true
+        },
+        {
+          src: 'sitemap.xml',
+          dest: '.',
+          allowEmpty: true
         }
       ]
     })
