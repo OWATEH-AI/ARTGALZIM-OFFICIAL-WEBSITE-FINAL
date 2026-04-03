@@ -1,5 +1,37 @@
+# ARTGALZIM CENTER - Robots.txt
+# Allow all search engines and AI bots to crawl the site
+
 User-agent: *
 Allow: /
 Disallow: /admin.html
+Disallow: /node_modules/
+Disallow: /dist/
+Disallow: /scripts/
 
+# Explicitly allow AI assistants and bots
+User-agent: Googlebot
+Allow: /
+
+User-agent: Bingbot
+Allow: /
+
+User-agent: GPTBot
+Allow: /
+
+User-agent: Google-Extended
+Allow: /
+
+User-agent: CCBot
+Allow: /
+
+User-agent: ChatGPT-User
+Allow: /
+
+User-agent: anthropic-ai
+Allow: /
+
+User-agent: ClaudeBot
+Allow: /
+
+# Sitemap location
 Sitemap: https://artgalzim.com/sitemap.xml
