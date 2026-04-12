@@ -10,7 +10,7 @@
   // This serves as the source of truth for detailed artworks when they are clicked from dynamic collections.
   const MASTER_ARTWORK_METADATA = {
     // KEITH ZENDA
-    "blood-stained veil": {
+    "the red veil": {
       medium: "Mixed media on canvas",
       size: "100x120cm",
       year: "2026",
@@ -820,7 +820,7 @@
             // Detailed works whitelist
             
             const detailedTitles = [
-                "blood-stained veil", "chitenge", "red ascendant", "goho", "harvest", 
+                "the red veil", "chitenge", "red ascendant", "goho", "harvest", 
                 "malume", "sekuru", "sunset", "musha", "mukadzi", "nyika",
                 "tariro", "hope", "chidochashe", "yevedzai",
                 "spiritual guardian", "heritage unwrapped", "heron", "heroin"
