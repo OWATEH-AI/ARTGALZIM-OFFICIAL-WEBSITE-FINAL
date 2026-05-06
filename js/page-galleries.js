@@ -133,32 +133,6 @@ const PageGalleries = {
         "/ARTISTS/NOMATTER KUTSAWA/Nomatter Kutsawa Artworks/Drawing_2.jpeg"
       ],
       "cover": "/ARTISTS/NOMATTER KUTSAWA/Nomatter Kutsawa Artworks/cover-tyger.jpeg"
-    },
-    "WILLARD MAGIGA/Abstracts": {
-      "images": [],
-      "cover": null
-    },
-    "WILLARD MAGIGA/Artworks": {
-      "images": [
-        "/ARTISTS/WILLARD MAGIGA/Artworks/Chidochashe.jpeg",
-        "/ARTISTS/WILLARD MAGIGA/Artworks/Yevedzai.jpeg"
-      ],
-      "cover": "/ARTISTS/WILLARD MAGIGA/Artworks/Chidochashe.jpeg"
-    },
-    "WILLARD MAGIGA/Commissions": {
-      "images": [],
-      "cover": null
-    },
-    "WILLARD MAGIGA/Portraits": {
-      "images": [
-        "/ARTISTS/WILLARD MAGIGA/Portraits/Chidochashe.jpeg",
-        "/ARTISTS/WILLARD MAGIGA/Portraits/Tariro (Hope).jpeg",
-        "/ARTISTS/WILLARD MAGIGA/Portraits/WhatsApp Image 2026-03-27 at 16.35.24.jpeg",
-        "/ARTISTS/WILLARD MAGIGA/Portraits/WhatsApp Image 2026-03-27 at 16.39.41.jpeg",
-        "/ARTISTS/WILLARD MAGIGA/Portraits/WhatsApp Image 2026-03-27 at 16.39.42.jpeg",
-        "/ARTISTS/WILLARD MAGIGA/Portraits/Yevedzai.jpeg"
-      ],
-      "cover": "/ARTISTS/WILLARD MAGIGA/Portraits/Chidochashe.jpeg"
     }
   }
 };

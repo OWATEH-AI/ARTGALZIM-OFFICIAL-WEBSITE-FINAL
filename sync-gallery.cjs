@@ -71,7 +71,7 @@ function getImages() {
                         const coverFile = files.find(file => file.toLowerCase().startsWith('cover'));
                         const coverPath = coverFile ? `/ARTISTS/${artist}/${category}/${coverFile}` : (images.length > 0 ? images[0] : null);
 
-                        // Storage Key: e.g. "WILLARD MAGIGA/Abstracts"
+                        // Storage Key: e.g. "FLORAH MAPHOSA/Abstracts"
                         galleryData.artistsCollections[`${artist}/${category}`] = {
                             images: images,
                             cover: coverPath

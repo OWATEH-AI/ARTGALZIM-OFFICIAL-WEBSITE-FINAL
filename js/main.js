@@ -76,31 +76,6 @@
       year: "2026",
       desc: "Captured moments at dusk, reflecting the warmth and shift of light across the landscape."
     },
-    // WILLARD MAGIGA
-    "tariro": {
-      medium: "Oils on Canvas",
-      size: "90x60cm",
-      year: "2025",
-      desc: "\"Tariro/Hope\" is a powerful emotional and psychological state that involves a feeling of expectation and desire for a certain thing to happen – usually something positive in the future. It’s like having a spark that drives people to keep going, even when things get tough. In the context of this painting, the artwork blend vibrant colors in the headwrap, symbolizing optimism, energy, and renewal. The woman’s confident gaze and bright attire suggest resilience and forward-looking positivity."
-    },
-    "hope": {
-      medium: "Oils on Canvas",
-      size: "90x60cm",
-      year: "2025",
-      desc: "\"Tariro/Hope\" is a powerful emotional and psychological state that involves a feeling of expectation and desire for a certain thing to happen – usually something positive in the future. It’s like having a spark that drives people to keep going, even when things get tough. In the context of this painting, the artwork blend vibrant colors in the headwrap, symbolizing optimism, energy, and renewal. The woman’s confident gaze and bright attire suggest resilience and forward-looking positivity."
-    },
-    "chidochashe": {
-      medium: "Oils on Canvas",
-      size: "90x60cm",
-      year: "2026",
-      desc: "Chidochashe portrays a young woman whose calm, self-possessed gaze is set against a luminous blue ground. Her sculpted face is rendered with refined realism, while the vibrant headwrap erupts in expressive strokes of red, gold, and ochre, suggesting vitality, resilience, and inner strength. Magiga contrasts precision with painterly freedom, allowing colour and gesture to convey emotion beyond likeness. The composition balances elegance and power, presenting the sitter as both contemporary and timeless. Chidochashe—a name associated with hope—becomes a quiet affirmation of dignity, confidence, and forward-looking resolve."
-    },
-    "yevedzai": {
-      medium: "Oils on Canvas",
-      size: "90x60cm",
-      year: "2026",
-      desc: "Yevedzai presents a poised female figure whose steady gaze conveys dignity, self-awareness, and quiet authority. Set against a muted violet ground, the portrait is animated by expressive strokes of yellow, blue, and soft earth tones that flow through her headwrap and garment, suggesting movement, energy, and inner life. Magiga balances realism in the face with painterly abstraction in the surrounding forms, allowing emotion to emerge through colour and texture rather than narrative. The subject appears both contemporary and timeless, embodying strength, elegance, and cultural pride while inviting the viewer into a moment of calm, reflective presence."
-    },
     // FLORAH MAPHOSA
     "spiritual guardian": {
       medium: "Acrylic and oil on canvas",
