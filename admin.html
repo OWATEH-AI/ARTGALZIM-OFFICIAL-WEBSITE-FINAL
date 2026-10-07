@@ -1,0 +1,4129 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>ARTGALZIM — Admin Dashboard</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+  <style>
+    html.admin-authenticated #gate { display: none !important; }
+    html.admin-authenticated #dashboard { display: flex !important; }
+    :root {
+      --bg:        #0a0a0a;
+      --bg2:       #111111;
+      --bg3:       #181818;
+      --bg-card:   #131313;
+      --surface:   #1a1a1a;
+      --border:    rgba(255,255,255,0.08);
+      --border-g:  rgba(201,168,76,0.35);
+      --text:      #f0ede8;
+      --muted:     #8e8e88;
+      --gold:      #c9a84c;
+      --gold-light:#e2c56b;
+      --gold-d:    rgba(201,168,76,0.12);
+      --gold-hover:rgba(201,168,76,0.22);
+      --red:       #e05252;
+      --red-d:     rgba(224,82,82,0.15);
+      --green:     #52c27a;
+      --green-d:   rgba(82,194,122,0.15);
+      --r:         6px;
+      --r-lg:      8px;
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; outline: none; }
+    body { 
+      background: var(--bg); 
+      color: var(--text); 
+      font-family: 'Inter', sans-serif; 
+      font-size: 14px; 
+      line-height: 1.6; 
+      display: flex; 
+      height: 100vh; 
+      overflow: hidden; 
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* ── Gate screen ── */
+    #gate {
+      position: fixed; inset: 0; z-index: 9999;
+      background: #050505;
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      gap: 2rem;
+    }
+    #gate h1 { font-family: 'Cormorant Garamond', serif; font-size: 2.8rem; color: var(--gold); letter-spacing: 0.15em; font-weight: 500; }
+    #gate p { color: var(--muted); font-size: 0.85rem; letter-spacing: 0.1em; text-transform: uppercase; }
+    #gate input {
+      background: var(--bg2); border: 1px solid var(--border); color: var(--text);
+      padding: 0.9rem 1.5rem; border-radius: 4px; font-size: 1rem; font-family: inherit;
+      width: 320px; text-align: center; letter-spacing: 0.15em;
+      outline: none; transition: border-color 0.3s;
+    }
+    #gate input:focus { border-color: var(--gold); }
+    #gate button {
+      background: var(--gold); color: #000; border: none;
+      padding: 0.9rem 2.5rem; border-radius: 4px;
+      font-family: 'Inter', sans-serif; font-weight: 600; font-size: 0.85rem;
+      letter-spacing: 0.12em; text-transform: uppercase; cursor: pointer;
+      transition: opacity 0.3s;
+    }
+    #gate button:hover { opacity: 0.85; }
+    #gate .gate-err { color: var(--red); font-size: 0.82rem; display: none; }
+    #gate .gate-logo-wrap { text-align: center; }
+    #gate .gate-logo-wrap img { width: 72px; height: 72px; object-fit: contain; border-radius: 4px; opacity: 0.9; }
+
+    /* ── Sidebar ── */
+    #sidebar {
+      width: 240px; flex-shrink: 0;
+      background: var(--bg2); border-right: 1px solid var(--border);
+      display: flex; flex-direction: column; overflow-y: auto;
+    }
+    .sb-brand {
+      padding: 1.4rem 1.5rem 1rem;
+      border-bottom: 1px solid var(--border);
+      display: flex; align-items: center; gap: 0.75rem;
+    }
+    .sb-brand img { width: 34px; height: 34px; border-radius: 4px; object-fit: cover; }
+    .sb-brand h2 { font-family: 'Cormorant Garamond', serif; font-size: 1.25rem; color: var(--gold); line-height: 1.1; }
+    .sb-brand p  { font-size: 0.7rem; color: var(--muted); letter-spacing: 0.08em; text-transform: uppercase; }
+    .sb-nav { padding: 1rem 0; flex: 1; }
+    .sb-nav a {
+      display: flex; align-items: center; gap: 0.75rem;
+      padding: 0.75rem 1.5rem; color: var(--muted);
+      text-decoration: none; font-size: 0.84rem; font-weight: 500;
+      letter-spacing: 0.03em; cursor: pointer;
+      border-left: 2px solid transparent;
+      transition: all 0.2s;
+    }
+    .sb-nav a:hover  { color: var(--text); background: var(--bg3); }
+    .sb-nav a.active { color: var(--gold); border-left-color: var(--gold); background: var(--gold-d); font-weight: 600; }
+    .sb-nav .sb-section { font-size: 0.65rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.12em; padding: 1rem 1.5rem 0.35rem; opacity: 0.6; }
+    
+    .sb-server-status {
+      margin: 0 1rem 1rem;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .sb-server-status button {
+      background: none; border: 1px solid var(--border); color: var(--muted);
+      padding: 0.55rem 1rem; border-radius: 4px; font-family: inherit;
+      font-size: 0.78rem; cursor: pointer; width: 100%; transition: all 0.2s;
+    }
+    .sb-server-status button:hover { border-color: var(--red); color: var(--red); }
+
+    /* ── Main content area ── */
+    #main { flex: 1; display: flex; flex-direction: column; overflow: hidden; background: var(--bg); }
+    #topbar {
+      padding: 0.9rem 2rem; border-bottom: 1px solid var(--border);
+      background: var(--bg2); display: flex; justify-content: space-between; align-items: center; gap: 1rem;
+    }
+    #topbar h3 { font-family: 'Cormorant Garamond', serif; font-size: 1.5rem; color: var(--text); font-weight: 500; }
+    
+    .topbar-actions { display: flex; align-items: center; gap: 0.75rem; }
+    .btn-sync {
+      background: var(--gold-d); border: 1px solid var(--gold); color: var(--gold);
+      padding: 0.45rem 1.1rem; border-radius: 4px; font-family: inherit; font-size: 0.78rem;
+      cursor: pointer; letter-spacing: 0.08em; text-transform: uppercase; font-weight: 600;
+      transition: all 0.2s; display: inline-flex; align-items: center; gap: 0.4rem;
+    }
+    .btn-sync:hover { background: var(--gold); color: #000; }
+
+    #content { flex: 1; overflow-y: auto; padding: 2rem; }
+
+    /* ── Panels ── */
+    .panel { display: none; }
+    .panel.active { display: block; }
+
+    /* ── Action Bar & Breadcrumbs ── */
+    .action-header-bar {
+      display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;
+      margin-bottom: 1.5rem; padding-bottom: 1rem; border-bottom: 1px solid var(--border);
+    }
+    .breadcrumbs {
+      display: flex; align-items: center; gap: 0.5rem; font-size: 0.85rem; color: var(--muted);
+    }
+    .breadcrumbs span.crumb {
+      cursor: pointer; transition: color 0.2s;
+    }
+    .breadcrumbs span.crumb:hover { color: var(--gold); }
+    .breadcrumbs span.current { color: var(--gold); font-weight: 600; cursor: default; }
+    .breadcrumbs .sep { color: rgba(255,255,255,0.2); }
+
+    .search-filter-box {
+      position: relative; width: 260px;
+    }
+    .search-filter-box input {
+      width: 100%; background: var(--bg3); border: 1px solid var(--border); color: var(--text);
+      padding: 0.55rem 1rem 0.55rem 2.2rem; border-radius: 20px; font-size: 0.84rem; outline: none;
+      transition: border-color 0.2s;
+    }
+    .search-filter-box input:focus { border-color: var(--gold); }
+    .search-filter-box svg {
+      position: absolute; left: 0.8rem; top: 50%; transform: translateY(-50%);
+      color: var(--muted); pointer-events: none;
+    }
+
+    .top-action-buttons {
+      display: flex; align-items: center; gap: 0.6rem; flex-wrap: wrap;
+    }
+    .btn-action-gold {
+      background: var(--gold); color: #000; border: 1px solid var(--gold);
+      padding: 0.55rem 1.2rem; border-radius: 4px; font-weight: 600; font-size: 0.8rem;
+      letter-spacing: 0.05em; text-transform: uppercase; cursor: pointer; transition: opacity 0.2s;
+      display: inline-flex; align-items: center; gap: 0.4rem;
+    }
+    .btn-action-gold:hover { opacity: 0.88; }
+    .btn-action-outline {
+      background: var(--bg3); border: 1px solid var(--border); color: var(--text);
+      padding: 0.55rem 1.1rem; border-radius: 4px; font-weight: 500; font-size: 0.8rem;
+      letter-spacing: 0.04em; cursor: pointer; transition: all 0.2s;
+      display: inline-flex; align-items: center; gap: 0.4rem;
+    }
+    .btn-action-outline:hover { border-color: var(--gold); color: var(--gold); background: var(--gold-d); }
+
+    /* ── Cards / Grids (No Subpixel Glitch / Hardware Accelerated Framing) ── */
+    .card {
+      background: var(--bg2); border: 1px solid var(--border);
+      border-radius: var(--r-lg); padding: 1.5rem; margin-bottom: 1.5rem;
+    }
+    .card h4 { font-family: 'Cormorant Garamond', serif; font-size: 1.25rem; color: var(--gold); margin-bottom: 1rem; font-weight: 500; }
+
+    /* ── Artist Cards Grid (Level 1) ── */
+    .artists-grid {
+      display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1.5rem;
+    }
+    .artist-card-item {
+      background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--r-lg);
+      overflow: hidden; cursor: pointer; isolation: isolate; transform: translateZ(0);
+      -webkit-backface-visibility: hidden; backface-visibility: hidden;
+      transition: transform 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease;
+      display: flex; flex-direction: column; position: relative;
+    }
+    .artist-card-item:hover {
+      transform: translateY(-3px) translateZ(0); border-color: var(--border-g);
+      box-shadow: 0 12px 30px rgba(0,0,0,0.5);
+    }
+    .artist-card-cover {
+      width: 100%; height: 190px; position: relative; overflow: hidden; background: #080808;
+      display: flex; align-items: center; justify-content: center;
+      transform: translateZ(0);
+      -webkit-backface-visibility: hidden; backface-visibility: hidden;
+    }
+    .artist-card-cover img {
+      width: 100%; height: 100%; object-fit: cover; display: block; transform: translateZ(0);
+      -webkit-backface-visibility: hidden; backface-visibility: hidden;
+      transition: transform 0.3s ease;
+    }
+    .artist-card-item:hover .artist-card-cover img { transform: scale(1.03) translateZ(0); }
+    .artist-card-overlay {
+      position: absolute; inset: 0; background: linear-gradient(to top, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0.1) 60%);
+      display: flex; flex-direction: column; justify-content: flex-end; padding: 1rem 1.25rem;
+    }
+    .artist-card-name {
+      font-family: 'Cormorant Garamond', serif; font-size: 1.4rem; color: var(--gold); font-weight: 600; line-height: 1.2;
+    }
+    .artist-card-info {
+      padding: 1rem 1.25rem; display: flex; justify-content: space-between; align-items: center;
+      background: var(--bg-card);
+    }
+    .artist-card-meta { font-size: 0.78rem; color: var(--muted); }
+    .artist-card-meta strong { color: var(--text); }
+    .artist-card-actions { display: flex; gap: 0.5rem; }
+
+    /* ── Artist Category Demarcation Badges & Tabs ── */
+    .tier-badge {
+      display: inline-flex; align-items: center; gap: 0.35rem;
+      padding: 0.25rem 0.65rem; border-radius: 20px; font-size: 0.68rem;
+      font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em;
+    }
+    .tier-badge.badge-founder {
+      background: rgba(201, 168, 76, 0.2); color: #f2d488; border: 1px solid rgba(201, 168, 76, 0.5);
+      box-shadow: 0 0 10px rgba(201, 168, 76, 0.25);
+    }
+    .tier-badge.badge-emerging {
+      background: rgba(82, 194, 122, 0.18); color: #6ee7a0; border: 1px solid rgba(82, 194, 122, 0.45);
+    }
+    .tier-badge.badge-student {
+      background: rgba(147, 112, 219, 0.2); color: #c4b5fd; border: 1px solid rgba(147, 112, 219, 0.45);
+    }
+
+    .tier-pills-bar {
+      display: flex; gap: 0.5rem; align-items: center; flex-wrap: wrap; margin-bottom: 1.5rem;
+      background: var(--bg2); padding: 0.4rem 0.6rem; border-radius: 30px; border: 1px solid var(--border);
+      width: fit-content; max-width: 100%;
+    }
+    .tier-pill-btn {
+      background: transparent; border: 1px solid transparent; color: var(--muted);
+      padding: 0.4rem 1rem; border-radius: 20px; font-size: 0.78rem; font-weight: 600;
+      cursor: pointer; transition: all 0.2s ease; letter-spacing: 0.04em;
+    }
+    .tier-pill-btn:hover { color: var(--text); background: var(--bg3); }
+    .tier-pill-btn.active {
+      background: var(--gold-d); border-color: var(--gold); color: var(--gold);
+      box-shadow: 0 0 8px rgba(201, 168, 76, 0.2);
+    }
+    .tier-pill-count {
+      display: inline-block; background: rgba(255,255,255,0.08); padding: 0.1rem 0.45rem;
+      border-radius: 10px; font-size: 0.7rem; margin-left: 0.35rem; color: inherit;
+    }
+
+    .tier-section-block {
+      margin-bottom: 2.5rem;
+    }
+    .tier-section-header {
+      display: flex; justify-content: space-between; align-items: center;
+      padding-bottom: 0.75rem; margin-bottom: 1.25rem;
+      border-bottom: 1px solid var(--border);
+    }
+    .tier-section-header h3 {
+      font-family: 'Cormorant Garamond', serif; font-size: 1.45rem; color: var(--gold);
+      display: flex; align-items: center; gap: 0.5rem; font-weight: 600;
+    }
+    .tier-section-header p { font-size: 0.8rem; color: var(--muted); }
+
+    /* ── Album / Category Cards Grid (Level 2 - Rightful Framing & Zero Glitch) ── */
+    .albums-grid {
+      display: grid; grid-template-columns: repeat(auto-fill, minmax(270px, 1fr)); gap: 1.5rem;
+    }
+    .album-card-item {
+      background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--r-lg);
+      overflow: hidden; cursor: pointer; isolation: isolate; transform: translateZ(0);
+      -webkit-backface-visibility: hidden; backface-visibility: hidden;
+      transition: transform 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease;
+      display: flex; flex-direction: column; position: relative;
+    }
+    .album-card-item:hover { 
+      transform: translateY(-3px) translateZ(0); 
+      border-color: rgba(201, 168, 76, 0.45); 
+      box-shadow: 0 12px 30px rgba(0,0,0,0.5);
+    }
+    .album-card-cover {
+      width: 100%; height: 180px; background: #080808; overflow: hidden; position: relative;
+      display: flex; align-items: center; justify-content: center;
+      transform: translateZ(0);
+      -webkit-backface-visibility: hidden; backface-visibility: hidden;
+    }
+    .album-card-cover img {
+      width: 100%; height: 100%; object-fit: cover; display: block; transform: translateZ(0);
+      -webkit-backface-visibility: hidden; backface-visibility: hidden;
+      transition: transform 0.3s ease;
+    }
+    .album-card-item:hover .album-card-cover img { transform: scale(1.03) translateZ(0); }
+    .album-card-body {
+      padding: 1.1rem 1.25rem; flex: 1; display: flex; flex-direction: column; justify-content: space-between;
+    }
+    .album-card-title {
+      font-family: 'Cormorant Garamond', serif; font-size: 1.2rem; color: var(--text); font-weight: 600;
+      margin-bottom: 0.35rem; text-transform: uppercase; letter-spacing: 0.05em;
+    }
+    .album-card-count { font-size: 0.78rem; color: var(--gold); }
+    .album-card-footer {
+      margin-top: 0.75rem; padding-top: 0.75rem; border-top: 1px solid var(--border);
+      display: flex; justify-content: space-between; align-items: center;
+    }
+
+    /* ── Artworks Grid (Level 3 - Matches Frontend & Rightful Framing) ── */
+    .artworks-admin-grid {
+      display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 1.5rem;
+    }
+    .artwork-admin-card {
+      background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--r);
+      overflow: hidden; display: flex; flex-direction: column; isolation: isolate; transform: translateZ(0);
+      -webkit-backface-visibility: hidden; backface-visibility: hidden;
+      transition: transform 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease;
+      position: relative;
+    }
+    .artwork-admin-card:hover { 
+      transform: translateY(-3px) translateZ(0);
+      border-color: var(--border-g); 
+      box-shadow: 0 10px 25px rgba(0,0,0,0.5); 
+    }
+    .artwork-admin-img-area {
+      width: 100%; aspect-ratio: 1; position: relative; background: #080808; overflow: hidden; cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      transform: translateZ(0);
+      -webkit-backface-visibility: hidden; backface-visibility: hidden;
+    }
+    .artwork-admin-img-area img {
+      width: 100%; height: 100%; object-fit: cover; display: block; transform: translateZ(0);
+      -webkit-backface-visibility: hidden; backface-visibility: hidden;
+      transition: transform 0.3s ease;
+    }
+    .artwork-admin-card:hover .artwork-admin-img-area img { transform: scale(1.03) translateZ(0); }
+    .artwork-hover-tag {
+      position: absolute; bottom: 0.5rem; right: 0.5rem; background: rgba(0,0,0,0.78);
+      color: var(--gold); font-size: 0.72rem; padding: 0.2rem 0.5rem; border-radius: 3px;
+      backdrop-filter: blur(4px);
+    }
+    .badge-card-cover {
+      position: absolute; top: 0.5rem; left: 0.5rem; background: var(--gold);
+      color: #000; font-size: 0.68rem; font-weight: 700; padding: 0.15rem 0.45rem; border-radius: 3px;
+      text-transform: uppercase; letter-spacing: 0.05em; box-shadow: 0 2px 6px rgba(0,0,0,0.5);
+    }
+    .artwork-admin-meta {
+      padding: 1rem; display: flex; flex-direction: column; flex: 1; justify-content: space-between;
+    }
+    .artwork-admin-artist {
+      font-size: 0.7rem; color: var(--gold); text-transform: uppercase; letter-spacing: 0.08em; font-weight: 600;
+    }
+    .artwork-admin-title {
+      font-family: 'Cormorant Garamond', serif; font-size: 1.15rem; color: var(--text); margin: 0.2rem 0; font-weight: 600;
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    }
+    .artwork-admin-medium {
+      font-size: 0.75rem; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    }
+    .artwork-admin-card-actions {
+      margin-top: 0.9rem; display: flex; gap: 0.4rem;
+    }
+    .artwork-view-btn {
+      flex: 1; background: transparent; border: 1px solid var(--gold); color: var(--gold);
+      padding: 0.45rem 0.5rem; border-radius: 4px; font-size: 0.75rem; font-weight: 600;
+      letter-spacing: 0.06em; text-transform: uppercase; cursor: pointer; transition: all 0.2s; text-align: center;
+    }
+    .artwork-view-btn:hover { background: var(--gold); color: #000; }
+    .artwork-cover-btn {
+      background: var(--bg3); border: 1px solid var(--border); color: var(--gold);
+      padding: 0.45rem 0.55rem; border-radius: 4px; font-size: 0.72rem; cursor: pointer; transition: all 0.2s;
+    }
+    .artwork-cover-btn:hover { background: var(--gold-d); border-color: var(--gold); }
+    .artwork-quick-del-btn {
+      background: var(--bg3); border: 1px solid var(--border); color: var(--red);
+      padding: 0.45rem 0.6rem; border-radius: 4px; cursor: pointer; transition: all 0.2s;
+    }
+    .artwork-quick-del-btn:hover { background: var(--red); color: #fff; border-color: var(--red); }
+
+    /* ── Split Layout Artwork Modal (Frontend-Identical with Edit & Cover Capabilities) ── */
+    .artwork-modal-overlay {
+      position: fixed; inset: 0; z-index: 10000; background: rgba(0,0,0,0.88);
+      backdrop-filter: blur(8px); display: none; align-items: center; justify-content: center;
+      padding: 1.5rem;
+    }
+    .artwork-modal-overlay.open { display: flex; }
+    .artwork-modal-box {
+      background: var(--bg2); border: 1px solid var(--border); border-radius: var(--r-lg);
+      width: 100%; max-width: 1100px; max-height: 90vh; display: flex; flex-direction: column;
+      box-shadow: 0 25px 60px rgba(0,0,0,0.8); overflow: hidden; position: relative;
+    }
+    
+    .modal-top-bar {
+      padding: 0.9rem 1.5rem; border-bottom: 1px solid var(--border); background: var(--bg3);
+      display: flex; justify-content: space-between; align-items: center;
+    }
+    .modal-status-badge {
+      font-size: 0.72rem; color: var(--gold); text-transform: uppercase; letter-spacing: 0.1em;
+      background: var(--gold-d); padding: 0.25rem 0.7rem; border-radius: 20px; border: 1px solid var(--border-g);
+    }
+    .badge-cover-active {
+      font-size: 0.72rem; color: #000; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em;
+      background: var(--gold); padding: 0.25rem 0.7rem; border-radius: 20px;
+    }
+    .modal-top-actions {
+      display: flex; align-items: center; gap: 0.6rem;
+    }
+    .btn-set-cover {
+      background: var(--bg3); border: 1px solid var(--gold); color: var(--gold);
+      padding: 0.45rem 1rem; border-radius: 4px; font-weight: 600; font-size: 0.78rem; text-transform: uppercase;
+      letter-spacing: 0.06em; cursor: pointer; transition: all 0.2s; display: inline-flex; align-items: center; gap: 0.35rem;
+    }
+    .btn-set-cover:hover { background: var(--gold); color: #000; }
+    .btn-edit-toggle {
+      background: var(--gold); color: #000; border: none; padding: 0.45rem 1.1rem;
+      border-radius: 4px; font-weight: 600; font-size: 0.78rem; text-transform: uppercase;
+      letter-spacing: 0.08em; cursor: pointer; display: inline-flex; align-items: center; gap: 0.4rem;
+      transition: opacity 0.2s;
+    }
+    .btn-edit-toggle:hover { opacity: 0.85; }
+    .btn-modal-del {
+      background: none; border: 1px solid var(--red); color: var(--red);
+      padding: 0.45rem 0.9rem; border-radius: 4px; font-size: 0.78rem; font-weight: 500;
+      cursor: pointer; transition: all 0.2s; display: inline-flex; align-items: center; gap: 0.3rem;
+    }
+    .btn-modal-del:hover { background: var(--red); color: #fff; }
+    .btn-modal-close {
+      background: none; border: none; color: var(--muted); font-size: 1.4rem;
+      cursor: pointer; padding: 0 0.4rem; transition: color 0.2s; line-height: 1;
+    }
+    .btn-modal-close:hover { color: #fff; }
+
+    .modal-split-body {
+      display: grid; grid-template-columns: 1fr 1fr; flex: 1; overflow-y: auto; min-height: 480px;
+    }
+    @media (max-width: 860px) {
+      .modal-split-body { grid-template-columns: 1fr; }
+    }
+
+    /* Left: Picture area */
+    .modal-picture-panel {
+      padding: 2rem; display: flex; flex-direction: column; align-items: center; justify-content: center;
+      background: #080808; border-right: 1px solid var(--border); position: relative;
+    }
+    .modal-picture-panel img {
+      max-width: 100%; max-height: 60vh; object-fit: contain; border-radius: 4px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.6);
+    }
+    .replace-img-zone {
+      display: none; margin-top: 1rem; width: 100%; border: 2px dashed var(--gold);
+      border-radius: 6px; padding: 1rem; text-align: center; background: var(--gold-d); cursor: pointer;
+    }
+    .replace-img-zone p { font-size: 0.8rem; color: var(--gold); }
+
+    /* Right: Details & In-Place Edit Panel */
+    .modal-details-panel {
+      padding: 2.2rem; display: flex; flex-direction: column; justify-content: space-between; overflow-y: auto;
+    }
+    
+    /* View Mode Styles (Matches Frontend artsy grid) */
+    .view-mode-section h3.artist-sub {
+      font-size: 0.85rem; color: var(--gold); text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 0.3rem;
+    }
+    .view-mode-section h2.piece-main-title {
+      font-family: 'Cormorant Garamond', serif; font-size: 2.2rem; color: var(--text); font-weight: 500; margin-bottom: 1.5rem; line-height: 1.1;
+    }
+    .artsy-grid {
+      display: grid; grid-template-columns: 140px 1fr; row-gap: 0.75rem; column-gap: 1rem;
+      padding: 1.25rem 0; border-top: 1px solid var(--border); border-bottom: 1px solid var(--border);
+      margin-bottom: 1.5rem; font-size: 0.86rem;
+    }
+    .artsy-label { color: var(--muted); text-transform: uppercase; font-size: 0.72rem; letter-spacing: 0.08em; }
+    .artsy-val { color: var(--text); font-weight: 500; }
+    .artsy-val.italic { font-style: italic; }
+    .piece-desc-block {
+      color: var(--muted); font-size: 0.9rem; line-height: 1.7; margin-bottom: 1.5rem;
+    }
+
+    /* Edit Mode Styles */
+    .edit-mode-section { display: none; }
+    .edit-mode-section.active { display: block; }
+    .view-mode-section.hidden { display: none; }
+
+    .form-group { margin-bottom: 1rem; }
+    .form-group label {
+      display: block; font-size: 0.75rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 0.35rem;
+    }
+    .form-group input, .form-group textarea, .form-group select {
+      width: 100%; background: var(--bg3); border: 1px solid var(--border);
+      color: var(--text); padding: 0.7rem 0.9rem; border-radius: 4px;
+      font-family: inherit; font-size: 0.9rem; outline: none; transition: border-color 0.2s;
+    }
+    .form-group input:focus, .form-group textarea:focus, .form-group select:focus { border-color: var(--gold); }
+    .form-group textarea { resize: vertical; min-height: 90px; }
+    
+    .form-row-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 0.8rem; }
+    .form-row-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 0.8rem; }
+
+    .edit-actions-bar {
+      display: flex; gap: 0.8rem; margin-top: 1.5rem; padding-top: 1rem; border-top: 1px solid var(--border);
+    }
+
+    /* ── Generic Dialog Modals (New Artist, New Album, Upload Artwork) ── */
+    .dialog-overlay {
+      position: fixed; inset: 0; z-index: 10001; background: rgba(0,0,0,0.85);
+      backdrop-filter: blur(6px); display: none; align-items: flex-start; justify-content: center;
+      padding: 2.5rem 1rem; overflow-y: auto; -webkit-overflow-scrolling: touch;
+    }
+    .dialog-overlay.open { display: flex; }
+    .dialog-card {
+      background: var(--bg2); border: 1px solid var(--border); border-radius: var(--r-lg);
+      width: 100%; max-width: 580px; padding: 2rem; position: relative; box-shadow: 0 20px 50px rgba(0,0,0,0.8);
+      margin: auto 0; max-height: calc(100vh - 5rem); overflow-y: auto;
+    }
+    .dialog-card h3 {
+      font-family: 'Cormorant Garamond', serif; font-size: 1.6rem; color: var(--gold); font-weight: 500; margin-bottom: 1.25rem;
+    }
+    .dialog-close {
+      position: absolute; top: 1.25rem; right: 1.25rem; background: none; border: none; color: var(--muted); font-size: 1.3rem; cursor: pointer; z-index: 10;
+    }
+    .dialog-close:hover { color: #fff; }
+    .btn-modal-close {
+      background: none; border: 1px solid var(--border); border-radius: 50%; color: var(--muted);
+      width: 30px; height: 30px; font-size: 1rem; cursor: pointer; display: flex; align-items: center;
+      justify-content: center; flex-shrink: 0; transition: color 0.2s, border-color 0.2s;
+    }
+    .btn-modal-close:hover { color: #fff; border-color: rgba(255,255,255,0.3); }
+
+    /* Custom scrollbars for modal cards */
+    .dialog-card::-webkit-scrollbar, .modal-details-panel::-webkit-scrollbar, .modal-split-body::-webkit-scrollbar {
+      width: 6px;
+    }
+    .dialog-card::-webkit-scrollbar-thumb, .modal-details-panel::-webkit-scrollbar-thumb, .modal-split-body::-webkit-scrollbar-thumb {
+      background: rgba(201, 168, 76, 0.4); border-radius: 4px;
+    }
+    .dialog-card::-webkit-scrollbar-thumb:hover, .modal-details-panel::-webkit-scrollbar-thumb:hover, .modal-split-body::-webkit-scrollbar-thumb:hover {
+      background: var(--gold);
+    }
+
+    /* Locked folder target pill */
+    .locked-target-banner {
+      background: var(--gold-d); border: 1px solid var(--border-g); border-radius: 4px;
+      padding: 0.75rem 1rem; margin-bottom: 1.2rem; display: flex; align-items: center; gap: 0.5rem;
+      font-size: 0.82rem; color: var(--gold);
+    }
+
+    /* ── Upload Dropzone ── */
+    .drop-zone {
+      border: 2px dashed var(--border); border-radius: var(--r);
+      padding: 2rem; text-align: center; cursor: pointer; transition: all 0.3s;
+    }
+    .drop-zone:hover, .drop-zone.drag-over { border-color: var(--gold); background: var(--gold-d); }
+    .drop-zone p { color: var(--muted); font-size: 0.85rem; }
+    .drop-zone span { color: var(--gold); font-weight: 600; }
+
+    /* ── Stats & Overview ── */
+    .stats-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem; margin-bottom: 1.5rem; }
+    .stat-card { background: var(--bg2); border: 1px solid var(--border); border-radius: var(--r); padding: 1.25rem 1.5rem; }
+    .stat-card .num { font-family: 'Cormorant Garamond', serif; font-size: 2.2rem; color: var(--gold); line-height: 1; }
+    .stat-card .lbl { font-size: 0.72rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.1em; margin-top: 0.35rem; }
+
+    /* ── Toast ── */
+    #toast {
+      position: fixed; bottom: 2rem; right: 2rem; z-index: 99999;
+      background: var(--bg3); border: 1px solid var(--border); border-radius: 4px;
+      padding: 0.85rem 1.5rem; font-size: 0.85rem; color: var(--text);
+      transform: translateY(120%); transition: transform 0.4s ease; max-width: 380px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+    }
+    #toast.show { transform: translateY(0); }
+    #toast.success { border-color: var(--green); color: var(--green); }
+    #toast.error   { border-color: var(--red);   color: var(--red); }
+    #toast.info    { border-color: var(--gold);  color: var(--gold); }
+
+    /* ── Global Admin Loader Spinner ── */
+    @keyframes spinAdmin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+    .admin-spinner {
+      width: 52px; height: 52px;
+      border: 3px solid rgba(201,168,76,0.2);
+      border-top-color: var(--gold);
+      border-radius: 50%;
+      animation: spinAdmin 0.8s linear infinite;
+      margin: 0 auto 1.5rem;
+    }
+
+    /* ── Scrollbars ── */
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.12); border-radius: 4px; }
+
+    /* ── Mobile Hamburger Toggle ── */
+    .hamburger-btn {
+      display: none; background: none; border: none; color: var(--gold);
+      cursor: pointer; padding: 0.3rem; line-height: 1;
+    }
+    .sidebar-overlay {
+      display: none; position: fixed; inset: 0; z-index: 8998; background: rgba(0,0,0,0.6);
+    }
+    .sidebar-overlay.open { display: block; }
+
+    /* ═══════════════════════════════════════════
+       TABLET — 768px to 1024px
+    ═══════════════════════════════════════════ */
+    @media (max-width: 1024px) {
+      .stats-row { grid-template-columns: repeat(2, 1fr); }
+      .artists-grid { grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 1.25rem; }
+      .albums-grid { grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 1.25rem; }
+      .artworks-admin-grid { grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 1.25rem; }
+      #content { padding: 1.5rem; }
+      .modal-split-body { grid-template-columns: 1fr; }
+      .modal-picture-panel { border-right: none; border-bottom: 1px solid var(--border); padding: 1.5rem; }
+      .modal-picture-panel img { max-height: 40vh; }
+      .modal-details-panel { padding: 1.5rem; }
+      .artsy-grid { grid-template-columns: 120px 1fr; font-size: 0.82rem; }
+      .view-mode-section h2.piece-main-title { font-size: 1.8rem; }
+    }
+
+    /* ═══════════════════════════════════════════
+       PHONE — below 768px
+    ═══════════════════════════════════════════ */
+    @media (max-width: 768px) {
+      body { flex-direction: column; }
+
+      /* ── Sidebar: off-canvas drawer ── */
+      .hamburger-btn { display: block; }
+      #sidebar {
+        position: fixed; top: 0; left: -280px; z-index: 8999;
+        width: 260px; height: 100vh;
+        transition: left 0.3s ease;
+        box-shadow: none;
+      }
+      #sidebar.mobile-open {
+        left: 0;
+        box-shadow: 4px 0 25px rgba(0,0,0,0.6);
+      }
+
+      /* ── Dashboard fills full width ── */
+      #dashboard { flex-direction: column !important; }
+      #main { width: 100%; }
+
+      /* ── Topbar ── */
+      #topbar { padding: 0.75rem 1rem; gap: 0.5rem; }
+      #topbar h3 { font-size: 1.15rem; }
+      .btn-sync { font-size: 0.7rem; padding: 0.4rem 0.8rem; }
+
+      /* ── Content area ── */
+      #content { padding: 1rem; }
+
+      /* ── Action Header Bar ── */
+      .action-header-bar {
+        flex-direction: column; align-items: flex-start; gap: 0.75rem;
+        padding-bottom: 0.75rem; margin-bottom: 1rem;
+      }
+      .breadcrumbs { font-size: 0.78rem; flex-wrap: wrap; }
+      .search-filter-box { width: 100%; }
+      .top-action-buttons { width: 100%; }
+      .top-action-buttons .btn-action-gold { width: 100%; justify-content: center; }
+
+      /* ── Card Grids: Stack nicely ── */
+      .artists-grid { grid-template-columns: 1fr; gap: 1rem; }
+      .albums-grid { grid-template-columns: 1fr; gap: 1rem; }
+      .artworks-admin-grid { grid-template-columns: repeat(2, 1fr); gap: 0.75rem; }
+
+      /* ── Artist card ── */
+      .artist-card-cover { height: 160px; }
+      .artist-card-name { font-size: 1.2rem; }
+      .artist-card-info { padding: 0.85rem 1rem; flex-wrap: wrap; gap: 0.5rem; }
+
+      /* ── Album card ── */
+      .album-card-cover { height: 150px; }
+      .album-card-body { padding: 0.9rem 1rem; }
+      .album-card-title { font-size: 1.05rem; }
+      .album-card-footer { flex-direction: column; gap: 0.5rem; align-items: flex-start; }
+
+      /* ── Artwork card ── */
+      .artwork-admin-meta { padding: 0.75rem; }
+      .artwork-admin-title { font-size: 0.95rem; }
+      .artwork-admin-medium { font-size: 0.68rem; }
+      .artwork-admin-card-actions { flex-wrap: wrap; }
+      .artwork-view-btn { font-size: 0.68rem; padding: 0.35rem 0.4rem; }
+      .artwork-cover-btn { font-size: 0.65rem; padding: 0.35rem 0.4rem; }
+      .artwork-quick-del-btn { padding: 0.35rem 0.4rem; }
+
+      /* ── Stats ── */
+      .stats-row { grid-template-columns: repeat(2, 1fr); gap: 0.75rem; }
+      .stat-card { padding: 1rem; }
+      .stat-card .num { font-size: 1.8rem; }
+
+      /* ── Artwork Detail Modal ── */
+      .artwork-modal-overlay { padding: 0; }
+      .artwork-modal-box {
+        max-width: 100%; max-height: 100vh; border-radius: 0;
+        height: 100vh;
+      }
+      .modal-split-body {
+        grid-template-columns: 1fr;
+        overflow-y: auto;
+      }
+      .modal-picture-panel {
+        border-right: none; padding: 1rem;
+        min-height: auto;
+      }
+      .modal-picture-panel img { max-height: 35vh; }
+      .modal-details-panel { padding: 1.25rem; }
+      .view-mode-section h2.piece-main-title { font-size: 1.6rem; margin-bottom: 1rem; }
+      .artsy-grid { grid-template-columns: 110px 1fr; font-size: 0.8rem; row-gap: 0.5rem; }
+
+      /* ── Modal Top Bar (wrap buttons) ── */
+      .modal-top-bar { flex-wrap: wrap; gap: 0.5rem; padding: 0.75rem 1rem; }
+      .modal-top-actions { flex-wrap: wrap; gap: 0.4rem; }
+      .btn-set-cover { font-size: 0.7rem; padding: 0.35rem 0.7rem; }
+      .btn-edit-toggle { font-size: 0.7rem; padding: 0.35rem 0.8rem; }
+      .btn-modal-del { font-size: 0.7rem; padding: 0.35rem 0.6rem; }
+
+      /* ── Edit Mode Form ── */
+      .form-row-2 { grid-template-columns: 1fr; }
+      .form-row-3 { grid-template-columns: 1fr; }
+      .edit-actions-bar { flex-direction: column; }
+
+      /* ── Dialog Modals ── */
+      .dialog-overlay { padding: 0.75rem; }
+      .dialog-card { padding: 1.25rem; max-width: 100%; }
+      .dialog-card h3 { font-size: 1.3rem; }
+
+      /* ── Toast ── */
+      #toast { left: 1rem; right: 1rem; bottom: 1rem; max-width: none; font-size: 0.8rem; }
+
+      /* ── Gate ── */
+      #gate h1 { font-size: 2rem; }
+      #gate p { font-size: 0.72rem; }
+      #gate input { width: 280px; font-size: 0.9rem; padding: 0.8rem 1rem; }
+      #gate button { padding: 0.8rem 2rem; font-size: 0.8rem; }
+
+      /* ── Level 2 & 3 inline header buttons ── */
+      .album-card-footer span { font-size: 0.68rem; }
+    }
+
+    /* ═══════════════════════════════════════════
+       SMALL PHONE — below 400px
+    ═══════════════════════════════════════════ */
+    @media (max-width: 400px) {
+      .artworks-admin-grid { grid-template-columns: 1fr; }
+      .stats-row { grid-template-columns: 1fr; }
+      #gate input { width: 90%; }
+      .artist-card-cover { height: 140px; }
+      .album-card-cover { height: 130px; }
+      .modal-top-actions { width: 100%; justify-content: flex-end; }
+      .btn-set-cover { flex: 1; justify-content: center; }
+      .btn-edit-toggle { flex: 1; justify-content: center; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ═══════════════ GATE / LOGIN ═══════════════ -->
+<div id="gate">
+  <div class="gate-logo-wrap">
+    <img src="images/logo.jpg" alt="ARTGALZIM" onerror="this.style.display='none'">
+  </div>
+  <h1>ARTGALZIM</h1>
+  <p>Admin Dashboard — Enter password to continue</p>
+  
+  <div class="pw-input-wrap" style="position: relative; width: 320px; max-width: 90%;">
+    <input type="password" id="pwInput" placeholder="Password" autocomplete="off" style="width: 100%; padding-right: 2.8rem;"/>
+    <button type="button" id="btnTogglePW" onclick="togglePasswordVisibility()" aria-label="Toggle password visibility" style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%); background: none; border: none; padding: 4px; cursor: pointer; color: var(--muted); display: flex; align-items: center; justify-content: center; transition: color 0.2s;" onmouseover="this.style.color='var(--gold)'" onmouseout="this.style.color='var(--muted)'">
+      <!-- Eye Open Icon (Show Password) -->
+      <svg id="eyeOpenIcon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display: none;">
+        <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+        <circle cx="12" cy="12" r="3"></circle>
+      </svg>
+      <!-- Eye Off Icon (Hide Password) -->
+      <svg id="eyeOffIcon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path>
+        <line x1="1" y1="1" x2="23" y2="23"></line>
+      </svg>
+    </button>
+  </div>
+
+  <button onclick="checkPW()">Access Dashboard</button>
+  <p class="gate-err" id="gateErr">Incorrect password. Try again.</p>
+</div>
+
+<!-- ═══════════════ DASHBOARD ═══════════════ -->
+<div id="dashboard" style="display:none; flex:1; overflow:hidden; width:100%;">
+
+  <!-- Mobile Sidebar Overlay -->
+  <div class="sidebar-overlay" id="sidebarOverlay" onclick="closeMobileSidebar()"></div>
+
+  <!-- Sidebar -->
+  <div id="sidebar">
+    <div class="sb-brand">
+      <img src="images/logo.jpg" alt="Logo" onerror="this.style.display='none'"/>
+      <div>
+        <h2>ARTGALZIM</h2>
+        <p>Admin Panel</p>
+      </div>
+    </div>
+
+    <nav class="sb-nav">
+      <div class="sb-section">Navigation</div>
+      <a onclick="showPanel('gallery-explorer'); closeMobileSidebar();" class="active" id="nav-gallery-explorer">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+        Artists &amp; Albums
+      </a>
+      <a onclick="showPanel('overview'); closeMobileSidebar();" id="nav-overview">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+        Statistics
+      </a>
+      <a onclick="showPanel('exhibitions'); closeMobileSidebar();" id="nav-exhibitions">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+        Exhibitions &amp; Events
+      </a>
+      <a onclick="showPanel('journal-media'); closeMobileSidebar();" id="nav-journal-media">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16v16H4z"/><path d="M8 8h8M8 12h8M8 16h5"/></svg>
+        Journal &amp; Media
+      </a>
+      <a onclick="showPanel('scholarships'); closeMobileSidebar();" id="nav-scholarships">Scholarships</a>
+      <a onclick="showPanel('testimonials-reviews'); closeMobileSidebar();" id="nav-testimonials-reviews">Testimonials &amp; Reviews</a>
+    </nav>
+
+    <div class="sb-server-status">
+      <button type="button" onclick="logoutToHome()">Logout &amp; Return Home</button>
+    </div>
+  </div>
+
+  <!-- Main -->
+  <div id="main">
+    <div id="topbar">
+      <div style="display:flex; align-items:center; gap:0.6rem;">
+        <!-- Hamburger (visible on mobile only) -->
+        <button class="hamburger-btn" id="hamburgerBtn" onclick="toggleMobileSidebar()">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+        </button>
+        <h3 id="panelTitle">Artists &amp; Albums</h3>
+      </div>
+      <div class="topbar-actions">
+        <button class="btn-sync" onclick="triggerSync()">⟳ Push &amp; Sync Changes</button>
+      </div>
+    </div>
+
+    <div id="content">
+
+      <!-- ═══════════════ GALLERY EXPLORER (ARTISTS / ALBUMS / ARTWORKS) ═══════════════ -->
+      <div class="panel active" id="panel-gallery-explorer">
+        
+        <!-- Action Header Bar -->
+        <div class="action-header-bar">
+          <div style="display:flex; align-items:center; gap:0.6rem;">
+            <button class="btn-back-step" id="btnBackStep" onclick="navStepBack()" style="display:none; align-items:center; gap:0.4rem; background:var(--bg3); border:1px solid var(--border-g); color:var(--gold); padding:0.45rem 0.85rem; border-radius:4px; font-size:0.82rem; cursor:pointer; font-weight:600; transition:all 0.2s;">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"></polyline></svg>
+              <span id="btnBackStepLabel">Back</span>
+            </button>
+            <div class="breadcrumbs" id="breadcrumbs">
+              <span class="crumb current" onclick="navToArtists()">All Artists</span>
+            </div>
+          </div>
+
+          <div style="display:flex; align-items:center; gap:0.75rem; flex-wrap:wrap;">
+            <div class="search-filter-box">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+              <input type="text" id="adminSearchInput" placeholder="Search artists, albums, artworks..." oninput="handleSearch(this.value)">
+            </div>
+            <!-- Dynamic Action Buttons (Context Sensitive) -->
+            <div class="top-action-buttons" id="topActionButtons">
+              <button class="btn-action-gold" onclick="openNewArtistModal()">+ Add Artist</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Explorer Container (Switches between Level 1, 2, and 3) -->
+        <div id="explorerContainer">
+          <!-- Content dynamically rendered by renderArtistsView(), renderAlbumsView(), or renderArtworksView() -->
+        </div>
+
+      </div>
+
+      <!-- ═══════════════ OVERVIEW / STATS PANEL ═══════════════ -->
+      <div class="panel" id="panel-overview">
+        <div class="stats-row">
+          <div class="stat-card"><div class="num" id="stat-artists">0</div><div class="lbl">Total Artists</div></div>
+          <div class="stat-card"><div class="num" id="stat-categories">0</div><div class="lbl">Album Folders</div></div>
+          <div class="stat-card"><div class="num" id="stat-artworks">0</div><div class="lbl">Total Artworks</div></div>
+          <div class="stat-card"><div class="num" id="stat-exhibitions">0</div><div class="lbl">Exhibitions</div></div>
+        </div>
+
+        <div class="card">
+          <h4>Quick Management Shortcuts</h4>
+          <div style="display:flex; gap:1rem; flex-wrap:wrap;">
+            <button class="btn-action-gold" onclick="showPanel('gallery-explorer'); navToArtists();">Explore Artists &amp; Albums</button>
+            <button class="btn-action-outline" onclick="openNewArtistModal()">Create New Artist</button>
+            <button class="btn-action-outline" id="btnQuickSync" onclick="triggerSync()">Push &amp; Sync All Changes</button>
+          </div>
+        </div>
+
+        <div class="card">
+          <h4>Recent Collections &amp; Directories</h4>
+          <div id="overviewCollectionsList" style="color:var(--muted); font-size:0.85rem;">Loading...</div>
+        </div>
+      </div>
+
+      <!-- ═══════════════ EXHIBITIONS PANEL ═══════════════ -->
+      <div class="panel" id="panel-exhibitions">
+        <div class="card">
+          <h4 id="exFormTitle">Add New Exhibition / Event</h4>
+          <input type="hidden" id="ex-id"/>
+          <div class="form-row-2" style="margin-bottom:1rem;">
+            <div class="form-group">
+              <label>Exhibition Title (required)</label>
+              <input type="text" id="ex-title" placeholder="e.g. Roots &amp; Rhythms"/>
+            </div>
+            <div class="form-group">
+              <label>Artist / Curator (optional)</label>
+              <input type="text" id="ex-artist" placeholder="e.g. Keith Zenda"/>
+            </div>
+          </div>
+          <div class="form-row-2" style="margin-bottom:1rem;">
+            <div class="form-group">
+              <label>Start Date (optional)</label>
+              <input type="date" id="ex-start"/>
+            </div>
+            <div class="form-group">
+              <label>End Date (optional)</label>
+              <input type="date" id="ex-end"/>
+            </div>
+          </div>
+          <div class="form-row-2" style="margin-bottom:1rem;">
+            <div class="form-group">
+              <label>Start Time (optional)</label>
+              <input type="time" id="ex-start-time"/>
+            </div>
+            <div class="form-group">
+              <label>End Time (optional)</label>
+              <input type="time" id="ex-end-time"/>
+            </div>
+          </div>
+          <div class="form-row-2" style="margin-bottom:1rem;">
+            <div class="form-group">
+              <label>Location (optional)</label>
+              <input type="text" id="ex-location" placeholder="e.g. Main Gallery, Domboshava"/>
+            </div>
+            <div class="form-group">
+              <label>Category / Medium (optional)</label>
+              <input type="text" id="ex-category" placeholder="e.g. Oil on Canvas, Mixed Media"/>
+            </div>
+          </div>
+          <div class="form-row-2" style="margin-bottom:1rem;">
+            <div class="form-group">
+              <label>Exhibition Theme (optional)</label>
+              <input type="text" id="ex-theme" placeholder="e.g. Roots &amp; Rhythms"/>
+            </div>
+            <div class="form-group">
+              <label>Status</label>
+              <select id="ex-status">
+                <option value="upcoming">Upcoming</option>
+                <option value="active">Active Now</option>
+                <option value="past">Past</option>
+              </select>
+            </div>
+          </div>
+          <div class="form-group" style="margin-bottom:1rem;">
+            <label>Description (optional)</label>
+            <textarea id="ex-desc" placeholder="Describe the exhibition, theme, participating artists…"></textarea>
+          </div>
+          <div class="form-row-2" style="margin-bottom:1rem;">
+            <div class="form-group">
+              <label for="ex-registration-link">Registration / form link (optional)</label>
+              <input type="url" id="ex-registration-link" placeholder="https://forms.google.com/…"/>
+            </div>
+            <div class="form-group">
+              <label for="ex-cta-text">Registration button label (optional)</label>
+              <input type="text" id="ex-cta-text" list="ex-cta-suggestions" placeholder="Choose a suggestion or type your own"/>
+              <datalist id="ex-cta-suggestions">
+                <option value="BOOK EXHIBITION"></option>
+                <option value="REGISTER"></option>
+                <option value="BOOK YOUR SPOT"></option>
+                <option value="GET TICKETS"></option>
+              </datalist>
+            </div>
+          </div>
+          <div class="form-row-2" style="margin-bottom:1rem;">
+            <div class="form-group">
+              <label for="ex-contact-link">Contact link (optional)</label>
+              <input type="text" id="ex-contact-link" placeholder="contact.html or https://…"/>
+            </div>
+            <div class="form-group">
+              <label for="ex-registration-fee">Registration fee (optional)</label>
+              <input type="text" id="ex-registration-fee" placeholder="e.g. $15"/>
+            </div>
+          </div>
+          <div class="form-row-2" style="margin-bottom:1rem;">
+            <div class="form-group">
+              <label for="ex-time-range">Display time range (optional)</label>
+              <input type="text" id="ex-time-range" placeholder="e.g. 1pm – 6pm"/>
+            </div>
+            <div class="form-group">
+              <label for="ex-display-date-override">Display date override (optional)</label>
+              <input type="text" id="ex-display-date-override" placeholder="e.g. Follow our socials for updates"/>
+            </div>
+          </div>
+          <div class="form-group" style="margin-bottom:1rem;">
+            <label for="ex-is-placeholder">
+              <input type="checkbox" id="ex-is-placeholder"/>
+              Show as a “More exhibitions coming soon” placeholder
+            </label>
+          </div>
+          <div class="form-group" style="margin-bottom:1rem;">
+            <label for="ex-conditions">Conditions / additional details (optional)</label>
+            <textarea id="ex-conditions" placeholder="Add entry requirements, booking conditions, or other details…"></textarea>
+          </div>
+          <div class="form-group" style="margin-bottom:1rem;">
+            <label>Exhibition Image (optional replacement)</label>
+            <input type="file" id="ex-image" accept="image/*"/>
+          </div>
+          <div style="display:flex; gap:1rem; align-items:center;">
+            <button class="btn-action-gold" onclick="saveExhibition()">Save Exhibition</button>
+            <button class="btn-action-outline" onclick="clearExForm()">Clear</button>
+          </div>
+        </div>
+
+        <div class="card">
+          <h4>All Exhibitions</h4>
+          <div id="exhibitionList" style="color:var(--muted); font-size:0.85rem;">Loading...</div>
+        </div>
+      </div>
+
+      <!-- ═══════════════ JOURNAL & MEDIA PANEL ═══════════════ -->
+      <div class="panel" id="panel-journal-media">
+        <div class="card">
+          <h4 id="journalFolderFormTitle">Create Journal Folder</h4>
+          <input type="hidden" id="journal-folder-id"/>
+          <div class="form-row-2" style="margin-bottom:1rem;">
+            <div class="form-group">
+              <label for="journal-folder-title">Folder Name (required)</label>
+              <input type="text" id="journal-folder-title" placeholder="e.g. Domboshava School Partnership"/>
+            </div>
+            <div class="form-group">
+              <label for="journal-folder-category">Folder Type</label>
+              <select id="journal-folder-category">
+                <option>School</option><option>Gallery Program</option><option>Partnership</option>
+                <option>Collaboration</option><option>Gallery News</option><option>Other</option>
+              </select>
+            </div>
+          </div>
+          <div class="form-group" style="margin-bottom:1rem;">
+            <label for="journal-folder-organization">School / Organization</label>
+            <input type="text" id="journal-folder-organization" placeholder="Optional organization name"/>
+          </div>
+          <div class="form-group" style="margin-bottom:1rem;">
+            <label for="journal-folder-description">Short Description</label>
+            <textarea id="journal-folder-description" rows="3" placeholder="What readers will find in this folder"></textarea>
+          </div>
+          <div class="form-group" style="margin-bottom:1rem;">
+            <label for="journal-folder-cover">Folder Cover (optional replacement)</label>
+            <input type="file" id="journal-folder-cover" accept="image/*"/>
+          </div>
+          <div style="display:flex;gap:1rem;align-items:center;">
+            <button class="btn-action-gold" onclick="saveJournalFolder()">Save Folder</button>
+            <button class="btn-action-outline" onclick="clearJournalFolderForm()">Clear</button>
+          </div>
+        </div>
+        <div class="card">
+          <h4>Journal Folders</h4>
+          <div id="journalFolderList" style="color:var(--muted);font-size:0.85rem;">Loading...</div>
+        </div>
+        <div class="card">
+          <h4 id="journalEntryFormTitle">Add Journal Entry</h4>
+          <input type="hidden" id="journal-entry-id"/>
+          <div class="form-row-2" style="margin-bottom:1rem;">
+            <div class="form-group">
+              <label for="journal-entry-destination">Publish Section</label>
+              <select id="journal-entry-destination" onchange="toggleJournalDestination()">
+                <option value="journal">Journal and Gallery</option>
+                <option value="tv">ARTGALZIM TV</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="journal-entry-type">Story Category</label>
+              <select id="journal-entry-type">
+                <option>News</option><option>Program</option><option>Event</option>
+                <option>Partnership</option><option>Collaboration</option><option>Story</option>
+                <option>Newsletter</option>
+              </select>
+            </div>
+          </div>
+          <div class="form-group" id="journal-folder-field" style="margin-bottom:1rem;">
+            <label for="journal-entry-folder">Folder (required for Journal and Gallery)</label>
+            <select id="journal-entry-folder"><option value="">Select a folder</option></select>
+          </div>
+          <div class="form-row-2" style="margin-bottom:1rem;">
+            <div class="form-group">
+              <label for="journal-entry-title">Title (required)</label>
+              <input type="text" id="journal-entry-title" placeholder="Article or activity title"/>
+            </div>
+            <div class="form-group">
+              <label for="journal-entry-author">Author / Reporter</label>
+              <input type="text" id="journal-entry-author" placeholder="Optional"/>
+            </div>
+          </div>
+          <div class="form-group" style="margin-bottom:1rem;">
+            <label for="journal-entry-excerpt">Short Description</label>
+            <textarea id="journal-entry-excerpt" rows="3" placeholder="A short introduction shown on the folder page"></textarea>
+          </div>
+          <div class="form-group" style="margin-bottom:1rem;">
+            <label for="journal-entry-body">Article / Activity Details</label>
+            <textarea id="journal-entry-body" rows="10" placeholder="Write the full story or event information"></textarea>
+          </div>
+          <div class="form-row-2" style="margin-bottom:1rem;">
+            <div class="form-group">
+              <label for="journal-entry-event-date">Program / Event Date</label>
+              <input type="date" id="journal-entry-event-date"/>
+            </div>
+            <div class="form-group">
+              <label for="journal-entry-end-date">End Date</label>
+              <input type="date" id="journal-entry-end-date"/>
+            </div>
+          </div>
+          <div class="form-group" style="margin-bottom:1rem;">
+            <label for="journal-entry-location">Location</label>
+            <input type="text" id="journal-entry-location" placeholder="Optional"/>
+          </div>
+          <div class="form-row-2" style="margin-bottom:1rem;">
+            <div class="form-group">
+              <label for="journal-entry-image">Story Image / Video Thumbnail (optional replacement)</label>
+              <input type="file" id="journal-entry-image" accept="image/*"/>
+            </div>
+            <div class="form-group">
+              <label for="journal-entry-attachment">Document / Video File (optional replacement)</label>
+              <input type="file" id="journal-entry-attachment" onchange="previewJournalMedia()"/>
+            </div>
+          </div>
+          <p style="color:var(--muted);font-size:0.82rem;margin-top:-0.5rem;">MP4, WebM, and Ogg video uploads are stored as Sanity file assets and play in ARTGALZIM TV. YouTube thumbnails are generated automatically; add a Story Image for a custom thumbnail or for other video providers.</p>
+          <div class="form-row-2" style="margin-bottom:1rem;">
+            <div class="form-group">
+              <label for="journal-entry-media-type">Embedded Media Format</label>
+              <select id="journal-entry-media-type" onchange="previewJournalMedia()">
+                <option value="">No external media</option>
+                <option value="video">Video — YouTube or direct MP4 / WebM</option>
+                <option value="document">Document — Google Drive or PDF</option>
+                <option value="social">Instagram post / reel</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="journal-entry-media-url">Video / Document / Instagram URL</label>
+              <input type="url" id="journal-entry-media-url" placeholder="https://youtu.be/… or https://drive.google.com/…" oninput="previewJournalMedia()"/>
+            </div>
+          </div>
+          <p style="color:var(--muted);font-size:0.82rem;margin-top:-0.5rem;">Supported links play or open in the page: YouTube videos, Instagram posts/reels, Google Drive files, and direct MP4/WebM/PDF URLs. Set Drive files to “Anyone with the link” and use public Instagram posts; provider permissions still apply.</p>
+          <div id="journal-media-preview" aria-live="polite" style="margin-bottom:1rem;"></div>
+          <div style="display:flex;gap:1rem;align-items:center;">
+            <button class="btn-action-gold" onclick="saveJournalEntry()">Save Entry</button>
+            <button class="btn-action-outline" onclick="clearJournalEntryForm()">Clear</button>
+          </div>
+        </div>
+        <div class="card">
+          <h4>Journal Entries</h4>
+          <div id="journalEntryList" style="color:var(--muted);font-size:0.85rem;">Loading...</div>
+        </div>
+      </div>
+      <div class="panel" id="panel-scholarships">
+        <div class="card">
+          <h4>Scholarships</h4>
+          <p style="color:var(--muted);">This page is reserved for the Scholarships workflow. Its content and actions will be added once the requirements are defined.</p>
+        </div>
+      </div>
+      <div class="panel" id="panel-testimonials-reviews">
+        <div class="card">
+          <h4>Testimonials &amp; Reviews</h4>
+          <p style="color:var(--muted);">This page is reserved for the Testimonials &amp; Reviews workflow. Its content and actions will be added once the requirements are defined.</p>
+        </div>
+      </div>
+
+    </div><!-- #content -->
+  </div><!-- #main -->
+</div><!-- #dashboard -->
+
+<!-- ═══════════════ SPLIT ARTWORK DETAIL & IN-PLACE EDIT MODAL ═══════════════ -->
+<div class="artwork-modal-overlay" id="artworkDetailModal" onclick="closeArtworkModalOnOverlay(event)">
+  <div class="artwork-modal-box">
+    
+    <!-- Top Action Bar -->
+    <div class="modal-top-bar">
+      <div style="display:flex; align-items:center; gap:0.6rem; flex-wrap:wrap;">
+        <span class="modal-status-badge" id="modalBadgeCat">Abstract</span>
+        <span class="badge-cover-active" id="modalBadgeCover" style="display:none;">★ Album Cover</span>
+        <span id="modalArtworkCounter" style="font-size:0.75rem; color:var(--gold); font-weight:600; background:var(--bg2); padding:0.2rem 0.5rem; border-radius:4px; border:1px solid var(--border);"></span>
+      </div>
+      <div class="modal-top-actions">
+        <!-- Next/Previous Step Progress Navigation -->
+        <button class="btn-action-outline" id="btnModalPrev" style="padding:0.4rem 0.75rem; font-size:0.75rem;" onclick="navPrevArtwork()" title="Previous Artwork in this album">← Prev</button>
+        <button class="btn-action-outline" id="btnModalNext" style="padding:0.4rem 0.75rem; font-size:0.75rem;" onclick="navNextArtwork()" title="Next Artwork in this album">Next →</button>
+        <!-- Add as Art Cover Button -->
+        <button class="btn-set-cover" id="btnModalSetCover" onclick="setArtworkAsAlbumCover()">
+          ★ Add as Art Cover
+        </button>
+        <!-- Edit Artwork Button -->
+        <button class="btn-edit-toggle" id="btnToggleEdit" onclick="toggleArtworkEditMode()">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+          <span id="btnEditText">Edit Artwork</span>
+        </button>
+        <!-- Delete Artwork Button -->
+        <button class="btn-modal-del" onclick="deleteCurrentArtwork()">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+          Delete
+        </button>
+        <!-- Close Button -->
+        <button class="btn-modal-close" onclick="closeArtworkModal()">✕</button>
+      </div>
+    </div>
+
+    <!-- Modal Body (Split Layout) -->
+    <div class="modal-split-body">
+      
+      <!-- Left Side: Artwork Image Frame -->
+      <div class="modal-picture-panel">
+        <img id="modalArtImg" src="" alt="Artwork View">
+        <div class="replace-img-zone" id="replaceImgZone" onclick="document.getElementById('replaceImgInput').click()">
+          <p>📷 <strong>Click to Replace Artwork Picture</strong></p>
+          <p style="font-size:0.72rem; color:var(--muted); margin-top:0.2rem;">PNG, JPG, WEBP formats supported</p>
+        </div>
+        <input type="file" id="replaceImgInput" accept="image/*" style="display:none" onchange="handleReplaceImgSelected(this)"/>
+      </div>
+
+      <!-- Right Side: Details / Edit Form -->
+      <div class="modal-details-panel">
+        
+        <!-- ── VIEW MODE (Frontend Replica) ── -->
+        <div class="view-mode-section" id="artworkViewMode">
+          <h3 class="artist-sub" id="modalViewArtist">KEITH ZENDA</h3>
+          <h2 class="piece-main-title" id="modalViewTitle">The Red Veil</h2>
+
+          <div class="artsy-grid">
+            <div class="artsy-label">Artist</div>
+            <div class="artsy-val" id="artsyGridArtist">KEITH ZENDA</div>
+
+            <div class="artsy-label">Artwork Title</div>
+            <div class="artsy-val italic" id="artsyGridTitle">The Red Veil</div>
+
+            <div class="artsy-label">Medium</div>
+            <div class="artsy-val" id="artsyGridMedium">Mixed media on canvas</div>
+
+            <div class="artsy-label">Size</div>
+            <div class="artsy-val" id="artsyGridSize">100x120cm</div>
+
+            <div class="artsy-label">Authenticity</div>
+            <div class="artsy-val">Certificate Included</div>
+
+            <div class="artsy-label">Year</div>
+            <div class="artsy-val" id="artsyGridYear">2026</div>
+
+            <div class="artsy-label">Album / Category</div>
+            <div class="artsy-val" id="artsyGridCategory">Abstract</div>
+
+            <div class="artsy-label">Price / Value</div>
+            <div class="artsy-val" id="artsyGridPrice" style="color:var(--gold);font-weight:600;">Price on Request</div>
+
+            <div class="artsy-label">Purchase Mode</div>
+            <div class="artsy-val" id="artsyGridPurchaseType">Inquire to Purchase</div>
+
+            <div class="artsy-label">Payment Link</div>
+            <div class="artsy-val" id="artsyGridPaymentLink" style="font-size:0.8rem;color:var(--muted);">None (Inquiry Mode)</div>
+          </div>
+
+          <div>
+            <div class="artsy-label" style="margin-bottom:0.4rem;">Description &amp; Artist Statement</div>
+            <p class="piece-desc-block" id="modalViewDesc"></p>
+          </div>
+
+          <!-- Bottom View Mode Progression Controls -->
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-top:1.5rem; padding-top:1rem; border-top:1px solid var(--border); flex-wrap:wrap; gap:0.5rem;">
+            <button class="btn-action-outline" id="btnViewPrev" style="font-size:0.78rem;" onclick="navPrevArtwork()">← Prev Artwork</button>
+            <button class="btn-action-gold" style="font-size:0.78rem;" onclick="toggleArtworkEditMode()">✏ Edit Artwork</button>
+            <button class="btn-action-outline" id="btnViewNext" style="font-size:0.78rem;" onclick="navNextArtwork()">Next Artwork →</button>
+          </div>
+        </div>
+
+        <!-- ── EDIT MODE (In-Place Editor) ── -->
+        <div class="edit-mode-section" id="artworkEditMode">
+          <input type="hidden" id="editOriginalSrc"/>
+          
+          <div class="form-group">
+            <label>Artwork Title</label>
+            <input type="text" id="editTitle" placeholder="e.g. The Red Veil"/>
+          </div>
+
+          <div class="form-row-2">
+            <div class="form-group">
+              <label>Artist Name</label>
+              <input type="text" id="editArtist" list="artistDatalist" placeholder="e.g. KEITH ZENDA"/>
+            </div>
+            <div class="form-group">
+              <label>Album / Category</label>
+              <input type="text" id="editCategory" placeholder="e.g. Abstract, Portraits"/>
+            </div>
+          </div>
+
+          <div class="form-row-3">
+            <div class="form-group">
+              <label>Medium</label>
+              <input type="text" id="editMedium" placeholder="e.g. Oil on Canvas"/>
+            </div>
+            <div class="form-group">
+              <label>Size</label>
+              <input type="text" id="editSize" placeholder="e.g. 100 x 120 cm"/>
+            </div>
+            <div class="form-group">
+              <label>Year</label>
+              <input type="text" id="editYear" placeholder="e.g. 2026"/>
+            </div>
+          </div>
+
+          <div class="form-row-2">
+            <div class="form-group">
+              <label>Price / Value</label>
+              <input type="text" id="editPrice" placeholder="e.g. $2,500 or Price on Request"/>
+            </div>
+            <div class="form-group">
+              <label>Purchase Option</label>
+              <select id="editPurchaseType" style="background:var(--bg2);border:1px solid var(--border);color:var(--text);padding:0.6rem 0.8rem;border-radius:4px;width:100%;font-size:0.85rem;" onchange="toggleEditPaymentField(this.value)">
+                <option value="inquire">Inquire to Purchase (Gallery Contact)</option>
+                <option value="direct">Direct Purchase (Custom Payment Link)</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="form-group" id="editPaymentLinkGroup">
+            <label>Payment / Checkout Link (Master Buy Button)</label>
+            <input type="text" id="editPaymentLink" placeholder="e.g. https://www.paypal.com/ncp/payment/... or Stripe checkout link" style="border-color:rgba(201,168,76,0.3);"/>
+            <small style="color:var(--muted);font-size:0.75rem;display:block;margin-top:0.25rem;">Paste your PayPal, Stripe, or custom checkout payment link here. When direct purchase is active, clicking Buy on frontend opens this checkout.</small>
+          </div>
+
+          <div class="form-group">
+            <label>Description / Statement</label>
+            <textarea id="editDesc" placeholder="Enter artwork description, technical breakdown, or theme..."></textarea>
+          </div>
+
+          <div class="edit-actions-bar" style="flex-wrap:wrap; gap:0.5rem;">
+            <button class="btn-action-gold" style="flex:1; min-width:140px;" onclick="saveArtworkEdits(false)">💾 Save Changes</button>
+            <button class="btn-action-outline" id="btnSaveAndNext" style="border-color:var(--gold); color:var(--gold); font-weight:600;" onclick="saveArtworkEdits(true)">💾 Save &amp; Next →</button>
+            <button class="btn-action-outline" onclick="cancelArtworkEdits()">Cancel</button>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════ MODAL: ADD NEW ARTIST ═══════════════ -->
+<div class="dialog-overlay" id="modalNewArtist">
+  <div class="dialog-card">
+    <button class="dialog-close" onclick="closeDialog('modalNewArtist')">✕</button>
+    <h3>Create New Artist</h3>
+    <div class="form-group">
+      <label>Artist Name</label>
+      <input type="text" id="createArtistName" placeholder="e.g. KEITH ZENDA, Tinashe Moyo"/>
+    </div>
+    <div class="form-group">
+      <label>Artist Category / Demarcation Tier</label>
+      <select id="createArtistTier" onchange="handleCreateArtistTierChange(this.value)" style="background:var(--bg3); border:1px solid var(--border); color:var(--text); padding:0.7rem 0.9rem; border-radius:4px; width:100%; font-size:0.9rem;">
+        <option value="Keith Zenda">👑 Keith Zenda (Founder / Solo)</option>
+        <option value="Emerging Artists" selected>🌟 Emerging Artists (Represented Zimbabwean / African Artists)</option>
+        <option value="Student Artists">🎓 Student Artists</option>
+      </select>
+    </div>
+
+    <!-- Standard Emerging Artist Collections Notice -->
+    <div id="emergingDefaultNotice" style="background:var(--gold-d); border:1px solid var(--border-g); border-radius:4px; padding:0.65rem 0.85rem; font-size:0.78rem; color:var(--gold); margin-bottom:1rem;">
+      ✨ <strong>Default Collections for Emerging Artists:</strong> <strong>Abstract</strong>, <strong>Portraits</strong>, and <strong>Commissions</strong> will automatically be created.
+    </div>
+
+    <!-- Student Artist Notice -->
+    <div id="studentDefaultNotice" style="display:none; background:rgba(147, 112, 219, 0.15); border:1px solid rgba(147, 112, 219, 0.45); border-radius:4px; padding:0.65rem 0.85rem; font-size:0.78rem; color:#c4b5fd; margin-bottom:1rem;">
+      🎓 <strong>Student Artist:</strong> A dedicated student folder will be created. Artworks are uploaded directly under this student without extra sub-folders.
+    </div>
+
+    <div class="form-group" id="createArtistCategoryGroup" style="display:none;">
+      <label>Initial Album / Category Folder</label>
+      <input type="text" id="createArtistCategory" placeholder="e.g. Abstract, Sculptures"/>
+    </div>
+    <div style="display:flex; justify-content:flex-end; gap:0.75rem; margin-top:1.5rem;">
+      <button class="btn-action-outline" onclick="closeDialog('modalNewArtist')">Cancel</button>
+      <button class="btn-action-gold" onclick="submitCreateArtist()">Create Artist</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════ MODAL: EDIT ARTIST CATEGORY / TIER ═══════════════ -->
+<div class="dialog-overlay" id="modalEditArtistTier">
+  <div class="dialog-card">
+    <button class="dialog-close" onclick="closeDialog('modalEditArtistTier')">✕</button>
+    <h3>Change Artist Category Demarcation</h3>
+    <input type="hidden" id="editTierArtistNameInput"/>
+    <p style="color:var(--muted); font-size:0.85rem; margin-bottom:1.25rem;">
+      Artist: <strong id="editTierArtistLabel" style="color:var(--gold);"></strong>
+    </p>
+    <div class="form-group">
+      <label>Select Category Demarcation Tier</label>
+      <select id="editArtistTierSelect" style="background:var(--bg3); border:1px solid var(--border); color:var(--text); padding:0.7rem 0.9rem; border-radius:4px; width:100%; font-size:0.9rem;">
+        <option value="Keith Zenda">👑 Keith Zenda (Founder / Solo)</option>
+        <option value="Emerging Artists">🌟 Emerging Artists (Represented Artists)</option>
+        <option value="Student Artists">🎓 Student Artists</option>
+      </select>
+    </div>
+    <div style="display:flex; justify-content:flex-end; gap:0.75rem; margin-top:1.5rem;">
+      <button class="btn-action-outline" onclick="closeDialog('modalEditArtistTier')">Cancel</button>
+      <button class="btn-action-gold" onclick="submitUpdateArtistTier()">Save Category Tier</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════ MODAL: CREATE NEW ALBUM ═══════════════ -->
+<div class="dialog-overlay" id="modalNewAlbum">
+  <div class="dialog-card">
+    <button class="dialog-close" onclick="closeDialog('modalNewAlbum')">✕</button>
+    <h3>Create New Album / Folder</h3>
+    <div class="form-group">
+      <label>Artist</label>
+      <input type="text" id="newAlbumArtistNameInput" readonly style="background:var(--bg); opacity:0.8; cursor:not-allowed;"/>
+    </div>
+    <div class="form-group">
+      <label>New Album / Category Name</label>
+      <input type="text" id="newAlbumCategoryName" placeholder="e.g. Sculptures, Commissions, Abstracts"/>
+    </div>
+    <div style="display:flex; justify-content:flex-end; gap:0.75rem; margin-top:1.5rem;">
+      <button class="btn-action-outline" onclick="closeDialog('modalNewAlbum')">Cancel</button>
+      <button class="btn-action-gold" onclick="submitCreateAlbum()">Create Album</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════ MODAL: UPLOAD ARTWORK (DEDICATED ALBUM ONLY) ═══════════════ -->
+<div class="dialog-overlay" id="modalUploadArtwork">
+  <div class="dialog-card" style="max-width:680px; max-height:90vh; display:flex; flex-direction:column; padding:0; overflow:hidden;">
+    <!-- Sticky Top Header -->
+    <div style="padding:1.4rem 1.75rem 1rem; border-bottom:1px solid var(--border); background:var(--bg3); display:flex; justify-content:space-between; align-items:center; flex-shrink:0;">
+      <h3 style="margin-bottom:0; font-family:'Cormorant Garamond',serif; font-size:1.6rem; color:var(--gold);">Upload Artwork</h3>
+      <button class="btn-modal-close" onclick="closeDialog('modalUploadArtwork')">✕</button>
+    </div>
+    
+    <!-- Scrollable Form Body -->
+    <div style="padding:1.5rem 1.75rem; overflow-y:auto; flex:1;">
+      <!-- Target Folder Banner -->
+      <div class="locked-target-banner">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>
+        <span>Destination: <strong id="uploadTargetFolderLabel">ARTISTS / Keith Zenda / Abstract</strong></span>
+      </div>
+      <input type="hidden" id="uploadArtistHidden"/>
+      <input type="hidden" id="uploadCategoryHidden"/>
+
+      <div class="form-group">
+        <label>Artwork Title</label>
+        <input type="text" id="upTitle" placeholder="e.g. The Red Veil"/>
+      </div>
+
+      <div class="form-row-3">
+        <div class="form-group">
+          <label>Medium</label>
+          <input type="text" id="upMedium" placeholder="e.g. Oil on Canvas"/>
+        </div>
+        <div class="form-group">
+          <label>Size</label>
+          <input type="text" id="upSize" placeholder="e.g. 100x120cm"/>
+        </div>
+        <div class="form-group">
+          <label>Year</label>
+          <input type="text" id="upYear" placeholder="2026"/>
+        </div>
+      </div>
+
+      <div class="form-row-2">
+        <div class="form-group">
+          <label>Price / Value</label>
+          <input type="text" id="upPrice" placeholder="e.g. $2,500 or Price on Request"/>
+        </div>
+        <div class="form-group">
+          <label>Purchase Option</label>
+          <select id="upPurchaseType" style="background:var(--bg2);border:1px solid var(--border);color:var(--text);padding:0.6rem 0.8rem;border-radius:4px;width:100%;font-size:0.85rem;" onchange="toggleUpPaymentField(this.value)">
+            <option value="inquire">Inquire to Purchase (Gallery Contact)</option>
+            <option value="direct">Direct Purchase (Custom Payment Link)</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="form-group" id="upPaymentLinkGroup">
+        <label>Payment / Checkout Link (Master Buy Button)</label>
+        <input type="text" id="upPaymentLink" placeholder="e.g. https://www.paypal.com/ncp/payment/... or Stripe checkout link"/>
+      </div>
+
+      <div class="form-group">
+        <label>Description / Statement</label>
+        <textarea id="upDesc" placeholder="Enter artist statement or technical description..."></textarea>
+      </div>
+
+      <div class="drop-zone" id="uploadDropZone" onclick="document.getElementById('uploadFileInput').click()">
+        <p>Drop artwork image files here or <span>click to browse</span></p>
+        <p style="font-size:0.75rem; color:var(--gold); margin-top:0.35rem;">⚡ Auto-compresses on upload • Zero quality loss</p>
+      </div>
+      <input type="file" id="uploadFileInput" multiple accept="image/*" style="display:none" onchange="previewUploadFiles(this)"/>
+      <div id="uploadPreviewGrid" style="display:grid; grid-template-columns:repeat(auto-fill,minmax(85px,1fr)); gap:0.6rem; margin-top:0.9rem;"></div>
+    </div>
+
+    <!-- Sticky Bottom Action Bar (Never cut off) -->
+    <div style="padding:1rem 1.75rem; border-top:1px solid var(--border); background:var(--bg3); display:flex; justify-content:space-between; align-items:center; flex-shrink:0;">
+      <span id="uploadSelectedCount" style="font-size:0.8rem; color:var(--muted);">No images selected</span>
+      <div style="display:flex; gap:0.75rem;">
+        <button class="btn-action-outline" onclick="closeDialog('modalUploadArtwork')">Cancel</button>
+        <button class="btn-action-gold" onclick="submitArtworkUpload()">💾 Upload &amp; Save</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════ GLOBAL ADMIN LOADER OVERLAY ═══════════════ -->
+<div class="dialog-overlay" id="globalAdminLoader" style="z-index: 100005; backdrop-filter: blur(8px); background: rgba(5,5,5,0.85);">
+  <div class="dialog-card" style="max-width: 440px; text-align: center; padding: 2.5rem 2rem; border-color: var(--border-g); box-shadow: 0 0 40px rgba(201,168,76,0.25);">
+    <div class="admin-spinner"></div>
+    <h3 id="globalLoaderTitle" style="font-family: 'Cormorant Garamond', serif; font-size: 1.6rem; color: var(--gold); margin-bottom: 0.5rem;">Processing Request...</h3>
+    <p id="globalLoaderSub" style="color: var(--muted); font-size: 0.85rem; line-height: 1.5;">Please wait while the system updates files and synchronizes the Neon database.</p>
+  </div>
+</div>
+
+<!-- ═══════════════ MODAL: EXIT CONFIRMATION (SAVE & SYNC / EXIT) ═══════════════ -->
+<div class="dialog-overlay" id="modalExitConfirm" style="z-index: 10000;">
+  <div class="dialog-card" style="max-width: 460px; text-align: center;">
+    <div style="font-size: 2.2rem; margin-bottom: 0.5rem;">💾</div>
+    <h3 style="margin-bottom: 0.5rem; color: var(--text);">Unsaved Changes / Pending Sync</h3>
+    <p style="color: var(--muted); font-size: 0.88rem; line-height: 1.5; margin-bottom: 1.5rem;">
+      You have alterations or changes in the admin dashboard. Would you like to <strong>Save &amp; Sync</strong> all changes to the database before exiting, or exit without saving?
+    </p>
+    <div style="display: flex; flex-direction: column; gap: 0.6rem;">
+      <button class="btn-action-gold" style="padding: 0.75rem; font-weight: 600;" onclick="confirmExitSaveAndSync()">💾 Save &amp; Sync to Database</button>
+      <button class="btn-modal-del" style="padding: 0.65rem; border-radius: 4px;" onclick="confirmExitWithoutSave()">🚪 Exit Without Saving</button>
+      <button class="btn-action-outline" style="padding: 0.6rem;" onclick="closeDialog('modalExitConfirm')">Cancel (Stay in Dashboard)</button>
+    </div>
+  </div>
+</div>
+
+<datalist id="artistDatalist"></datalist>
+<div id="toast"></div>
+
+<!-- Fallback / Static data script for immediate offline display -->
+<script type="module" src="js/page-galleries.js"></script>
+
+<script>
+/* ==========================================================================
+   ARTGALZIM ADMIN DASHBOARD — HIGH-PERFORMANCE CLIENT SCRIPT
+   ========================================================================== */
+
+let API_BASE = '';
+
+let serverConnected = false;
+let returnHomeAfterExit = false;
+let allArtistsData = [];
+let allMetadata = {};
+let currentLevel = 'artists'; // 'artists', 'albums', 'artworks'
+let activeTierFilter = 'all'; // 'all', 'Keith Zenda', 'Emerging Artists', 'Student Artists'
+let selectedArtist = null;
+let selectedAlbum = null;
+let currentViewingArtwork = null;
+let isEditMode = false;
+let replaceFileBlob = null;
+
+/* ── Helpers ── */
+function lsGet(key, fallback) {
+  try { return JSON.parse(localStorage.getItem(key)) ?? fallback; } catch { return fallback; }
+}
+function lsSet(key, val) { localStorage.setItem(key, JSON.stringify(val)); }
+
+function toast(msg, type = 'success') {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className = 'show ' + type;
+  setTimeout(() => { t.className = ''; }, 3600);
+}
+
+function showAdminLoading(title = 'Processing Request...', sub = 'Please wait while the system updates files and synchronizes with Neon Database...') {
+  const tEl = document.getElementById('globalLoaderTitle');
+  const sEl = document.getElementById('globalLoaderSub');
+  const loader = document.getElementById('globalAdminLoader');
+  if (tEl) tEl.textContent = title;
+  if (sEl) sEl.textContent = sub;
+  if (loader) loader.classList.add('open');
+}
+
+function hideAdminLoading() {
+  const loader = document.getElementById('globalAdminLoader');
+  if (loader) loader.classList.remove('open');
+}
+
+/* ══ AUTH & EXIT ═════════════════════════════════ */
+let hasPendingChanges = false;
+let currentActivePanel = 'gallery-explorer';
+
+function setPendingSync(status = true) {
+  hasPendingChanges = status;
+  const syncBtns = document.querySelectorAll('.btn-sync, #btnQuickSync');
+  syncBtns.forEach(btn => {
+    if (status) {
+      btn.style.borderColor = 'var(--gold)';
+      btn.style.boxShadow = '0 0 10px rgba(201, 168, 76, 0.35)';
+    } else {
+      btn.style.borderColor = '';
+      btn.style.boxShadow = '';
+    }
+  });
+}
+
+function togglePasswordVisibility() {
+  const input = document.getElementById('pwInput');
+  const eyeOpen = document.getElementById('eyeOpenIcon');
+  const eyeOff = document.getElementById('eyeOffIcon');
+  if (!input) return;
+
+  if (input.type === 'password') {
+    input.type = 'text';
+    if (eyeOpen) eyeOpen.style.display = 'block';
+    if (eyeOff) eyeOff.style.display = 'none';
+  } else {
+    input.type = 'password';
+    if (eyeOpen) eyeOpen.style.display = 'none';
+    if (eyeOff) eyeOff.style.display = 'block';
+  }
+}
+
+async function checkPW() {
+  const val = document.getElementById('pwInput').value;
+  const errorEl = document.getElementById('gateErr');
+  try {
+    const response = await fetch('/api/login', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ password: val })
+    });
+    const result = await response.json();
+    if (!response.ok) throw new Error(result.error || 'Login failed.');
+    document.documentElement.classList.add('admin-authenticated');
+    document.getElementById('gate').style.display = 'none';
+    document.getElementById('dashboard').style.display = 'flex';
+    errorEl.style.display = 'none';
+    await initDashboard();
+  } catch (error) {
+    errorEl.textContent = error.message;
+    errorEl.style.display = 'block';
+    document.getElementById('pwInput').value = '';
+  }
+}
+document.getElementById('pwInput').addEventListener('keydown', e => { if (e.key === 'Enter') checkPW(); });
+
+window.addEventListener('DOMContentLoaded', async () => {
+  try {
+    const response = await fetch('/api/session');
+    const session = await response.json();
+    if (!session.authenticated) return;
+    document.documentElement.classList.add('admin-authenticated');
+    document.getElementById('gate').style.display = 'none';
+    document.getElementById('dashboard').style.display = 'flex';
+    await initDashboard();
+  } catch (error) {
+    console.warn('Admin session check failed:', error);
+  }
+});
+
+function logout(force = false) {
+  if (!force && hasPendingChanges) {
+    openDialog('modalExitConfirm');
+    return;
+  }
+  fetch('/api/logout', { method: 'POST' }).catch(() => {});
+  localStorage.removeItem('ag_admin_nav_state');
+  sessionStorage.removeItem('ag_admin_nav_state');
+  document.documentElement.classList.remove('admin-authenticated');
+  document.getElementById('dashboard').style.display = 'none';
+  document.getElementById('gate').style.display = 'flex';
+  const pwInput = document.getElementById('pwInput');
+  if (pwInput) {
+    pwInput.value = '';
+    pwInput.type = 'password';
+  }
+  const eyeOpen = document.getElementById('eyeOpenIcon');
+  const eyeOff = document.getElementById('eyeOffIcon');
+  if (eyeOpen) eyeOpen.style.display = 'none';
+  if (eyeOff) eyeOff.style.display = 'block';
+  closeDialog('modalExitConfirm');
+}
+
+async function logoutToHome() {
+  if (hasPendingChanges) {
+    returnHomeAfterExit = true;
+    openDialog('modalExitConfirm');
+    return;
+  }
+  await endSessionAndReturnHome();
+}
+
+async function endSessionAndReturnHome() {
+  try {
+    await fetch('/api/logout', { method: 'POST', keepalive: true });
+  } catch (error) {
+    console.warn('Could not notify the server about logout:', error);
+  }
+  localStorage.removeItem('ag_admin_nav_state');
+  sessionStorage.removeItem('ag_admin_nav_state');
+  document.documentElement.classList.remove('admin-authenticated');
+  window.location.assign('/');
+}
+
+async function confirmExitSaveAndSync() {
+  closeDialog('modalExitConfirm');
+  toast('⏳ Saving & Syncing changes to database...', 'info');
+  await triggerSync();
+  if (returnHomeAfterExit) {
+    returnHomeAfterExit = false;
+    await endSessionAndReturnHome();
+    return;
+  }
+  logout(true);
+}
+
+function confirmExitWithoutSave() {
+  hasPendingChanges = false;
+  setPendingSync(false);
+  if (returnHomeAfterExit) {
+    returnHomeAfterExit = false;
+    endSessionAndReturnHome();
+    return;
+  }
+  logout(true);
+}
+
+window.addEventListener('beforeunload', (e) => {
+  if (hasPendingChanges) {
+    e.preventDefault();
+    e.returnValue = 'You have unsaved changes in the dashboard. Make sure to sync before leaving!';
+    return e.returnValue;
+  }
+});
+
+/* ══ NAVIGATION STATE PRESERVATION ══════════════ */
+function saveNavState() {
+  try {
+    const state = {
+      panel: currentActivePanel,
+      level: currentLevel,
+      artist: selectedArtist ? selectedArtist.name : null,
+      album: selectedAlbum ? selectedAlbum.name : null,
+      tier: activeTierFilter
+    };
+    sessionStorage.setItem('ag_admin_nav_state', JSON.stringify(state));
+    localStorage.setItem('ag_admin_nav_state', JSON.stringify(state));
+  } catch (e) {}
+}
+
+function restoreNavState() {
+  try {
+    const raw = sessionStorage.getItem('ag_admin_nav_state') || localStorage.getItem('ag_admin_nav_state');
+    if (!raw) return;
+    const state = JSON.parse(raw);
+    if (state.tier) activeTierFilter = state.tier;
+    if (state.panel && state.panel !== 'gallery-explorer') {
+      showPanel(state.panel, false);
+    }
+    if (state.artist) {
+      const artist = allArtistsData.find(a => a.name === state.artist);
+      if (artist) {
+        selectedArtist = artist;
+        if (state.album) {
+          const album = artist.categories.find(c => c.name === state.album);
+          if (album) {
+            selectedAlbum = album;
+            currentLevel = 'artworks';
+            return;
+          }
+        }
+        currentLevel = 'albums';
+        return;
+      }
+    }
+    currentLevel = state.level || 'artists';
+  } catch (e) {}
+}
+
+/* ══ PANEL NAVIGATION ══════════════════════════ */
+function showPanel(id, persist = true) {
+  currentActivePanel = id;
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.sb-nav a').forEach(a => a.classList.remove('active'));
+  const target = document.getElementById('panel-' + id);
+  if (target) target.classList.add('active');
+  const navItem = document.getElementById('nav-' + id);
+  if (navItem) navItem.classList.add('active');
+
+  const titles = {
+    'gallery-explorer': 'Artists & Albums',
+    'overview': 'Statistics & Overview',
+    'exhibitions': 'Exhibitions & Events',
+    'journal-media': 'Journal & Media',
+    'scholarships': 'Scholarships',
+    'testimonials-reviews': 'Testimonials & Reviews'
+  };
+  document.getElementById('panelTitle').textContent = titles[id] || 'Dashboard';
+  
+  if (id === 'overview') updateOverviewStats();
+  if (id === 'exhibitions') loadExhibitions();
+  if (id === 'journal-media') loadJournalAdmin();
+  if (id === 'content-library') loadContentLibrary();
+  if (persist) saveNavState();
+}
+
+/* ══ INITIALIZATION ═════════════════════════════ */
+async function initDashboard() {
+  await checkServerHealth();
+  await loadAllData();
+  restoreNavState();
+  renderExplorer();
+  updateOverviewStats();
+  loadExhibitions();
+}
+
+async function checkServerHealth() {
+  try {
+    const [healthResponse, sessionResponse] = await Promise.all([
+      fetch('/api/health', { signal: AbortSignal.timeout(3000) }),
+      fetch('/api/session', { signal: AbortSignal.timeout(3000) })
+    ]);
+    const health = await healthResponse.json();
+    const session = await sessionResponse.json();
+    serverConnected = healthResponse.ok && sessionResponse.ok
+      && health.configured === true && health.connected !== false && session.authenticated === true;
+    return serverConnected;
+  } catch (error) {
+    serverConnected = false;
+    return false;
+  }
+}
+
+/* ══ DATA LOADING ══════════════════════════════ */
+async function loadAllData() {
+  let sanityArtists = [];
+  try {
+    const [artRes, metaRes] = await Promise.all([
+      fetch(`${API_BASE}/api/artists`),
+      fetch(`${API_BASE}/api/artworks-metadata`)
+    ]);
+    if (!artRes.ok) throw new Error(`Sanity gallery request failed (${artRes.status}).`);
+    sanityArtists = await artRes.json();
+    allMetadata = metaRes.ok ? await metaRes.json() : {};
+    if (!metaRes.ok) console.warn(`Sanity artwork metadata request failed (${metaRes.status}); using available artwork details.`);
+  } catch (error) {
+    allMetadata = {};
+    console.warn('Could not load Sanity gallery data; restoring the website gallery folders and artworks.', error);
+  }
+
+  mergeSanityGalleryWithFrontend(sanityArtists);
+
+  // Populate datalist
+  const datalist = document.getElementById('artistDatalist');
+  datalist.innerHTML = '';
+  allArtistsData.forEach(a => {
+    const opt = document.createElement('option');
+    opt.value = a.name;
+    datalist.appendChild(opt);
+  });
+}
+
+function fallbackToLocalData() {
+  const collections = (window.PageGalleries && window.PageGalleries.artistsCollections)
+    ? window.PageGalleries.artistsCollections : {};
+
+  const artistMap = {};
+  Object.entries(collections).forEach(([key, val]) => {
+    const [artist, cat] = key.split('/');
+    if (!artistMap[artist]) artistMap[artist] = [];
+    
+    const artworks = (val.images || []).map(src => {
+      const f = src.split('/').pop();
+      const baseName = f.replace(/\.[^/.]+$/, "").replace(/[-_]/g, " ");
+      return {
+        filename: f,
+        src: src,
+        artist: artist,
+        category: cat,
+        title: baseName.charAt(0).toUpperCase() + baseName.slice(1),
+        medium: 'Contemporary Work',
+        size: 'Inquire for Size',
+        year: '2026',
+        description: 'Recently added to our collection.'
+      };
+    });
+
+    artistMap[artist].push({
+      name: cat,
+      imageCount: val.images ? val.images.length : 0,
+      cover: val.cover || (val.images && val.images[0]) || null,
+      images: val.images || [],
+      artworks: artworks
+    });
+  });
+
+  allArtistsData = Object.entries(artistMap).map(([name, categories]) => {
+    let artistCover = null;
+    for (const c of categories) {
+      if (c.cover) { artistCover = c.cover; break; }
+    }
+    const tier = name.toUpperCase().includes('KEITH ZENDA') ? 'Keith Zenda' : 'Emerging Artists';
+    return { name, tier, cover: artistCover, categories };
+  });
+}
+
+function mergeSanityGalleryWithFrontend(sanityArtists) {
+  const artistsByName = new Map();
+  const normalize = value => String(value || '').trim().toLocaleLowerCase();
+  const addArtwork = (album, artwork) => {
+    const key = normalize(artwork.filename || artwork.src);
+    const existingIndex = album.artworks.findIndex(item => normalize(item.filename || item.src) === key);
+    if (existingIndex >= 0) {
+      const existing = album.artworks[existingIndex];
+      album.artworks[existingIndex] = { ...existing, ...artwork, src: existing.src || artwork.src };
+    } else {
+      album.artworks.push(artwork);
+    }
+  };
+
+  const addArtist = artist => {
+    const key = normalize(artist.name);
+    if (!artistsByName.has(key)) {
+      artistsByName.set(key, { ...artist, categories: [] });
+    } else {
+      const existing = artistsByName.get(key);
+      artistsByName.set(key, { ...existing, ...artist, categories: existing.categories });
+    }
+    return artistsByName.get(key);
+  };
+
+  const ensureAlbum = (artist, album) => {
+    const key = normalize(album.name);
+    let existing = artist.categories.find(item => normalize(item.name) === key);
+    if (!existing) {
+      existing = { ...album, images: [], artworks: [], imageCount: 0 };
+      artist.categories.push(existing);
+    } else {
+      Object.assign(existing, album, {
+        images: existing.images || [],
+        artworks: existing.artworks || []
+      });
+    }
+    return existing;
+  };
+
+  fallbackToLocalData();
+  for (const artist of allArtistsData) {
+    const mergedArtist = addArtist(artist);
+    for (const album of artist.categories || []) {
+      const mergedAlbum = ensureAlbum(mergedArtist, album);
+      for (const artwork of album.artworks || []) addArtwork(mergedAlbum, artwork);
+    }
+  }
+
+  for (const artist of sanityArtists || []) {
+    const mergedArtist = addArtist(artist);
+    for (const album of artist.categories || []) {
+      const mergedAlbum = ensureAlbum(mergedArtist, album);
+      for (const artwork of album.artworks || []) addArtwork(mergedAlbum, artwork);
+    }
+  }
+
+  allArtistsData = [...artistsByName.values()].map(artist => ({
+    ...artist,
+    categories: artist.categories.map(album => {
+      const artworks = album.artworks || [];
+      const images = artworks.map(artwork => artwork.src).filter(Boolean);
+      return {
+        ...album,
+        artworks,
+        images,
+        imageCount: artworks.length,
+        cover: album.cover || images[0] || null
+      };
+    }),
+    isStudent: artist.tier === 'Student Artists'
+  }));
+}
+
+/* ══ EXPLORER NAVIGATION & RENDERING (3-TIER HIERARCHY) ══════ */
+function navStepBack() {
+  // 1. Close any open dialog/modal first
+  const openModal = document.querySelector('.dialog-overlay.open, #artworkDetailModal.open');
+  if (openModal) {
+    if (openModal.id === 'artworkDetailModal') {
+      closeArtworkModal();
+    } else {
+      closeDialog(openModal.id);
+    }
+    return;
+  }
+
+  // 2. Step back one level at a time
+  if (currentLevel === 'artworks' && selectedArtist) {
+    if (selectedArtist.tier === 'Student Artists' || selectedArtist.isStudent) {
+      navToArtists();
+    } else {
+      navToAlbums(selectedArtist.name);
+    }
+  } else if (currentLevel === 'albums') {
+    navToArtists();
+  } else {
+    showPanel('gallery-explorer');
+  }
+}
+
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape') {
+    const openModal = document.querySelector('.dialog-overlay.open, #artworkDetailModal.open');
+    if (openModal) {
+      navStepBack();
+    }
+  }
+});
+
+function renderExplorer() {
+  const container = document.getElementById('explorerContainer');
+  const breadcrumbs = document.getElementById('breadcrumbs');
+  const topActions = document.getElementById('topActionButtons');
+  const btnBack = document.getElementById('btnBackStep');
+  const btnBackLabel = document.getElementById('btnBackStepLabel');
+
+  if (currentLevel === 'artists') {
+    if (btnBack) btnBack.style.display = 'none';
+    breadcrumbs.innerHTML = `<span class="crumb current">All Artists (${allArtistsData.length})</span>`;
+    topActions.innerHTML = `<button class="btn-action-gold" onclick="openNewArtistModal()">+ Add Artist</button>`;
+    renderArtistsView(container);
+  } else if (currentLevel === 'albums') {
+    if (btnBack) {
+      btnBack.style.display = 'inline-flex';
+      if (btnBackLabel) btnBackLabel.textContent = 'Back to Artists';
+    }
+    breadcrumbs.innerHTML = `
+      <span class="crumb" onclick="navToArtists()">All Artists</span>
+      <span class="sep">/</span>
+      <span class="crumb current">${selectedArtist.name}</span>
+    `;
+    topActions.innerHTML = `<button class="btn-action-gold" onclick="openNewAlbumForArtist('${selectedArtist.name.replace(/'/g,"\\'")}')">+ Add Album / Folder</button>`;
+    renderAlbumsView(container);
+  } else if (currentLevel === 'artworks') {
+    const isStudent = selectedArtist && (selectedArtist.tier === 'Student Artists' || selectedArtist.isStudent);
+    if (btnBack) {
+      btnBack.style.display = 'inline-flex';
+      if (btnBackLabel) btnBackLabel.textContent = isStudent ? 'Back to Artists' : 'Back to Albums';
+    }
+    if (isStudent) {
+      breadcrumbs.innerHTML = `
+        <span class="crumb" onclick="navToArtists()">All Artists</span>
+        <span class="sep">/</span>
+        <span class="crumb current">🎓 ${selectedArtist.name}</span>
+      `;
+      const catName = (selectedAlbum && selectedAlbum.name) || 'Artworks';
+      topActions.innerHTML = `<button class="btn-action-gold" onclick="openUploadForAlbum('${selectedArtist.name.replace(/'/g,"\\'")}', '${catName.replace(/'/g,"\\'")}')">+ Upload Artwork for ${selectedArtist.name}</button>`;
+    } else {
+      breadcrumbs.innerHTML = `
+        <span class="crumb" onclick="navToArtists()">All Artists</span>
+        <span class="sep">/</span>
+        <span class="crumb" onclick="navToAlbums('${selectedArtist.name.replace(/'/g,"\\'")}')">${selectedArtist.name}</span>
+        <span class="sep">/</span>
+        <span class="crumb current">${selectedAlbum.name}</span>
+      `;
+      topActions.innerHTML = `<button class="btn-action-gold" onclick="openUploadForAlbum('${selectedArtist.name.replace(/'/g,"\\'")}', '${selectedAlbum.name.replace(/'/g,"\\'")}')">+ Upload Artwork to this Album</button>`;
+    }
+    renderArtworksView(container);
+  }
+}
+
+function navToArtists() {
+  currentLevel = 'artists';
+  selectedArtist = null;
+  selectedAlbum = null;
+  saveNavState();
+  renderExplorer();
+}
+
+function navToAlbums(artistName) {
+  const artist = allArtistsData.find(a => a.name === artistName);
+  if (!artist) return;
+  selectedArtist = artist;
+  selectedAlbum = null;
+  currentLevel = 'albums';
+  saveNavState();
+  renderExplorer();
+}
+
+function navToStudentArtworks(artistName) {
+  const artist = allArtistsData.find(a => a.name === artistName);
+  if (!artist) return;
+  selectedArtist = artist;
+  selectedAlbum = (artist.categories && artist.categories.length > 0) ? artist.categories[0] : { name: 'Artworks', artworks: [] };
+  currentLevel = 'artworks';
+  saveNavState();
+  renderExplorer();
+}
+
+function navToArtworks(albumName) {
+  if (!selectedArtist) return;
+  const album = selectedArtist.categories.find(c => c.name === albumName);
+  if (!album) return;
+  selectedAlbum = album;
+  currentLevel = 'artworks';
+  saveNavState();
+  renderExplorer();
+}
+
+/* ── LEVEL 1: ALL ARTISTS VIEW WITH CATEGORY DEMARCATION ── */
+function setTierFilter(tier) {
+  activeTierFilter = tier;
+  saveNavState();
+  const container = document.getElementById('explorerContainer');
+  if (container && currentLevel === 'artists') {
+    renderArtistsView(container);
+  }
+}
+
+function getTierBadgeClass(tier) {
+  const t = (tier || '').toLowerCase();
+  if (t.includes('keith') || t.includes('founder')) return 'badge-founder';
+  if (t.includes('student')) return 'badge-student';
+  return 'badge-emerging';
+}
+
+function getTierIcon(tier) {
+  const t = (tier || '').toLowerCase();
+  if (t.includes('keith') || t.includes('founder')) return '👑';
+  if (t.includes('student')) return '🎓';
+  return '🌟';
+}
+
+function renderArtistsView(container) {
+  if (allArtistsData.length === 0) {
+    container.innerHTML = `
+      <div style="text-align:center; padding:4rem 2rem; color:var(--muted);">
+        <p style="font-size:1.1rem; margin-bottom:1rem;">No artist folders found.</p>
+        <button class="btn-action-gold" onclick="openNewArtistModal()">+ Create First Artist</button>
+      </div>`;
+    return;
+  }
+
+  // Count per tier
+  const counts = {
+    all: allArtistsData.length,
+    keith: allArtistsData.filter(a => (a.tier || '').toLowerCase().includes('keith') || a.name.toUpperCase().includes('KEITH ZENDA')).length,
+    emerging: allArtistsData.filter(a => (a.tier || '').toLowerCase().includes('emerging') && !a.name.toUpperCase().includes('KEITH ZENDA')).length,
+    student: allArtistsData.filter(a => (a.tier || '').toLowerCase().includes('student')).length
+  };
+
+  // 1. Render Category Demarcation Filter Pills
+  let html = `
+    <div class="tier-pills-bar">
+      <button class="tier-pill-btn ${activeTierFilter === 'all' ? 'active' : ''}" onclick="setTierFilter('all')">
+        All Categories <span class="tier-pill-count">${counts.all}</span>
+      </button>
+      <button class="tier-pill-btn ${activeTierFilter === 'Keith Zenda' ? 'active' : ''}" onclick="setTierFilter('Keith Zenda')">
+        👑 Keith Zenda <span class="tier-pill-count">${counts.keith}</span>
+      </button>
+      <button class="tier-pill-btn ${activeTierFilter === 'Emerging Artists' ? 'active' : ''}" onclick="setTierFilter('Emerging Artists')">
+        🌟 Emerging Artists <span class="tier-pill-count">${counts.emerging}</span>
+      </button>
+      <button class="tier-pill-btn ${activeTierFilter === 'Student Artists' ? 'active' : ''}" onclick="setTierFilter('Student Artists')">
+        🎓 Student Artists <span class="tier-pill-count">${counts.student}</span>
+      </button>
+    </div>
+  `;
+
+  // Filter artists
+  let filteredArtists = allArtistsData;
+  if (activeTierFilter !== 'all') {
+    if (activeTierFilter === 'Keith Zenda') {
+      filteredArtists = allArtistsData.filter(a => (a.tier || '').toLowerCase().includes('keith') || a.name.toUpperCase().includes('KEITH ZENDA'));
+    } else if (activeTierFilter === 'Emerging Artists') {
+      filteredArtists = allArtistsData.filter(a => (a.tier || '').toLowerCase().includes('emerging') && !a.name.toUpperCase().includes('KEITH ZENDA'));
+    } else if (activeTierFilter === 'Student Artists') {
+      filteredArtists = allArtistsData.filter(a => (a.tier || '').toLowerCase().includes('student'));
+    }
+  }
+
+  // Grouping helper
+  const renderArtistCard = (artist) => {
+    let totalPieces = 0;
+    artist.categories.forEach(c => totalPieces += (c.imageCount || (c.artworks ? c.artworks.length : 0)));
+    const coverSrc = artist.cover || 'images/logo.jpg';
+    const artistTier = artist.tier || (artist.name.toUpperCase().includes('KEITH ZENDA') ? 'Keith Zenda' : 'Emerging Artists');
+    const badgeClass = getTierBadgeClass(artistTier);
+    const icon = getTierIcon(artistTier);
+    const isStudent = (artistTier === 'Student Artists' || artist.isStudent);
+    const openAction = isStudent ? `navToStudentArtworks('${artist.name.replace(/'/g,"\\'")}')` : `navToAlbums('${artist.name.replace(/'/g,"\\'")}')`;
+
+    return `
+      <div class="artist-card-item" onclick="${openAction}">
+        <div class="artist-card-cover">
+          <img src="${coverSrc}" alt="${artist.name}" loading="lazy" onerror="this.src='images/logo.jpg'">
+          <div class="artist-card-overlay">
+            <div style="margin-bottom:0.35rem;">
+              <span class="tier-badge ${badgeClass}">${icon} ${artistTier}</span>
+            </div>
+            <div class="artist-card-name">${artist.name}</div>
+          </div>
+        </div>
+        <div class="artist-card-info">
+          <div class="artist-card-meta">
+            ${isStudent ? `<strong>${totalPieces}</strong> Artworks` : `<strong>${artist.categories.length}</strong> Albums &bull; <strong>${totalPieces}</strong> Artworks`}
+          </div>
+          <div class="artist-card-actions">
+            <button class="btn-action-outline" style="padding:0.35rem 0.6rem; font-size:0.7rem;" title="Change Category Tier" onclick="event.stopPropagation(); openEditArtistTierModal('${artist.name.replace(/'/g,"\\'")}', '${artistTier.replace(/'/g,"\\'")}')">⚙ Tier</button>
+            <button class="btn-action-gold" style="padding:0.35rem 0.8rem; font-size:0.72rem;" onclick="event.stopPropagation(); ${openAction}">${isStudent ? 'Open Artworks &rarr;' : 'Open &rarr;'}</button>
+          </div>
+        </div>
+      </div>`;
+  };
+
+  if (activeTierFilter === 'all') {
+    // Demarcate into 3 clear categorized sections
+    const keithList = allArtistsData.filter(a => (a.tier || '').toLowerCase().includes('keith') || a.name.toUpperCase().includes('KEITH ZENDA'));
+    const emergingList = allArtistsData.filter(a => (a.tier || '').toLowerCase().includes('emerging') && !a.name.toUpperCase().includes('KEITH ZENDA'));
+    const studentList = allArtistsData.filter(a => (a.tier || '').toLowerCase().includes('student'));
+
+    // 1. Keith Zenda Section
+    if (keithList.length > 0) {
+      html += `
+        <div class="tier-section-block">
+          <div class="tier-section-header">
+            <div>
+              <h3>👑 KEITH ZENDA ART</h3>
+              <p>Founder &amp; Resident Master Zimbabwean Visual Artist</p>
+            </div>
+            <span class="tier-badge badge-founder">${keithList.length} Artist</span>
+          </div>
+          <div class="artists-grid">
+            ${keithList.map(renderArtistCard).join('')}
+          </div>
+        </div>
+      `;
+    }
+
+    // 2. Emerging Artists Section
+    html += `
+      <div class="tier-section-block">
+        <div class="tier-section-header">
+          <div>
+            <h3>🌟 EMERGING ARTISTS</h3>
+            <p>Leading &amp; upcoming contemporary Zimbabwean and African creators</p>
+          </div>
+          <span class="tier-badge badge-emerging">${emergingList.length} Artist${emergingList.length !== 1 ? 's' : ''}</span>
+        </div>
+        <div class="artists-grid">
+          ${emergingList.length > 0 ? emergingList.map(renderArtistCard).join('') : `<div style="grid-column:1/-1; color:var(--muted); padding:1rem 0;">No artists currently under Emerging Artists. Click <strong>+ Add Artist</strong> above to add one.</div>`}
+        </div>
+      </div>
+    `;
+
+    // 3. Student Artists Section
+    html += `
+      <div class="tier-section-block">
+        <div class="tier-section-header">
+          <div>
+            <h3>🎓 STUDENT ARTISTS</h3>
+            <p>Student artists and workshop talents</p>
+          </div>
+          <span class="tier-badge badge-student">${studentList.length} Artist${studentList.length !== 1 ? 's' : ''}</span>
+        </div>
+        <div class="artists-grid">
+          ${studentList.length > 0 ? studentList.map(renderArtistCard).join('') : `<div style="grid-column:1/-1; color:var(--muted); padding:1rem 0;">No artists currently under Student Artists. Click <strong>+ Add Artist</strong> above to create a student folder.</div>`}
+        </div>
+      </div>
+    `;
+
+  } else {
+    // Filtered Single Grid
+    if (filteredArtists.length === 0) {
+      html += `
+        <div style="text-align:center; padding:3rem; color:var(--muted); background:var(--bg2); border-radius:var(--r); border:1px solid var(--border);">
+          <p style="margin-bottom:1rem;">No artists found under "${activeTierFilter}".</p>
+          <button class="btn-action-gold" onclick="openNewArtistModal('${activeTierFilter.replace(/'/g,"\\'")}')">+ Add Artist to ${activeTierFilter}</button>
+        </div>`;
+    } else {
+      html += `<div class="artists-grid">`;
+      filteredArtists.forEach(artist => {
+        html += renderArtistCard(artist);
+      });
+      html += `</div>`;
+    }
+  }
+
+  container.innerHTML = html;
+}
+
+/* ── LEVEL 2: ARTIST ALBUMS VIEW ── */
+function renderAlbumsView(container) {
+  if (!selectedArtist) return navToArtists();
+
+  const artistTier = selectedArtist.tier || (selectedArtist.name.toUpperCase().includes('KEITH ZENDA') ? 'Keith Zenda' : 'Emerging Artists');
+  const badgeClass = getTierBadgeClass(artistTier);
+  const icon = getTierIcon(artistTier);
+
+  let html = `
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1.5rem; flex-wrap:wrap; gap:1rem;">
+      <div>
+        <div style="display:flex; align-items:center; gap:0.75rem; margin-bottom:0.25rem;">
+          <h2 style="font-family:'Cormorant Garamond',serif; font-size:2rem; color:var(--gold); font-weight:500;">${selectedArtist.name}</h2>
+          <span class="tier-badge ${badgeClass}">${icon} ${artistTier}</span>
+        </div>
+        <p style="font-size:0.85rem; color:var(--muted);">Artist Album Collections &amp; Folders (${selectedArtist.categories.length} collections)</p>
+      </div>
+      <div style="display:flex; gap:0.6rem; flex-wrap:wrap;">
+        <button class="btn-action-outline" onclick="openEditArtistTierModal('${selectedArtist.name.replace(/'/g,"\\'")}', '${artistTier.replace(/'/g,"\\'")}')">⚙ Change Demarcation</button>
+        <button class="btn-action-gold" onclick="openNewAlbumForArtist('${selectedArtist.name.replace(/'/g,"\\'")}')">+ Add Album / Folder</button>
+      </div>
+    </div>
+    <div class="albums-grid">`;
+
+  if (selectedArtist.categories.length === 0) {
+    html += `
+      <div style="grid-column:1/-1; text-align:center; padding:3rem; color:var(--muted);">
+        <p style="margin-bottom:1rem;">No album folders yet for this artist.</p>
+        <button class="btn-action-gold" onclick="openNewAlbumForArtist('${selectedArtist.name.replace(/'/g,"\\'")}')">+ Create Album</button>
+      </div>`;
+  } else {
+    selectedArtist.categories.forEach(album => {
+      const pieceCount = album.imageCount || (album.artworks ? album.artworks.length : 0);
+      const coverSrc = album.cover || (album.images && album.images[0]) || 'images/logo.jpg';
+      
+      html += `
+        <div class="album-card-item" onclick="navToArtworks('${album.name.replace(/'/g,"\\'")}')">
+          <div class="album-card-cover">
+            <img src="${coverSrc}" alt="${album.name}" loading="lazy" onerror="this.src='images/logo.jpg'">
+          </div>
+          <div class="album-card-body">
+            <div>
+              <div class="album-card-title">${album.name}</div>
+              <div class="album-card-count">${pieceCount} piece${pieceCount !== 1 ? 's' : ''}</div>
+            </div>
+            <div class="album-card-footer">
+              <span style="font-size:0.75rem; color:var(--muted);">Folder: /ARTISTS/${selectedArtist.name}/${album.name}</span>
+              <button class="btn-action-gold" style="padding:0.35rem 0.75rem; font-size:0.72rem;" onclick="event.stopPropagation(); navToArtworks('${album.name.replace(/'/g,"\\'")}')">Open Collection &rarr;</button>
+            </div>
+          </div>
+        </div>`;
+    });
+  }
+  html += `</div>`;
+  container.innerHTML = html;
+}
+
+/* ── LEVEL 3: ALBUM ARTWORKS GRID VIEW (INSIDE DEDICATED ALBUM) ── */
+function renderArtworksView(container) {
+  if (!selectedArtist || !selectedAlbum) return navToArtists();
+
+  const artworks = selectedAlbum.artworks || [];
+  const currentAlbumCover = selectedAlbum.cover;
+  
+  let html = `
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1.5rem; flex-wrap:wrap; gap:1rem;">
+      <div>
+        <h2 style="font-family:'Cormorant Garamond',serif; font-size:2rem; color:var(--gold); font-weight:500;">${selectedAlbum.name}</h2>
+        <p style="font-size:0.85rem; color:var(--muted);">Artist: <strong style="color:var(--text);">${selectedArtist.name}</strong> &bull; ${artworks.length} artworks in this album</p>
+      </div>
+      <div style="display:flex; gap:0.6rem;">
+        <button class="btn-action-gold" onclick="openUploadForAlbum('${selectedArtist.name.replace(/'/g,"\\'")}', '${selectedAlbum.name.replace(/'/g,"\\'")}')">+ Upload Artwork to this Album</button>
+      </div>
+    </div>
+    <div class="artworks-admin-grid">`;
+
+  if (artworks.length === 0) {
+    html += `
+      <div style="grid-column:1/-1; text-align:center; padding:4rem 2rem; color:var(--muted);">
+        <p style="font-size:1.1rem; margin-bottom:1rem;">No artwork images in this album.</p>
+        <button class="btn-action-gold" onclick="openUploadForAlbum('${selectedArtist.name.replace(/'/g,"\\'")}', '${selectedAlbum.name.replace(/'/g,"\\'")}')">+ Upload Artwork Image</button>
+      </div>`;
+  } else {
+    artworks.forEach((art) => {
+      const safeArt = JSON.stringify(art).replace(/"/g, '&quot;');
+      const isCover = currentAlbumCover && currentAlbumCover.includes(art.filename);
+
+      html += `
+        <div class="artwork-admin-card">
+          <div class="artwork-admin-img-area" onclick='openArtworkModal(${safeArt})'>
+            <img src="${art.src}" alt="${art.title}" loading="lazy" onerror="this.style.opacity='0.4'">
+            ${isCover ? `<span class="badge-card-cover">★ Cover</span>` : ''}
+            <div class="artwork-hover-tag">🔍 View / Edit</div>
+          </div>
+          <div class="artwork-admin-meta">
+            <div>
+              <div class="artwork-admin-artist">${art.artist}</div>
+              <div class="artwork-admin-title" title="${art.title}">${art.title}</div>
+              <div class="artwork-admin-medium">${art.medium || 'Contemporary Work'} &bull; ${art.year || '2026'}</div>
+            </div>
+            <div class="artwork-admin-card-actions">
+              <button class="artwork-view-btn" onclick='openArtworkModal(${safeArt})'>View Details</button>
+              ${!isCover ? `
+              <button class="artwork-cover-btn" title="Set as Album Cover" onclick="event.stopPropagation(); setArtworkAsAlbumCoverDirect('${art.src.replace(/'/g,"\\'")}', '${art.artist.replace(/'/g,"\\'")}', '${art.category.replace(/'/g,"\\'")}')">★ Cover</button>
+              ` : ''}
+              <button class="artwork-quick-del-btn" title="Delete Artwork" onclick='quickDeleteArtwork("${art.src.replace(/'/g,"\\'")}", "${art.title.replace(/'/g,"\\'")}")'>
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+              </button>
+            </div>
+          </div>
+        </div>`;
+    });
+  }
+  html += `</div>`;
+  container.innerHTML = html;
+}
+
+/* ══ SEARCH FILTERING ══════════════════════════ */
+function handleSearch(query) {
+  const q = query.toLowerCase().trim();
+  const container = document.getElementById('explorerContainer');
+  
+  if (!q) {
+    renderExplorer();
+    return;
+  }
+
+  const matchingArtworks = [];
+  allArtistsData.forEach(artist => {
+    artist.categories.forEach(cat => {
+      (cat.artworks || []).forEach(art => {
+        const text = `${art.title} ${art.artist} ${art.category} ${art.medium} ${art.year}`.toLowerCase();
+        if (text.includes(q)) {
+          matchingArtworks.push(art);
+        }
+      });
+    });
+  });
+
+  document.getElementById('breadcrumbs').innerHTML = `<span class="crumb current">Search Results for "${query}" (${matchingArtworks.length} items)</span>`;
+
+  if (matchingArtworks.length === 0) {
+    container.innerHTML = `<div style="text-align:center; padding:4rem 2rem; color:var(--muted);">No matching artworks found.</div>`;
+    return;
+  }
+
+  let html = `<div class="artworks-admin-grid">`;
+  matchingArtworks.forEach(art => {
+    const safeArt = JSON.stringify(art).replace(/"/g, '&quot;');
+    html += `
+      <div class="artwork-admin-card">
+        <div class="artwork-admin-img-area" onclick='openArtworkModal(${safeArt})'>
+          <img src="${art.src}" alt="${art.title}" loading="lazy">
+          <div class="artwork-hover-tag">🔍 View / Edit</div>
+        </div>
+        <div class="artwork-admin-meta">
+          <div>
+            <div class="artwork-admin-artist">${art.artist}</div>
+            <div class="artwork-admin-title">${art.title}</div>
+            <div class="artwork-admin-medium">${art.medium} &bull; ${art.year}</div>
+          </div>
+          <div class="artwork-admin-card-actions">
+            <button class="artwork-view-btn" onclick='openArtworkModal(${safeArt})'>View Details</button>
+          </div>
+        </div>
+      </div>`;
+  });
+  html += `</div>`;
+  container.innerHTML = html;
+}
+
+/* ══ ARTWORK DETAIL & IN-PLACE EDIT MODAL ═══════ */
+function getCurrentAlbumArtworks() {
+  if (selectedAlbum && selectedAlbum.artworks && selectedAlbum.artworks.length > 0) {
+    return selectedAlbum.artworks;
+  }
+  if (currentViewingArtwork) {
+    const artist = allArtistsData.find(a => a.name === currentViewingArtwork.artist);
+    if (artist) {
+      const cat = artist.categories.find(c => c.name === currentViewingArtwork.category);
+      if (cat && cat.artworks) return cat.artworks;
+    }
+  }
+  return [];
+}
+
+function updateArtworkNavButtons() {
+  const artworks = getCurrentAlbumArtworks();
+  const counterEl = document.getElementById('modalArtworkCounter');
+  const btnPrev = document.getElementById('btnModalPrev');
+  const btnNext = document.getElementById('btnModalNext');
+  const btnViewPrev = document.getElementById('btnViewPrev');
+  const btnViewNext = document.getElementById('btnViewNext');
+  const btnSaveNext = document.getElementById('btnSaveAndNext');
+  
+  if (!currentViewingArtwork || artworks.length <= 1) {
+    if (counterEl) counterEl.style.display = 'none';
+    if (btnPrev) btnPrev.style.display = 'none';
+    if (btnNext) btnNext.style.display = 'none';
+    if (btnViewPrev) btnViewPrev.style.display = 'none';
+    if (btnViewNext) btnViewNext.style.display = 'none';
+    if (btnSaveNext) btnSaveNext.style.display = 'none';
+    return;
+  }
+
+  const idx = artworks.findIndex(a => a.src === currentViewingArtwork.src || (a.filename && currentViewingArtwork.src && currentViewingArtwork.src.includes(a.filename)));
+  const displayIdx = idx >= 0 ? idx + 1 : 1;
+
+  if (counterEl) {
+    counterEl.style.display = 'inline-block';
+    counterEl.textContent = `Piece ${displayIdx} of ${artworks.length}`;
+  }
+
+  const isFirst = (idx <= 0);
+  const isLast = (idx >= artworks.length - 1);
+
+  [btnPrev, btnViewPrev].forEach(btn => {
+    if (btn) {
+      btn.style.display = 'inline-flex';
+      btn.disabled = isFirst;
+      btn.style.opacity = isFirst ? '0.35' : '1';
+      btn.style.cursor = isFirst ? 'not-allowed' : 'pointer';
+    }
+  });
+
+  [btnNext, btnViewNext].forEach(btn => {
+    if (btn) {
+      btn.style.display = 'inline-flex';
+      btn.disabled = isLast;
+      btn.style.opacity = isLast ? '0.35' : '1';
+      btn.style.cursor = isLast ? 'not-allowed' : 'pointer';
+    }
+  });
+
+  if (btnSaveNext) {
+    btnSaveNext.style.display = 'inline-flex';
+    if (isLast) {
+      btnSaveNext.innerHTML = '💾 Save &amp; Finish';
+    } else {
+      btnSaveNext.innerHTML = '💾 Save &amp; Next →';
+    }
+  }
+}
+
+function navNextArtwork() {
+  const artworks = getCurrentAlbumArtworks();
+  if (!artworks.length || !currentViewingArtwork) return;
+  const idx = artworks.findIndex(a => a.src === currentViewingArtwork.src || (a.filename && currentViewingArtwork.src && currentViewingArtwork.src.includes(a.filename)));
+  if (idx > -1 && idx + 1 < artworks.length) {
+    openArtworkModal(artworks[idx + 1]);
+  } else {
+    toast('Reached the last artwork in this collection.', 'info');
+  }
+}
+
+function navPrevArtwork() {
+  const artworks = getCurrentAlbumArtworks();
+  if (!artworks.length || !currentViewingArtwork) return;
+  const idx = artworks.findIndex(a => a.src === currentViewingArtwork.src || (a.filename && currentViewingArtwork.src && currentViewingArtwork.src.includes(a.filename)));
+  if (idx > 0) {
+    openArtworkModal(artworks[idx - 1]);
+  } else {
+    toast('At the first artwork in this collection.', 'info');
+  }
+}
+
+function openArtworkModal(artwork) {
+  currentViewingArtwork = artwork;
+  isEditMode = false;
+  replaceFileBlob = null;
+
+  // Set Picture
+  document.getElementById('modalArtImg').src = artwork.src;
+  document.getElementById('modalBadgeCat').textContent = artwork.category || 'Artworks';
+
+  // Check if current artwork is the cover for this album
+  updateCoverButtonState(artwork.src);
+
+  // Update step navigation buttons and counter
+  updateArtworkNavButtons();
+
+  // Populate View Mode
+  document.getElementById('modalViewArtist').textContent = artwork.artist || 'ARTIST';
+  document.getElementById('modalViewTitle').textContent = artwork.title || 'Untitled';
+  document.getElementById('artsyGridArtist').textContent = artwork.artist || 'ARTIST';
+  document.getElementById('artsyGridTitle').textContent = artwork.title || 'Untitled';
+  document.getElementById('artsyGridMedium').textContent = artwork.medium || 'Contemporary Work';
+  document.getElementById('artsyGridSize').textContent = artwork.size || 'Inquire for Size';
+  document.getElementById('artsyGridYear').textContent = artwork.year || '2026';
+  document.getElementById('artsyGridCategory').textContent = artwork.category || 'Artworks';
+  document.getElementById('artsyGridPrice').textContent = artwork.price || 'Price on Request';
+  
+  const isDirect = (artwork.purchaseType === 'direct' || Boolean(artwork.paymentLink));
+  document.getElementById('artsyGridPurchaseType').textContent = isDirect ? 'Direct Purchase (Buy Button)' : 'Inquire to Purchase';
+  
+  const linkEl = document.getElementById('artsyGridPaymentLink');
+  if (artwork.paymentLink) {
+    linkEl.innerHTML = `<a href="${artwork.paymentLink}" target="_blank" style="color:var(--gold);text-decoration:underline;word-break:break-all;">${artwork.paymentLink} ↗</a>`;
+  } else {
+    linkEl.textContent = 'None (Inquiry Mode)';
+  }
+  
+  document.getElementById('modalViewDesc').textContent = artwork.description || 'Recently added to our collection.';
+
+  // Populate Edit Mode fields
+  document.getElementById('editOriginalSrc').value = artwork.src;
+  document.getElementById('editTitle').value = artwork.title || '';
+  document.getElementById('editArtist').value = artwork.artist || '';
+  document.getElementById('editCategory').value = artwork.category || '';
+  document.getElementById('editMedium').value = artwork.medium || '';
+  document.getElementById('editSize').value = artwork.size || '';
+  document.getElementById('editYear').value = artwork.year || '';
+  document.getElementById('editPrice').value = artwork.price || '';
+  document.getElementById('editPurchaseType').value = artwork.purchaseType || (artwork.paymentLink ? 'direct' : 'inquire');
+  document.getElementById('editPaymentLink').value = artwork.paymentLink || '';
+  document.getElementById('editDesc').value = artwork.description || '';
+  checkEditPaymentLink();
+
+  // Switch to View Mode display
+  document.getElementById('artworkViewMode').classList.remove('hidden');
+  document.getElementById('artworkEditMode').classList.remove('active');
+  document.getElementById('replaceImgZone').style.display = 'none';
+  document.getElementById('btnEditText').textContent = 'Edit Artwork';
+
+  // Show modal
+  document.getElementById('artworkDetailModal').classList.add('open');
+}
+
+function updateCoverButtonState(src) {
+  const btn = document.getElementById('btnModalSetCover');
+  const badge = document.getElementById('modalBadgeCover');
+  
+  let isCover = false;
+  if (selectedAlbum && selectedAlbum.cover) {
+    isCover = selectedAlbum.cover === src || selectedAlbum.cover.endsWith(src.split('/').pop());
+  } else if (currentViewingArtwork) {
+    const artist = allArtistsData.find(a => a.name === currentViewingArtwork.artist);
+    if (artist) {
+      const cat = artist.categories.find(c => c.name === currentViewingArtwork.category);
+      if (cat && cat.cover) {
+        isCover = cat.cover === src || cat.cover.endsWith(src.split('/').pop());
+      }
+    }
+  }
+
+  if (isCover) {
+    badge.style.display = 'inline-block';
+    btn.style.display = 'none';
+  } else {
+    badge.style.display = 'none';
+    btn.style.display = 'inline-flex';
+    btn.textContent = '★ Add as Art Cover';
+  }
+}
+
+async function setArtworkAsAlbumCover() {
+  if (!currentViewingArtwork) return;
+  await setArtworkAsAlbumCoverDirect(
+    currentViewingArtwork.src,
+    currentViewingArtwork.artist,
+    currentViewingArtwork.category
+  );
+}
+
+async function setArtworkAsAlbumCoverDirect(src, artist, category) {
+  const targetArtist = artist || (selectedArtist && selectedArtist.name);
+  const targetCat = category || (selectedAlbum && selectedAlbum.name);
+
+  if (!src || !targetArtist || !targetCat) {
+    toast('Missing artwork details', 'error');
+    return;
+  }
+
+  if (serverConnected) {
+    try {
+      toast('⏳ Updating album cover...', 'info');
+      const res = await fetch(`${API_BASE}/api/set-album-cover`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ artist: targetArtist, category: targetCat, src: src })
+      });
+      const data = await res.json();
+      if (res.ok && data.ok) {
+        toast(`✓ Set as album cover for ${targetCat}!`);
+        await loadAllData();
+        if (selectedArtist) {
+          selectedArtist = allArtistsData.find(a => a.name === selectedArtist.name) || selectedArtist;
+          if (selectedAlbum) {
+            selectedAlbum = selectedArtist.categories.find(c => c.name === selectedAlbum.name) || selectedAlbum;
+          }
+        }
+        renderExplorer();
+        updateCoverButtonState(src);
+        return;
+      }
+    } catch (e) {
+      toast('Failed setting cover: ' + e.message, 'error');
+    }
+  } else {
+    // Offline local fallback
+    if (selectedAlbum) {
+      selectedAlbum.cover = src;
+    }
+    toast(`✓ Set as album cover for ${targetCat} (Local)`);
+    renderExplorer();
+    updateCoverButtonState(src);
+  }
+}
+
+function closeArtworkModal() {
+  document.getElementById('artworkDetailModal').classList.remove('open');
+  currentViewingArtwork = null;
+  replaceFileBlob = null;
+}
+
+function closeArtworkModalOnOverlay(e) {
+  if (e.target.id === 'artworkDetailModal') {
+    closeArtworkModal();
+  }
+}
+
+function toggleArtworkEditMode() {
+  isEditMode = !isEditMode;
+  if (isEditMode) {
+    document.getElementById('artworkViewMode').classList.add('hidden');
+    document.getElementById('artworkEditMode').classList.add('active');
+    document.getElementById('replaceImgZone').style.display = 'block';
+    document.getElementById('btnEditText').textContent = 'View Mode';
+    checkEditPaymentLink();
+  } else {
+    document.getElementById('artworkViewMode').classList.remove('hidden');
+    document.getElementById('artworkEditMode').classList.remove('active');
+    document.getElementById('replaceImgZone').style.display = 'none';
+    document.getElementById('btnEditText').textContent = 'Edit Artwork';
+  }
+}
+
+function cancelArtworkEdits() {
+  isEditMode = false;
+  document.getElementById('artworkViewMode').classList.remove('hidden');
+  document.getElementById('artworkEditMode').classList.remove('active');
+  document.getElementById('replaceImgZone').style.display = 'none';
+  document.getElementById('btnEditText').textContent = 'Edit Artwork';
+  replaceFileBlob = null;
+  if (currentViewingArtwork) {
+    document.getElementById('modalArtImg').src = currentViewingArtwork.src;
+  }
+}
+
+function handleReplaceImgSelected(input) {
+  if (input.files && input.files[0]) {
+    replaceFileBlob = input.files[0];
+    const previewUrl = URL.createObjectURL(replaceFileBlob);
+    document.getElementById('modalArtImg').src = previewUrl;
+    toast('📷 New image selected. Click "Save Changes" to apply.', 'info');
+  }
+}
+
+async function saveArtworkEdits(advanceToNext = false) {
+  const originalSrc = document.getElementById('editOriginalSrc').value;
+  const title = document.getElementById('editTitle').value.trim();
+  const artist = document.getElementById('editArtist').value.trim();
+  const category = document.getElementById('editCategory').value.trim();
+  const medium = document.getElementById('editMedium').value.trim();
+  const size = document.getElementById('editSize').value.trim();
+  const year = document.getElementById('editYear').value.trim();
+  const price = document.getElementById('editPrice').value.trim();
+  const purchaseType = document.getElementById('editPurchaseType').value.trim();
+  const paymentLink = document.getElementById('editPaymentLink').value.trim();
+  const description = document.getElementById('editDesc').value.trim();
+
+  if (!title) { toast('Please provide an artwork title', 'error'); return; }
+  if (!artist) { toast('Please specify the artist name', 'error'); return; }
+
+  if (purchaseType === 'direct' && !paymentLink) {
+    toast('Payment link is mandatory when Direct Purchase is selected.', 'error');
+    document.getElementById('editPaymentLink').focus();
+    checkEditPaymentLink();
+    return;
+  }
+
+  const formData = new FormData();
+  formData.append('originalSrc', originalSrc);
+  formData.append('title', title);
+  formData.append('artist', artist);
+  formData.append('category', category || 'Abstract');
+  formData.append('medium', medium || 'Contemporary Work');
+  formData.append('size', size || 'Inquire for Size');
+  formData.append('year', year || '2026');
+  formData.append('price', price || 'Price on Request');
+  formData.append('purchaseType', purchaseType || 'inquire');
+  formData.append('paymentLink', paymentLink || '');
+  formData.append('description', description);
+
+  if (replaceFileBlob) {
+    formData.append('imageFile', replaceFileBlob);
+  }
+
+  if (!serverConnected) await checkServerHealth();
+
+  showAdminLoading('Saving Artwork...', `Saving changes for "${title}" and syncing with database...`);
+
+  try {
+    const res = await fetch(`${API_BASE}/api/edit-artwork`, {
+      method: 'POST',
+      body: formData
+    });
+    const data = await res.json();
+    if (res.ok && data.ok) {
+      setPendingSync(true);
+      await loadAllData();
+      
+      // Update selectedArtist and selectedAlbum references
+      if (selectedArtist) {
+        selectedArtist = allArtistsData.find(a => a.name === selectedArtist.name) || selectedArtist;
+        if (selectedAlbum) {
+          selectedAlbum = selectedArtist.categories.find(c => c.name === selectedAlbum.name) || selectedAlbum;
+        }
+      }
+      renderExplorer();
+      hideAdminLoading();
+      toast('✓ Artwork changes saved successfully!');
+
+      if (advanceToNext) {
+        const artworks = getCurrentAlbumArtworks();
+        const updatedSrc = data.src || originalSrc;
+        const idx = artworks.findIndex(a => a.src === updatedSrc || (a.filename && updatedSrc.includes(a.filename)) || a.title === title);
+        if (idx > -1 && idx + 1 < artworks.length) {
+          openArtworkModal(artworks[idx + 1]);
+          toggleArtworkEditMode(); // Keep edit mode open for rapid successive edits
+          return;
+        } else {
+          toast('✓ Saved! Reached the last artwork in this collection.', 'info');
+        }
+      }
+
+      const updatedSrc = data.src || originalSrc;
+      let foundUpdated = null;
+      for (const a of allArtistsData) {
+        for (const c of a.categories) {
+          const match = (c.artworks || []).find(w => w.src === updatedSrc || w.title === title);
+          if (match) { foundUpdated = match; selectedArtist = a; selectedAlbum = c; break; }
+        }
+        if (foundUpdated) break;
+      }
+
+      if (foundUpdated) {
+        openArtworkModal(foundUpdated);
+      } else {
+        closeArtworkModal();
+      }
+      return;
+    } else {
+      hideAdminLoading();
+      toast('Error saving: ' + (data.error || 'Server error'), 'error');
+    }
+  } catch (err) {
+    hideAdminLoading();
+    toast('Server connection failed. ' + err.message, 'error');
+  }
+}
+
+async function deleteCurrentArtwork() {
+  if (!currentViewingArtwork) return;
+  const src = currentViewingArtwork.src;
+  const title = currentViewingArtwork.title;
+  if (!confirm(`Are you sure you want to permanently delete "${title}"?`)) return;
+
+  if (!serverConnected) await checkServerHealth();
+
+  closeArtworkModal();
+  showAdminLoading('Deleting Artwork...', `Removing "${title}" and syncing database...`);
+
+  try {
+    const res = await fetch(`${API_BASE}/api/delete-artwork`, {
+      method: 'DELETE',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ src: src })
+    });
+    const data = await res.json();
+    if (res.ok && data.ok) {
+      setPendingSync(true);
+      await loadAllData();
+      renderExplorer();
+      hideAdminLoading();
+      toast(`✓ "${title}" deleted.`);
+      return;
+    } else {
+      hideAdminLoading();
+      toast('Failed to delete on server: ' + (data.error || 'Error'), 'error');
+    }
+  } catch (err) {
+    hideAdminLoading();
+    toast('Failed to delete on server: ' + err.message, 'error');
+  }
+}
+
+async function quickDeleteArtwork(src, title) {
+  if (!confirm(`Delete artwork "${title}"?`)) return;
+  if (!serverConnected && !await checkServerHealth()) {
+    toast('Sanity admin connection is unavailable. Sign in again and retry.', 'error');
+    return;
+  }
+
+  showAdminLoading('Deleting...', `Removing "${title}"...`);
+  try {
+    const res = await fetch(`${API_BASE}/api/delete-artwork`, {
+      method: 'DELETE',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ src })
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || 'Unable to delete artwork.');
+    setPendingSync(true);
+    await loadAllData();
+    renderExplorer();
+    hideAdminLoading();
+    toast('Artwork removal staged in Sanity. Push & Sync Changes to publish it.');
+  } catch (e) {
+    hideAdminLoading();
+    toast('Delete failed: ' + e.message, 'error');
+  }
+}
+
+/* ══ MODAL ACTIONS (NEW ARTIST, NEW ALBUM, UPLOAD DEDICATED) ═════════ */
+function handleCreateArtistTierChange(tier) {
+  const emergingNotice = document.getElementById('emergingDefaultNotice');
+  const studentNotice = document.getElementById('studentDefaultNotice');
+  const catGroup = document.getElementById('createArtistCategoryGroup');
+  const catInput = document.getElementById('createArtistCategory');
+
+  if (tier === 'Student Artists') {
+    if (emergingNotice) emergingNotice.style.display = 'none';
+    if (studentNotice) studentNotice.style.display = 'block';
+    if (catGroup) catGroup.style.display = 'none';
+    if (catInput) catInput.value = 'Artworks';
+  } else if (tier === 'Emerging Artists') {
+    if (emergingNotice) emergingNotice.style.display = 'block';
+    if (studentNotice) studentNotice.style.display = 'none';
+    if (catGroup) catGroup.style.display = 'none';
+    if (catInput) catInput.value = 'Abstract';
+  } else {
+    if (emergingNotice) emergingNotice.style.display = 'none';
+    if (studentNotice) studentNotice.style.display = 'none';
+    if (catGroup) catGroup.style.display = 'block';
+    if (catInput) catInput.value = 'Abstract';
+  }
+}
+
+function openNewArtistModal(presetTier = null) {
+  document.getElementById('createArtistName').value = '';
+  const tierSelect = document.getElementById('createArtistTier');
+  if (tierSelect) {
+    if (presetTier && ['Keith Zenda', 'Emerging Artists', 'Student Artists'].includes(presetTier)) {
+      tierSelect.value = presetTier;
+    } else {
+      tierSelect.value = 'Emerging Artists';
+    }
+    handleCreateArtistTierChange(tierSelect.value);
+  }
+  document.getElementById('modalNewArtist').classList.add('open');
+}
+
+async function submitCreateArtist() {
+  const artist = document.getElementById('createArtistName').value.trim();
+  const category = document.getElementById('createArtistCategory').value.trim() || 'Artworks';
+  const tier = (document.getElementById('createArtistTier') ? document.getElementById('createArtistTier').value : 'Emerging Artists');
+  if (!artist) { toast('Please enter artist name', 'error'); return; }
+
+  if (!serverConnected) await checkServerHealth();
+
+  closeDialog('modalNewArtist');
+  showAdminLoading('Creating Artist...', `Setting up folder and database entries for ${artist} (${tier})...`);
+
+  try {
+    const res = await fetch(`${API_BASE}/api/create-artist-folder`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ artist, category, tier })
+    });
+    const data = await res.json();
+    if (res.ok && data.ok) {
+      setPendingSync(true);
+      await loadAllData();
+      hideAdminLoading();
+      toast(`✓ Artist created: ${artist} (${tier})${data.folders ? ' — Folders: ' + data.folders.join(', ') : ''}`);
+      if (tier === 'Student Artists') {
+        navToStudentArtworks(artist);
+      } else {
+        navToAlbums(artist);
+      }
+      return;
+    } else {
+      hideAdminLoading();
+      toast('Failed creating artist: ' + (data.error || 'Server error'), 'error');
+    }
+  } catch (e) {
+    hideAdminLoading();
+    toast('Failed creating artist: ' + e.message, 'error');
+  }
+}
+
+function openEditArtistTierModal(artistName, currentTier) {
+  document.getElementById('editTierArtistNameInput').value = artistName;
+  document.getElementById('editTierArtistLabel').textContent = artistName;
+  const select = document.getElementById('editArtistTierSelect');
+  if (select) {
+    select.value = currentTier || 'Emerging Artists';
+  }
+  document.getElementById('modalEditArtistTier').classList.add('open');
+}
+
+async function submitUpdateArtistTier() {
+  const artist = document.getElementById('editTierArtistNameInput').value;
+  const tier = document.getElementById('editArtistTierSelect').value;
+  if (!artist || !tier) return;
+
+  if (!serverConnected) await checkServerHealth();
+
+  closeDialog('modalEditArtistTier');
+  showAdminLoading('Updating Category...', `Changing demarcation tier for ${artist} to ${tier}...`);
+
+  try {
+    const res = await fetch(`${API_BASE}/api/update-artist-tier`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ artist, tier })
+    });
+    const data = await res.json();
+    if (res.ok && data.ok) {
+      setPendingSync(true);
+      await loadAllData();
+      if (selectedArtist) {
+        selectedArtist = allArtistsData.find(a => a.name === selectedArtist.name) || selectedArtist;
+      }
+      renderExplorer();
+      hideAdminLoading();
+      toast(`✓ Category demarcation updated for ${artist} → ${tier}`);
+      return;
+    } else {
+      hideAdminLoading();
+      toast('Failed updating tier: ' + (data.error || 'Server error'), 'error');
+    }
+  } catch (e) {
+    hideAdminLoading();
+    toast('Failed updating tier: ' + e.message, 'error');
+  }
+}
+
+function openNewAlbumForArtist(artistName) {
+  document.getElementById('newAlbumArtistNameInput').value = artistName;
+  document.getElementById('newAlbumCategoryName').value = '';
+  document.getElementById('modalNewAlbum').classList.add('open');
+}
+
+async function submitCreateAlbum() {
+  const artist = document.getElementById('newAlbumArtistNameInput').value;
+  const category = document.getElementById('newAlbumCategoryName').value.trim();
+  if (!category) { toast('Please enter album name', 'error'); return; }
+
+  if (!serverConnected) await checkServerHealth();
+
+  closeDialog('modalNewAlbum');
+  showAdminLoading('Creating Album...', `Setting up ${category} for ${artist}...`);
+
+  try {
+    const res = await fetch(`${API_BASE}/api/create-artist-folder`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ artist, category })
+    });
+    const data = await res.json();
+    if (res.ok && data.ok) {
+      setPendingSync(true);
+      await loadAllData();
+      hideAdminLoading();
+      toast(`✓ Album created: ${artist} / ${category}`);
+      navToArtworks(category);
+      return;
+    } else {
+      hideAdminLoading();
+      toast('Failed creating album: ' + (data.error || 'Server error'), 'error');
+    }
+  } catch (e) {
+    hideAdminLoading();
+    toast('Failed creating album: ' + e.message, 'error');
+  }
+}
+
+/* Upload ONLY inside dedicated album */
+let stagedUploadFiles = [];
+
+// High-Performance Client-Side Image Compressor (Zero visual loss, prevents upload latency & database space overflow)
+async function compressImageFileClient(file, maxDimension = 2560, quality = 0.85) {
+  if (!file.type || !file.type.startsWith('image/') || file.type === 'image/gif' || file.size < 120 * 1024) {
+    return file;
+  }
+  return new Promise((resolve) => {
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const img = new Image();
+      img.onload = () => {
+        let width = img.naturalWidth || img.width;
+        let height = img.naturalHeight || img.height;
+
+        if (width > maxDimension || height > maxDimension) {
+          if (width > height) {
+            height = Math.round((height * maxDimension) / width);
+            width = maxDimension;
+          } else {
+            width = Math.round((width * maxDimension) / height);
+            height = maxDimension;
+          }
+        }
+
+        const canvas = document.createElement('canvas');
+        canvas.width = width;
+        canvas.height = height;
+        const ctx = canvas.getContext('2d', { alpha: false });
+        ctx.imageSmoothingEnabled = true;
+        ctx.imageSmoothingQuality = 'high';
+        ctx.drawImage(img, 0, 0, width, height);
+
+        const outType = (file.type === 'image/png') ? 'image/png' : 'image/jpeg';
+        canvas.toBlob((blob) => {
+          if (blob && blob.size < file.size) {
+            const compressedFile = new File([blob], file.name, {
+              type: outType,
+              lastModified: Date.now()
+            });
+            resolve(compressedFile);
+          } else {
+            resolve(file);
+          }
+        }, outType, quality);
+      };
+      img.onerror = () => resolve(file);
+      img.src = e.target.result;
+    };
+    reader.onerror = () => resolve(file);
+    reader.readAsDataURL(file);
+  });
+}
+
+function updateStagedUploadUI() {
+  const grid = document.getElementById('uploadPreviewGrid');
+  const countLabel = document.getElementById('uploadSelectedCount');
+  if (!grid) return;
+  grid.innerHTML = '';
+
+  if (countLabel) {
+    countLabel.textContent = stagedUploadFiles.length === 0 
+      ? 'No images selected' 
+      : `${stagedUploadFiles.length} file(s) ready to upload`;
+    countLabel.style.color = stagedUploadFiles.length === 0 ? 'var(--muted)' : 'var(--gold)';
+  }
+
+  if (stagedUploadFiles.length === 0) return;
+
+  stagedUploadFiles.forEach((file, idx) => {
+    const url = URL.createObjectURL(file);
+    const sizeKB = Math.round(file.size / 1024);
+    const div = document.createElement('div');
+    div.style = 'position:relative; border:1px solid var(--border-g); border-radius:4px; overflow:hidden; aspect-ratio:1; background:#000; box-shadow:0 2px 6px rgba(0,0,0,0.5);';
+    div.innerHTML = `
+      <img src="${url}" style="width:100%;height:100%;object-fit:cover;display:block;">
+      <span style="position:absolute; bottom:2px; left:2px; background:rgba(0,0,0,0.8); color:var(--gold); font-size:0.65rem; padding:1px 4px; border-radius:2px; font-weight:600;">${sizeKB} KB</span>
+      <button type="button" onclick="removeStagedUploadFile(${idx})" title="Remove this picture" style="position:absolute; top:2px; right:2px; background:rgba(200,30,30,0.9); color:#fff; border:none; border-radius:50%; width:20px; height:20px; font-size:12px; cursor:pointer; display:flex; align-items:center; justify-content:center; line-height:1; font-weight:bold;">✕</button>
+    `;
+    grid.appendChild(div);
+  });
+}
+
+function removeStagedUploadFile(idx) {
+  stagedUploadFiles.splice(idx, 1);
+  updateStagedUploadUI();
+}
+
+function openUploadForAlbum(artistName, albumName) {
+  stagedUploadFiles = [];
+  document.getElementById('uploadArtistHidden').value = artistName;
+  document.getElementById('uploadCategoryHidden').value = albumName;
+  document.getElementById('uploadTargetFolderLabel').textContent = `ARTISTS / ${artistName} / ${albumName}`;
+
+  document.getElementById('upTitle').value = '';
+  document.getElementById('upMedium').value = 'Oil on Canvas';
+  document.getElementById('upSize').value = '100x120cm';
+  document.getElementById('upYear').value = '2026';
+  document.getElementById('upPrice').value = '';
+  document.getElementById('upPurchaseType').value = 'inquire';
+  document.getElementById('upPaymentLink').value = '';
+  document.getElementById('upDesc').value = '';
+  document.getElementById('uploadFileInput').value = '';
+  updateStagedUploadUI();
+  checkUploadPaymentLink();
+  document.getElementById('modalUploadArtwork').classList.add('open');
+}
+
+function checkUploadPaymentLink() {
+  const purchaseType = (document.getElementById('upPurchaseType')?.value || 'inquire').trim();
+  const paymentInput = document.getElementById('upPaymentLink');
+  const group = document.getElementById('upPaymentLinkGroup');
+  const label = group ? group.querySelector('label') : null;
+  const saveBtn = document.querySelector('#modalUploadArtwork .btn-action-gold');
+  const isDirect = purchaseType === 'direct';
+  const hasLink = Boolean(paymentInput && paymentInput.value.trim());
+
+  if (label) {
+    label.innerHTML = isDirect 
+      ? 'Payment / Checkout Link (Master Buy Button) <span style="color:#ff6b6b; font-weight:700; font-size:0.8rem; margin-left:6px;">* (Mandatory for Direct Purchase)</span>'
+      : 'Payment / Checkout Link (Master Buy Button)';
+  }
+
+  if (isDirect && !hasLink) {
+    if (paymentInput) {
+      paymentInput.style.borderColor = '#ff6b6b';
+      paymentInput.style.boxShadow = '0 0 6px rgba(255,107,107,0.3)';
+    }
+    if (saveBtn) {
+      saveBtn.disabled = true;
+      saveBtn.style.opacity = '0.5';
+      saveBtn.style.cursor = 'not-allowed';
+      saveBtn.title = 'Payment link is mandatory when Direct Purchase is selected';
+    }
+    return false;
+  } else {
+    if (paymentInput) {
+      paymentInput.style.borderColor = 'rgba(201,168,76,0.3)';
+      paymentInput.style.boxShadow = '';
+    }
+    if (saveBtn) {
+      saveBtn.disabled = false;
+      saveBtn.style.opacity = '1';
+      saveBtn.style.cursor = 'pointer';
+      saveBtn.title = '';
+    }
+    return true;
+  }
+}
+
+function checkEditPaymentLink() {
+  const purchaseType = (document.getElementById('editPurchaseType')?.value || 'inquire').trim();
+  const paymentInput = document.getElementById('editPaymentLink');
+  const group = document.getElementById('editPaymentLinkGroup');
+  const label = group ? group.querySelector('label') : null;
+  const saveBtn = document.querySelector('.edit-actions-bar .btn-action-gold');
+  const saveNextBtn = document.getElementById('btnSaveAndNext');
+  const isDirect = purchaseType === 'direct';
+  const hasLink = Boolean(paymentInput && paymentInput.value.trim());
+
+  if (label) {
+    label.innerHTML = isDirect 
+      ? 'Payment / Checkout Link (Master Buy Button) <span style="color:#ff6b6b; font-weight:700; font-size:0.8rem; margin-left:6px;">* (Mandatory for Direct Purchase)</span>'
+      : 'Payment / Checkout Link (Master Buy Button)';
+  }
+
+  if (isDirect && !hasLink) {
+    if (paymentInput) {
+      paymentInput.style.borderColor = '#ff6b6b';
+      paymentInput.style.boxShadow = '0 0 6px rgba(255,107,107,0.3)';
+    }
+    if (saveBtn) {
+      saveBtn.disabled = true;
+      saveBtn.style.opacity = '0.5';
+      saveBtn.style.cursor = 'not-allowed';
+      saveBtn.title = 'Payment link is mandatory when Direct Purchase is selected';
+    }
+    if (saveNextBtn) {
+      saveNextBtn.disabled = true;
+      saveNextBtn.style.opacity = '0.5';
+      saveNextBtn.style.cursor = 'not-allowed';
+      saveNextBtn.title = 'Payment link is mandatory when Direct Purchase is selected';
+    }
+    return false;
+  } else {
+    if (paymentInput) {
+      paymentInput.style.borderColor = 'rgba(201,168,76,0.3)';
+      paymentInput.style.boxShadow = '';
+    }
+    if (saveBtn) {
+      saveBtn.disabled = false;
+      saveBtn.style.opacity = '1';
+      saveBtn.style.cursor = 'pointer';
+      saveBtn.title = '';
+    }
+    if (saveNextBtn) {
+      saveNextBtn.disabled = false;
+      saveNextBtn.style.opacity = '1';
+      saveNextBtn.style.cursor = 'pointer';
+      saveNextBtn.title = '';
+    }
+    return true;
+  }
+}
+
+function toggleEditPaymentField(val) {
+  checkEditPaymentLink();
+}
+
+function toggleUpPaymentField(val) {
+  checkUploadPaymentLink();
+}
+
+// Bind live input listeners for real-time button unlocking as user types
+document.addEventListener('DOMContentLoaded', () => {
+  const upPay = document.getElementById('upPaymentLink');
+  if (upPay) {
+    upPay.addEventListener('input', checkUploadPaymentLink);
+  }
+  const editPay = document.getElementById('editPaymentLink');
+  if (editPay) {
+    editPay.addEventListener('input', checkEditPaymentLink);
+  }
+});
+
+function previewUploadFiles(input) {
+  if (input.files) {
+    [...input.files].forEach(file => {
+      stagedUploadFiles.push(file);
+    });
+    updateStagedUploadUI();
+  }
+}
+
+// Drag & drop on upload modal (Smooth, non-dragging page interaction)
+const dz = document.getElementById('uploadDropZone');
+if (dz) {
+  dz.addEventListener('dragover', e => { 
+    e.preventDefault(); 
+    e.stopPropagation();
+    dz.classList.add('drag-over'); 
+  });
+  dz.addEventListener('dragleave', e => {
+    e.preventDefault();
+    e.stopPropagation();
+    dz.classList.remove('drag-over');
+  });
+  dz.addEventListener('drop', e => {
+    e.preventDefault();
+    e.stopPropagation();
+    dz.classList.remove('drag-over');
+    if (e.dataTransfer && e.dataTransfer.files) {
+      [...e.dataTransfer.files].forEach(f => {
+        if (f.type.startsWith('image/')) {
+          stagedUploadFiles.push(f);
+        }
+      });
+      updateStagedUploadUI();
+    }
+  });
+}
+
+async function submitArtworkUpload() {
+  const artist = document.getElementById('uploadArtistHidden').value;
+  const category = document.getElementById('uploadCategoryHidden').value;
+  const title = document.getElementById('upTitle').value.trim();
+  const medium = document.getElementById('upMedium').value.trim();
+  const size = document.getElementById('upSize').value.trim();
+  const year = document.getElementById('upYear').value.trim();
+  const price = document.getElementById('upPrice').value.trim();
+  const purchaseType = document.getElementById('upPurchaseType').value.trim();
+  const paymentLink = document.getElementById('upPaymentLink').value.trim();
+  const description = document.getElementById('upDesc').value.trim();
+
+  if (stagedUploadFiles.length === 0) {
+    toast('Please select at least one image file to upload', 'error');
+    return;
+  }
+
+  if (purchaseType === 'direct' && !paymentLink) {
+    toast('Payment link is mandatory when Direct Purchase is selected.', 'error');
+    document.getElementById('upPaymentLink').focus();
+    checkUploadPaymentLink();
+    return;
+  }
+
+  if (!serverConnected) await checkServerHealth();
+
+  closeDialog('modalUploadArtwork');
+  showAdminLoading('Optimizing & Uploading...', `Auto-compressing and uploading ${stagedUploadFiles.length} file(s) with lossless quality...`);
+
+  try {
+    const formData = new FormData();
+    formData.append('artist', artist);
+    formData.append('category', category || 'Artworks');
+    formData.append('title', title);
+    formData.append('medium', medium);
+    formData.append('size', size);
+    formData.append('year', year);
+    formData.append('price', price || 'Price on Request');
+    formData.append('purchaseType', purchaseType || 'inquire');
+    formData.append('paymentLink', paymentLink || '');
+    formData.append('description', description);
+
+    // Fast client-side lossless compression before dispatch
+    for (const file of stagedUploadFiles) {
+      const compressedFile = await compressImageFileClient(file);
+      formData.append('images', compressedFile);
+    }
+
+    const res = await fetch(`${API_BASE}/api/upload-artwork`, {
+      method: 'POST',
+      body: formData
+    });
+    const data = await res.json();
+    if (res.ok && data.ok) {
+      setPendingSync(true);
+      await loadAllData();
+      hideAdminLoading();
+      toast('✓ Artwork uploaded & auto-compressed successfully!');
+      stagedUploadFiles = [];
+      const isStudent = selectedArtist && (selectedArtist.tier === 'Student Artists' || selectedArtist.isStudent);
+      if (isStudent) {
+        navToStudentArtworks(artist);
+      } else {
+        navToArtworks(category || 'Artworks');
+      }
+      return;
+    } else {
+      hideAdminLoading();
+      toast('Upload failed: ' + (data.error || 'Server error'), 'error');
+    }
+  } catch (e) {
+    hideAdminLoading();
+    toast('Upload failed: ' + e.message, 'error');
+  }
+}
+
+function closeDialog(id) {
+  document.getElementById(id).classList.remove('open');
+}
+
+/* ══ OVERVIEW STATS ════════════════════════════ */
+function updateOverviewStats() {
+  let totalArtworks = 0;
+  let totalCats = 0;
+  allArtistsData.forEach(a => {
+    a.categories.forEach(c => {
+      totalArtworks += (c.imageCount || (c.artworks ? c.artworks.length : 0));
+      totalCats++;
+    });
+  });
+
+  const exs = _exhibitions;
+
+  document.getElementById('stat-artists').textContent = allArtistsData.length;
+  document.getElementById('stat-categories').textContent = totalCats;
+  document.getElementById('stat-artworks').textContent = totalArtworks;
+  document.getElementById('stat-exhibitions').textContent = exs.length;
+
+  // List collections
+  let html = '<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:0.75rem;">';
+  allArtistsData.forEach(a => {
+    a.categories.forEach(c => {
+      const count = c.imageCount || (c.artworks ? c.artworks.length : 0);
+      html += `
+        <div style="background:var(--bg3);border:1px solid var(--border);border-radius:4px;padding:0.85rem;cursor:pointer;" onclick="showPanel('gallery-explorer'); navToAlbums('${a.name.replace(/'/g,"\\'")}')">
+          <div style="font-size:0.75rem;color:var(--gold);text-transform:uppercase;letter-spacing:0.06em;font-weight:600;">${a.name}</div>
+          <div style="font-size:0.95rem;margin-top:0.2rem;font-weight:500;">${c.name}</div>
+          <div style="font-size:0.75rem;color:var(--muted);margin-top:0.2rem;">${count} artwork${count !== 1 ? 's' : ''}</div>
+        </div>`;
+    });
+  });
+  html += '</div>';
+  document.getElementById('overviewCollectionsList').innerHTML = html;
+}
+
+/* ══ EXHIBITIONS MANAGEMENT ════════════════════ */
+let _exhibitions = [];
+async function loadExhibitions() {
+  try {
+    const response = await fetch('/api/exhibitions');
+    if (!response.ok) throw new Error('Unable to load exhibitions from Sanity.');
+    _exhibitions = await response.json();
+    renderExhibitions();
+    updateOverviewStats();
+  } catch (error) {
+    toast(error.message, 'error');
+  }
+}
+
+function renderExhibitions() {
+  const el = document.getElementById('exhibitionList');
+  if (!_exhibitions.length) {
+    el.innerHTML = '<p style="color:var(--muted)">No exhibitions yet. Add one above.</p>';
+    return;
+  }
+  el.innerHTML = _exhibitions.map(ex => {
+    const dateRange = [ex.startDate, ex.endDate].filter(Boolean).join(' → ');
+    const timeRange = [ex.startTime, ex.endTime].filter(Boolean).join(' – ');
+    return `
+    <div style="background:var(--bg3);border:1px solid var(--border);border-radius:4px;padding:1rem;margin-bottom:0.75rem;display:flex;justify-content:space-between;align-items:flex-start;gap:1rem;">
+      <div>
+        <h5 style="font-size:0.95rem;color:var(--text);font-weight:600;">${escapeAdminHtml(ex.title || 'Untitled')}</h5>
+        <p style="font-size:0.78rem;color:var(--muted);margin-top:0.2rem;">${escapeAdminHtml(ex.artist || '')}${ex.location ? ' &bull; ' + escapeAdminHtml(ex.location) : ''}</p>
+        ${dateRange ? `<p style="font-size:0.78rem;color:var(--muted);">${escapeAdminHtml(dateRange)}</p>` : ''}
+        ${timeRange ? `<p style="font-size:0.78rem;color:var(--muted);">Time: ${escapeAdminHtml(timeRange)}</p>` : ''}
+        ${ex.timeRange && ex.timeRange !== timeRange ? `<p style="font-size:0.78rem;color:var(--muted);">Display time: ${escapeAdminHtml(ex.timeRange)}</p>` : ''}
+        ${ex.theme ? `<p style="font-size:0.78rem;color:var(--muted);">Theme: ${escapeAdminHtml(ex.theme)}</p>` : ''}
+        ${ex.registrationFee ? `<p style="font-size:0.78rem;color:var(--muted);">Registration fee: ${escapeAdminHtml(ex.registrationFee)}</p>` : ''}
+        ${ex.isPlaceholder && ex.displayDateOverride ? `<p style="font-size:0.78rem;color:var(--muted);">${escapeAdminHtml(ex.displayDateOverride)}</p>` : ''}
+        ${ex.registrationLink ? `<p style="font-size:0.78rem;color:var(--muted);">Registration: ${escapeAdminHtml(ex.ctaText || 'Register')} · ${escapeAdminHtml(ex.registrationLink)}</p>` : ''}
+        <span style="font-size:0.68rem;padding:0.2rem 0.6rem;border-radius:20px;text-transform:uppercase;letter-spacing:0.08em;margin-top:0.35rem;display:inline-block;background:var(--gold-d);color:var(--gold);">${escapeAdminHtml(ex.status || 'upcoming')}</span>
+      </div>
+      <div style="display:flex;gap:0.5rem;flex-shrink:0;">
+        <button class="btn-action-outline" style="font-size:0.75rem;padding:0.35rem 0.75rem;" onclick="editExhibition('${escapeAdminHtml(ex.id)}')">Edit</button>
+        <button class="btn-modal-del" style="font-size:0.75rem;padding:0.35rem 0.75rem;" onclick="deleteExhibition('${escapeAdminHtml(ex.id)}')">Delete</button>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function clearExForm() {
+  ['ex-id','ex-title','ex-artist','ex-location','ex-category','ex-theme','ex-desc','ex-image','ex-start-time','ex-end-time','ex-registration-link','ex-cta-text','ex-conditions','ex-contact-link','ex-registration-fee','ex-time-range','ex-display-date-override'].forEach(id => document.getElementById(id).value = '');
+  document.getElementById('ex-start').value  = '';
+  document.getElementById('ex-end').value    = '';
+  document.getElementById('ex-status').value = 'upcoming';
+  document.getElementById('ex-is-placeholder').checked = false;
+  document.getElementById('exFormTitle').textContent = 'Add New Exhibition / Event';
+}
+
+function editExhibition(id) {
+  const ex = _exhibitions.find(e => e.id === id); if (!ex) return;
+  document.getElementById('ex-id').value       = ex.id;
+  document.getElementById('ex-title').value    = ex.title || '';
+  document.getElementById('ex-artist').value   = ex.artist || '';
+  document.getElementById('ex-start').value    = ex.startDate || '';
+  document.getElementById('ex-end').value      = ex.endDate || '';
+  document.getElementById('ex-start-time').value = ex.startTime || '';
+  document.getElementById('ex-end-time').value   = ex.endTime || '';
+  document.getElementById('ex-status').value   = ex.status || 'upcoming';
+  document.getElementById('ex-location').value = ex.location || '';
+  document.getElementById('ex-category').value = ex.category || '';
+  document.getElementById('ex-theme').value    = ex.theme || '';
+  document.getElementById('ex-desc').value     = ex.description || '';
+  document.getElementById('ex-registration-link').value = ex.registrationLink || '';
+  document.getElementById('ex-cta-text').value = ex.ctaText || '';
+  document.getElementById('ex-conditions').value = ex.conditions || '';
+  document.getElementById('ex-contact-link').value = ex.contactLink || '';
+  document.getElementById('ex-registration-fee').value = ex.registrationFee || '';
+  document.getElementById('ex-time-range').value = ex.timeRange || '';
+  document.getElementById('ex-is-placeholder').checked = Boolean(ex.isPlaceholder);
+  document.getElementById('ex-display-date-override').value = ex.displayDateOverride || '';
+  document.getElementById('ex-image').value     = '';
+  document.getElementById('exFormTitle').textContent = 'Edit Exhibition';
+  document.getElementById('panel-exhibitions').scrollTop = 0;
+}
+
+async function saveExhibition() {
+  const id = document.getElementById('ex-id').value;
+  const payload = {
+    id:          id || ('ex_' + Date.now()),
+    title:       document.getElementById('ex-title').value.trim(),
+    artist:      document.getElementById('ex-artist').value.trim(),
+    startDate:   document.getElementById('ex-start').value,
+    endDate:     document.getElementById('ex-end').value,
+    startTime:   document.getElementById('ex-start-time').value,
+    endTime:     document.getElementById('ex-end-time').value,
+    status:      document.getElementById('ex-status').value,
+    location:    document.getElementById('ex-location').value.trim(),
+    category:    document.getElementById('ex-category').value.trim(),
+    theme:       document.getElementById('ex-theme').value.trim(),
+    description: document.getElementById('ex-desc').value.trim(),
+    registrationLink: document.getElementById('ex-registration-link').value.trim(),
+    contactLink: document.getElementById('ex-contact-link').value.trim(),
+    ctaText:     document.getElementById('ex-cta-text').value.trim(),
+    conditions:  document.getElementById('ex-conditions').value.trim(),
+    registrationFee: document.getElementById('ex-registration-fee').value.trim(),
+    timeRange: document.getElementById('ex-time-range').value.trim(),
+    isPlaceholder: document.getElementById('ex-is-placeholder').checked,
+    displayDateOverride: document.getElementById('ex-display-date-override').value.trim(),
+  };
+  if (!payload.title) { toast('Title is required', 'error'); return; }
+  if (payload.registrationLink) {
+    try {
+      const registrationUrl = new URL(payload.registrationLink);
+      if (!['http:', 'https:'].includes(registrationUrl.protocol)) throw new Error();
+    } catch {
+      toast('Enter a valid http or https registration link.', 'error');
+      return;
+    }
+  }
+  try {
+    const form = new FormData();
+    Object.entries(payload).forEach(([key, value]) => form.append(key, value));
+    const image = document.getElementById('ex-image').files[0];
+    if (image) form.append('image', image);
+    const response = await fetch('/api/exhibitions', {
+      method: 'POST', body: form
+    });
+    const result = await response.json();
+    if (!response.ok) throw new Error(result.error || 'Unable to save exhibition.');
+    setPendingSync(true);
+    toast('Exhibition draft saved in Sanity. Publish to make it public.');
+    clearExForm();
+    await loadExhibitions();
+  } catch (error) {
+    toast(error.message, 'error');
+  }
+}
+
+async function deleteExhibition(id) {
+  if (!confirm('Delete this exhibition?')) return;
+  try {
+    const response = await fetch(`/api/exhibitions/${encodeURIComponent(id)}`, { method: 'DELETE' });
+    const result = await response.json();
+    if (!response.ok) throw new Error(result.error || 'Unable to delete exhibition.');
+    _exhibitions = _exhibitions.filter(item => item.id !== id);
+    setPendingSync(true);
+    toast('Exhibition removal staged in Sanity.');
+    renderExhibitions();
+  } catch (error) {
+    toast(error.message, 'error');
+  }
+}
+
+/* ══ SYNC TRIGGER ══════════════════════════════ */
+let _posts = [];
+let _libraryItems = [];
+
+function escapeAdminHtml(value) {
+  return String(value ?? '').replace(/[&<>"']/g, character => ({
+    '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+  })[character]);
+}
+
+async function loadContentLibrary() {
+  try {
+    const [postsResponse, mediaResponse] = await Promise.all([fetch('/api/posts'), fetch('/api/library')]);
+    if (!postsResponse.ok || !mediaResponse.ok) throw new Error('Unable to load Sanity content.');
+    [_posts, _libraryItems] = await Promise.all([postsResponse.json(), mediaResponse.json()]);
+    renderPostList();
+    renderLibraryList();
+  } catch (error) {
+    toast(error.message, 'error');
+  }
+}
+
+function renderPostList() {
+  const list = document.getElementById('postList');
+  if (!_posts.length) {
+    list.textContent = 'No blog posts yet.';
+    return;
+  }
+  list.innerHTML = _posts.map(post => {
+    const id = escapeAdminHtml(post._id);
+    return `<div style="display:flex;justify-content:space-between;gap:1rem;align-items:center;border-top:1px solid var(--border);padding:0.8rem 0;">
+      <div><strong>${escapeAdminHtml(post.title)}</strong><div style="color:var(--muted);font-size:0.78rem;">${post._draft ? 'Draft' : 'Published'} · ${escapeAdminHtml(post.excerpt || '')}</div></div>
+      <div style="display:flex;gap:0.5rem;"><button class="btn-action-outline" data-id="${id}" onclick="editPost(this.dataset.id)">Edit</button><button class="btn-modal-del" data-id="${id}" onclick="deletePost(this.dataset.id)">Delete</button></div>
+    </div>`;
+  }).join('');
+}
+
+function clearPostForm() {
+  ['post-id', 'post-title', 'post-slug', 'post-excerpt', 'post-body'].forEach(id => document.getElementById(id).value = '');
+}
+
+function editPost(id) {
+  const post = _posts.find(item => item._id === id);
+  if (!post) return;
+  document.getElementById('post-id').value = id;
+  document.getElementById('post-title').value = post.title || '';
+  document.getElementById('post-slug').value = post.slug?.current || post.slug || '';
+  document.getElementById('post-excerpt').value = post.excerpt || '';
+  document.getElementById('post-body').value = post.body || '';
+  document.getElementById('post-title').focus();
+}
+
+async function savePost() {
+  const payload = {
+    id: document.getElementById('post-id').value,
+    title: document.getElementById('post-title').value.trim(),
+    slug: document.getElementById('post-slug').value.trim(),
+    excerpt: document.getElementById('post-excerpt').value.trim(),
+    body: document.getElementById('post-body').value.trim()
+  };
+  if (!payload.title) return toast('Post title is required.', 'error');
+  try {
+    const response = await fetch('/api/posts', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload)
+    });
+    const result = await response.json();
+    if (!response.ok) throw new Error(result.error || 'Unable to save post.');
+    setPendingSync(true);
+    clearPostForm();
+    await loadContentLibrary();
+    toast('Blog draft saved in Sanity. Publish to make it public.');
+  } catch (error) {
+    toast(error.message, 'error');
+  }
+}
+
+async function deletePost(id) {
+  if (!confirm('Delete this blog post?')) return;
+  try {
+    const response = await fetch(`/api/posts/${encodeURIComponent(id)}`, { method: 'DELETE' });
+    const result = await response.json();
+    if (!response.ok) throw new Error(result.error || 'Unable to delete post.');
+    setPendingSync(true);
+    await loadContentLibrary();
+    toast('Post removal staged in Sanity.');
+  } catch (error) {
+    toast(error.message, 'error');
+  }
+}
+
+function clearLibraryForm() {
+  ['library-id', 'library-title', 'library-description', 'library-file'].forEach(id => document.getElementById(id).value = '');
+  document.getElementById('library-kind').value = 'image';
+}
+
+function renderLibraryList() {
+  const list = document.getElementById('libraryList');
+  if (!_libraryItems.length) {
+    list.textContent = 'No media uploaded yet.';
+    return;
+  }
+  list.innerHTML = _libraryItems.map(item => {
+    const id = escapeAdminHtml(item._id);
+    const url = item.assetUrl || item.imageUrl || item.fileUrl || '';
+    return `<div style="display:flex;justify-content:space-between;gap:1rem;align-items:center;border-top:1px solid var(--border);padding:0.8rem 0;">
+      <div><strong>${escapeAdminHtml(item.title)}</strong><div style="color:var(--muted);font-size:0.78rem;">${escapeAdminHtml(item.kind || 'file')} · ${item._draft ? 'Draft' : 'Published'} ${url ? `· <a href="${escapeAdminHtml(url)}" target="_blank" rel="noopener noreferrer">Open file</a>` : ''}</div></div>
+      <div style="display:flex;gap:0.5rem;"><button class="btn-action-outline" data-id="${id}" onclick="editLibraryItem(this.dataset.id)">Edit</button><button class="btn-modal-del" data-id="${id}" onclick="deleteLibraryItem(this.dataset.id)">Delete</button></div>
+    </div>`;
+  }).join('');
+}
+
+function editLibraryItem(id) {
+  const item = _libraryItems.find(record => record._id === id);
+  if (!item) return;
+  document.getElementById('library-id').value = id;
+  document.getElementById('library-title').value = item.title || '';
+  document.getElementById('library-description').value = item.description || '';
+  document.getElementById('library-kind').value = item.kind || 'document';
+  document.getElementById('library-file').value = '';
+}
+
+async function saveLibraryItem() {
+  const id = document.getElementById('library-id').value;
+  const title = document.getElementById('library-title').value.trim();
+  const description = document.getElementById('library-description').value.trim();
+  const file = document.getElementById('library-file').files[0];
+  try {
+    let response;
+    if (id) {
+      response = await fetch('/api/library/update', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ id, title, description })
+      });
+    } else {
+      if (!file) return toast('Choose a file to upload.', 'error');
+      const form = new FormData();
+      form.append('title', title || file.name);
+      form.append('description', description);
+      form.append('kind', document.getElementById('library-kind').value);
+      form.append('file', file);
+      response = await fetch('/api/library', { method: 'POST', body: form });
+    }
+    const result = await response.json();
+    if (!response.ok) throw new Error(result.error || 'Unable to save media.');
+    setPendingSync(true);
+    clearLibraryForm();
+    await loadContentLibrary();
+    toast(id ? 'Media details updated in Sanity.' : 'File uploaded to Sanity. Publish to make it public.');
+  } catch (error) {
+    toast(error.message, 'error');
+  }
+}
+
+async function deleteLibraryItem(id) {
+  if (!confirm('Delete this media item?')) return;
+  try {
+    const response = await fetch(`/api/library/${encodeURIComponent(id)}`, { method: 'DELETE' });
+    const result = await response.json();
+    if (!response.ok) throw new Error(result.error || 'Unable to delete media item.');
+    setPendingSync(true);
+    await loadContentLibrary();
+    toast('Media removal staged in Sanity.');
+  } catch (error) {
+    toast(error.message, 'error');
+  }
+}
+
+let _journalFolders = [];
+let _journalEntries = [];
+
+async function loadJournalAdmin() {
+  try {
+    const [foldersResponse, entriesResponse] = await Promise.all([
+      fetch('/api/journal/folders'), fetch('/api/journal/entries')
+    ]);
+    if (!foldersResponse.ok || !entriesResponse.ok) throw new Error('Unable to load Journal & Media content.');
+    [_journalFolders, _journalEntries] = await Promise.all([foldersResponse.json(), entriesResponse.json()]);
+    renderJournalFolders();
+    renderJournalEntries();
+    refreshJournalFolderOptions();
+  } catch (error) {
+    toast(error.message, 'error');
+  }
+}
+
+function renderJournalFolders() {
+  const list = document.getElementById('journalFolderList');
+  if (!_journalFolders.length) {
+    list.textContent = 'No journal folders yet.';
+    return;
+  }
+  list.innerHTML = _journalFolders.map(folder => {
+    const id = escapeAdminHtml(folder._id);
+    const count = _journalEntries.filter(entry => entry.folderId === folder._id).length;
+    return `<div style="display:flex;justify-content:space-between;gap:1rem;align-items:center;border-top:1px solid var(--border);padding:0.8rem 0;">
+      <div><strong>${escapeAdminHtml(folder.title)}</strong><div style="color:var(--muted);font-size:0.78rem;">${escapeAdminHtml(folder.category || 'Other')}${folder.organization ? ` · ${escapeAdminHtml(folder.organization)}` : ''} · ${count} entr${count === 1 ? 'y' : 'ies'} · ${folder._draft ? 'Draft' : 'Published'}</div></div>
+      <div style="display:flex;gap:0.5rem;"><button class="btn-action-outline" data-id="${id}" onclick="editJournalFolder(this.dataset.id)">Edit</button><button class="btn-modal-del" data-id="${id}" onclick="deleteJournalFolder(this.dataset.id)">Delete</button></div>
+    </div>`;
+  }).join('');
+}
+
+function renderJournalEntries() {
+  const list = document.getElementById('journalEntryList');
+  if (!_journalEntries.length) {
+    list.textContent = 'No journal entries yet.';
+    return;
+  }
+  list.innerHTML = _journalEntries.map(entry => {
+    const id = escapeAdminHtml(entry._id);
+    const folder = _journalFolders.find(item => item._id === entry.folderId);
+    return `<div style="display:flex;justify-content:space-between;gap:1rem;align-items:center;border-top:1px solid var(--border);padding:0.8rem 0;">
+      <div><strong>${escapeAdminHtml(entry.title)}</strong><div style="color:var(--muted);font-size:0.78rem;">${escapeAdminHtml(entry.destination === 'tv' || entry.entryType === 'ARTGALZIM TV' ? 'ARTGALZIM TV' : 'Journal and Gallery')}${folder ? ` · ${escapeAdminHtml(folder.title)}` : ''} · ${escapeAdminHtml(entry.entryType === 'ARTGALZIM TV' ? 'Video' : entry.entryType || 'Story')} · ${entry._draft ? 'Draft' : 'Published'}</div></div>
+      <div style="display:flex;gap:0.5rem;"><button class="btn-action-outline" data-id="${id}" onclick="editJournalEntry(this.dataset.id)">Edit</button><button class="btn-modal-del" data-id="${id}" onclick="deleteJournalEntry(this.dataset.id)">Delete</button></div>
+    </div>`;
+  }).join('');
+}
+
+function refreshJournalFolderOptions(selectedId = document.getElementById('journal-entry-folder').value) {
+  const select = document.getElementById('journal-entry-folder');
+  select.innerHTML = '<option value="">Select a folder</option>' + _journalFolders.map(folder =>
+    `<option value="${escapeAdminHtml(folder._id)}">${escapeAdminHtml(folder.title)}</option>`
+  ).join('');
+  if (_journalFolders.some(folder => folder._id === selectedId)) select.value = selectedId;
+}
+
+function clearJournalFolderForm() {
+  ['journal-folder-id', 'journal-folder-title', 'journal-folder-organization', 'journal-folder-description', 'journal-folder-cover']
+    .forEach(id => { document.getElementById(id).value = ''; });
+  document.getElementById('journal-folder-category').value = 'School';
+  document.getElementById('journalFolderFormTitle').textContent = 'Create Journal Folder';
+}
+
+function editJournalFolder(id) {
+  const folder = _journalFolders.find(item => item._id === id);
+  if (!folder) return;
+  document.getElementById('journal-folder-id').value = id;
+  document.getElementById('journal-folder-title').value = folder.title || '';
+  document.getElementById('journal-folder-category').value = folder.category || 'Other';
+  document.getElementById('journal-folder-organization').value = folder.organization || '';
+  document.getElementById('journal-folder-description').value = folder.description || '';
+  document.getElementById('journal-folder-cover').value = '';
+  document.getElementById('journalFolderFormTitle').textContent = 'Edit Journal Folder';
+  document.getElementById('journal-folder-title').focus();
+}
+
+async function saveJournalFolder() {
+  const form = new FormData();
+  const id = document.getElementById('journal-folder-id').value;
+  form.set('id', id);
+  form.set('title', document.getElementById('journal-folder-title').value.trim());
+  form.set('category', document.getElementById('journal-folder-category').value);
+  form.set('organization', document.getElementById('journal-folder-organization').value.trim());
+  form.set('description', document.getElementById('journal-folder-description').value.trim());
+  const cover = document.getElementById('journal-folder-cover').files[0];
+  if (cover) form.set('cover', cover);
+  try {
+    const response = await fetch('/api/journal/folders', { method: 'POST', body: form });
+    const result = await response.json();
+    if (!response.ok) throw new Error(result.error || 'Unable to save journal folder.');
+    setPendingSync(true);
+    clearJournalFolderForm();
+    await loadJournalAdmin();
+    toast(id ? 'Journal folder updated in Sanity.' : 'Journal folder saved in Sanity. Publish to make it public.');
+  } catch (error) {
+    toast(error.message, 'error');
+  }
+}
+
+async function deleteJournalFolder(id) {
+  if (!confirm('Delete this journal folder? Folders with entries must be emptied first.')) return;
+  try {
+    const response = await fetch(`/api/journal/folders/${encodeURIComponent(id)}`, { method: 'DELETE' });
+    const result = await response.json();
+    if (!response.ok) throw new Error(result.error || 'Unable to delete journal folder.');
+    setPendingSync(true);
+    await loadJournalAdmin();
+    toast('Journal folder removal staged in Sanity.');
+  } catch (error) {
+    toast(error.message, 'error');
+  }
+}
+
+function clearJournalEntryForm() {
+  [
+    'journal-entry-id', 'journal-entry-title', 'journal-entry-author', 'journal-entry-excerpt',
+    'journal-entry-body', 'journal-entry-event-date', 'journal-entry-end-date',
+    'journal-entry-location', 'journal-entry-image', 'journal-entry-attachment',
+    'journal-entry-media-url'
+  ].forEach(id => { document.getElementById(id).value = ''; });
+  document.getElementById('journal-entry-folder').value = '';
+  document.getElementById('journal-entry-destination').value = 'journal';
+  document.getElementById('journal-entry-type').value = 'News';
+  document.getElementById('journal-entry-media-type').value = '';
+  if (journalMediaPreviewUrl) URL.revokeObjectURL(journalMediaPreviewUrl);
+  journalMediaPreviewUrl = '';
+  document.getElementById('journal-media-preview').replaceChildren();
+  toggleJournalDestination();
+  document.getElementById('journalEntryFormTitle').textContent = 'Add Journal Entry';
+}
+
+function toggleJournalDestination() {
+  const isTv = document.getElementById('journal-entry-destination').value === 'tv';
+  const folderField = document.getElementById('journal-folder-field');
+  const folderSelect = document.getElementById('journal-entry-folder');
+  folderField.hidden = isTv;
+  folderSelect.required = !isTv;
+  if (isTv) folderSelect.value = '';
+}
+
+function journalMediaEmbed(mediaUrl, mediaType) {
+  let url;
+  try {
+    url = new URL(mediaUrl);
+  } catch {
+    return null;
+  }
+  if (url.protocol !== 'https:') return null;
+  const host = url.hostname.toLowerCase().replace(/^www\./, '');
+  if (mediaType === 'video' && ['youtube.com', 'm.youtube.com', 'youtu.be'].includes(host)) {
+    const segments = url.pathname.split('/').filter(Boolean);
+    const videoId = host === 'youtu.be'
+      ? segments[0]
+      : url.searchParams.get('v') || (['shorts', 'embed', 'live'].includes(segments[0]) ? segments[1] : '');
+    return videoId && /^[A-Za-z0-9_-]{6,}$/.test(videoId)
+      ? { kind: 'frame', src: `https://www.youtube-nocookie.com/embed/${videoId}` }
+      : null;
+  }
+  if (mediaType === 'video' && /\.(mp4|webm|ogv|m3u8)$/i.test(url.pathname)) {
+    return { kind: 'video', src: url.href };
+  }
+  if (mediaType === 'document' && ['drive.google.com', 'docs.google.com'].includes(host)) {
+    const match = url.pathname.match(/\/(file|document|spreadsheets|presentation)\/d\/([A-Za-z0-9_-]+)/);
+    const fileId = match?.[2] || url.searchParams.get('id');
+    const documentType = match?.[1] || 'file';
+    const embedHost = documentType === 'file' ? 'drive.google.com' : 'docs.google.com';
+    const embedPath = documentType === 'file' ? 'file' : documentType;
+    return fileId ? { kind: 'frame', src: `https://${embedHost}/${embedPath}/d/${fileId}/preview` } : null;
+  }
+  if (mediaType === 'document' && /\.pdf$/i.test(url.pathname)) {
+    return { kind: 'frame', src: url.href };
+  }
+  if (mediaType === 'social' && host === 'instagram.com') {
+    const match = url.pathname.match(/^\/(p|reel|tv)\/([A-Za-z0-9_-]+)\/?/);
+    return match ? { kind: 'frame', src: `https://www.instagram.com/${match[1]}/${match[2]}/embed/` } : null;
+  }
+  return null;
+}
+
+let journalMediaPreviewUrl = '';
+
+function previewJournalMedia() {
+  const preview = document.getElementById('journal-media-preview');
+  if (journalMediaPreviewUrl) URL.revokeObjectURL(journalMediaPreviewUrl);
+  journalMediaPreviewUrl = '';
+  preview.replaceChildren();
+  const attachment = document.getElementById('journal-entry-attachment').files[0];
+  if (attachment && /\.(mp4|webm|ogv)$/i.test(attachment.name)) {
+    journalMediaPreviewUrl = URL.createObjectURL(attachment);
+    const player = document.createElement('video');
+    player.src = journalMediaPreviewUrl;
+    player.controls = true;
+    player.playsInline = true;
+    player.preload = 'metadata';
+    player.className = 'journal-admin-preview';
+    preview.appendChild(player);
+    return;
+  }
+  const mediaType = document.getElementById('journal-entry-media-type').value;
+  const mediaUrl = document.getElementById('journal-entry-media-url').value.trim();
+  if (!mediaType && !mediaUrl) return;
+  const embed = journalMediaEmbed(mediaUrl, mediaType);
+  if (!embed) {
+    preview.textContent = 'Paste a supported HTTPS link to preview it here.';
+    preview.style.color = 'var(--muted)';
+    return;
+  }
+  if (embed.kind === 'video') {
+    const player = document.createElement('video');
+    player.src = embed.src;
+    player.controls = true;
+    player.playsInline = true;
+    player.preload = 'metadata';
+    player.className = 'journal-admin-preview';
+    preview.appendChild(player);
+    return;
+  }
+  const frame = document.createElement('iframe');
+  frame.src = embed.src;
+  frame.title = 'Embedded media preview';
+  frame.loading = 'lazy';
+  frame.referrerPolicy = 'strict-origin-when-cross-origin';
+  frame.allowFullscreen = true;
+  frame.className = 'journal-admin-preview';
+  preview.appendChild(frame);
+}
+
+function editJournalEntry(id) {
+  const entry = _journalEntries.find(item => item._id === id);
+  if (!entry) return;
+  document.getElementById('journal-entry-id').value = id;
+  refreshJournalFolderOptions(entry.folderId);
+  document.getElementById('journal-entry-destination').value = entry.destination || (entry.entryType === 'ARTGALZIM TV' ? 'tv' : 'journal');
+  toggleJournalDestination();
+  document.getElementById('journal-entry-type').value = entry.entryType === 'ARTGALZIM TV' ? 'Story' : entry.entryType || 'Story';
+  document.getElementById('journal-entry-title').value = entry.title || '';
+  document.getElementById('journal-entry-author').value = entry.author || '';
+  document.getElementById('journal-entry-excerpt').value = entry.excerpt || '';
+  document.getElementById('journal-entry-body').value = entry.body || '';
+  document.getElementById('journal-entry-event-date').value = entry.eventDate || '';
+  document.getElementById('journal-entry-end-date').value = entry.endDate || '';
+  document.getElementById('journal-entry-location').value = entry.location || '';
+  document.getElementById('journal-entry-image').value = '';
+  document.getElementById('journal-entry-attachment').value = '';
+  document.getElementById('journal-entry-media-type').value = entry.mediaType || '';
+  document.getElementById('journal-entry-media-url').value = entry.mediaUrl || '';
+  previewJournalMedia();
+  document.getElementById('journalEntryFormTitle').textContent = 'Edit Journal Entry';
+  document.getElementById('journal-entry-title').focus();
+}
+
+async function saveJournalEntry() {
+  const form = new FormData();
+  const id = document.getElementById('journal-entry-id').value;
+  form.set('id', id);
+  form.set('folderId', document.getElementById('journal-entry-folder').value);
+  form.set('destination', document.getElementById('journal-entry-destination').value);
+  form.set('entryType', document.getElementById('journal-entry-type').value);
+  form.set('mediaType', document.getElementById('journal-entry-media-type').value);
+  form.set('mediaUrl', document.getElementById('journal-entry-media-url').value.trim());
+  form.set('title', document.getElementById('journal-entry-title').value.trim());
+  form.set('author', document.getElementById('journal-entry-author').value.trim());
+  form.set('excerpt', document.getElementById('journal-entry-excerpt').value.trim());
+  form.set('body', document.getElementById('journal-entry-body').value.trim());
+  form.set('eventDate', document.getElementById('journal-entry-event-date').value);
+  form.set('endDate', document.getElementById('journal-entry-end-date').value);
+  form.set('location', document.getElementById('journal-entry-location').value.trim());
+  const image = document.getElementById('journal-entry-image').files[0];
+  const attachment = document.getElementById('journal-entry-attachment').files[0];
+  if (image) form.set('image', image);
+  if (attachment) form.set('attachment', attachment);
+  try {
+    const response = await fetch('/api/journal/entries', { method: 'POST', body: form });
+    const result = await response.json();
+    if (!response.ok) throw new Error(result.error || 'Unable to save journal entry.');
+    setPendingSync(true);
+    clearJournalEntryForm();
+    await loadJournalAdmin();
+    toast(id ? 'Journal entry updated in Sanity.' : 'Journal entry saved in Sanity. Publish to make it public.');
+  } catch (error) {
+    toast(error.message, 'error');
+  }
+}
+
+async function deleteJournalEntry(id) {
+  if (!confirm('Delete this journal entry?')) return;
+  try {
+    const response = await fetch(`/api/journal/entries/${encodeURIComponent(id)}`, { method: 'DELETE' });
+    const result = await response.json();
+    if (!response.ok) throw new Error(result.error || 'Unable to delete journal entry.');
+    setPendingSync(true);
+    await loadJournalAdmin();
+    toast('Journal entry removal staged in Sanity.');
+  } catch (error) {
+    toast(error.message, 'error');
+  }
+}
+
+async function triggerSync() {
+  try {
+    toast('Publishing Sanity drafts...', 'info');
+    const response = await fetch('/api/sync', { method: 'POST' });
+    const result = await response.json();
+    if (!response.ok) throw new Error(result.error || 'Sanity publish failed.');
+    setPendingSync(false);
+    toast(`Published ${result.published || 0} Sanity document(s).`);
+    await Promise.all([loadAllData(), loadExhibitions(), loadContentLibrary()]);
+    renderExplorer();
+    updateOverviewStats();
+  } catch (error) {
+    toast('Publish failed: ' + error.message, 'error');
+  }
+}
+
+/* ══ MOBILE SIDEBAR HELPERS ═══════════════════ */
+function toggleMobileSidebar() {
+  const sb = document.getElementById('sidebar');
+  const overlay = document.getElementById('sidebarOverlay');
+  if (!sb || !overlay) return;
+  const isOpen = sb.classList.contains('mobile-open');
+  if (isOpen) {
+    closeMobileSidebar();
+  } else {
+    sb.classList.add('mobile-open');
+    overlay.classList.add('open');
+  }
+}
+
+function closeMobileSidebar() {
+  const sb = document.getElementById('sidebar');
+  const overlay = document.getElementById('sidebarOverlay');
+  if (sb) sb.classList.remove('mobile-open');
+  if (overlay) overlay.classList.remove('open');
+}
+
+</script>
+</body>
+</html>

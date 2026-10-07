@@ -1,0 +1,16 @@
+node_modules
+.DS_Store
+dist
+.env
+.next
+build
+out
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.vercel
+# IDE stuff
+.vscode
+.idea
+.fleet
+.history

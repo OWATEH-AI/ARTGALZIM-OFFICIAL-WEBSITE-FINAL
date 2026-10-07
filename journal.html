@@ -1,0 +1,104 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Journal &amp; Media | ARTGALZIM CENTER</title>
+  <meta name="description" content="Stories, videos, images, and documents from ARTGALZIM CENTER." />
+  <link rel="stylesheet" href="/css/style.css" />
+  <style>
+    .journal-main { min-height: 70vh; padding: 5rem 0 7rem; }
+    .journal-heading { margin-bottom: 2.5rem; }
+    .journal-feed { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 290px), 1fr)); gap: 1.25rem; }
+    .journal-section, .journal-folder-heading, .journal-detail { grid-column: 1 / -1; }
+    .journal-section > h2 { margin: 0 0 1rem; }
+    .journal-cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 290px), 1fr)); gap: 1.25rem; }
+    .journal-item { min-width: 0; padding: 1.25rem; border: 1px solid var(--border); background: var(--bg-card); }
+    .journal-item h2 { margin: 0 0 0.65rem; }
+    .journal-item h3 { margin: 0 0 0.65rem; }
+    .journal-item p { white-space: pre-wrap; overflow-wrap: anywhere; }
+    .journal-item img, .journal-item video { display: block; width: 100%; max-height: 440px; margin: 0 0 1rem; object-fit: contain; background: #111; }
+    .journal-file { display: inline-block; margin: 0 0 1rem; color: var(--gold); text-decoration: underline; overflow-wrap: anywhere; }
+    .journal-meta { color: var(--text-muted); font-size: 0.82rem; margin-bottom: 0.9rem; }
+    .journal-empty { grid-column: 1 / -1; color: var(--text-muted); padding: 2rem 0; }
+    .journal-button, .journal-back { border: 1px solid var(--border-g); border-radius: 4px; background: transparent; color: var(--gold); padding: 0.65rem 0.9rem; font: inherit; cursor: pointer; }
+    .journal-back { margin-bottom: 1rem; }
+    .journal-button:hover, .journal-back:hover { background: var(--bg3); }
+    .journal-detail-body { font-size: 1.05rem; line-height: 1.8; }
+    .journal-detail-excerpt { color: var(--text-muted); font-size: 1.05rem; }
+    .journal-tabs { display: flex; gap: 0.75rem; flex-wrap: wrap; margin: 0 0 1.5rem; border-bottom: 1px solid var(--border); }
+    .journal-tab { border: 0; border-bottom: 2px solid transparent; background: transparent; color: var(--text-muted); padding: 0.8rem 1rem; font: inherit; font-weight: 700; cursor: pointer; }
+    .journal-tab.active, .journal-tab[aria-selected="true"] { color: var(--gold); border-bottom-color: var(--gold); }
+    .journal-tab:focus-visible, .journal-button:focus-visible, .journal-back:focus-visible { outline: 2px solid var(--gold); outline-offset: 3px; }
+    .journal-media-viewer, .journal-document-viewer { position: relative; width: 100%; aspect-ratio: 16 / 9; margin: 1.25rem 0; background: #080808; }
+    .journal-media-viewer iframe, .journal-media-viewer video, .journal-document-viewer iframe { display: block; width: 100%; height: 100%; border: 0; }
+    .journal-video-preview { position: relative; display: grid; place-items: center; width: 100%; height: 100%; padding: 0; overflow: hidden; border: 0; background: #080808; color: #fff; cursor: pointer; }
+    .journal-video-preview img { display: block; width: 100%; height: 100%; margin: 0; object-fit: cover; }
+    .journal-video-preview-label { position: absolute; padding: 0.65rem 1rem; border-radius: 999px; background: rgba(0, 0, 0, 0.78); color: #fff; font: inherit; }
+    .journal-video-preview:hover .journal-video-preview-label, .journal-video-preview:focus-visible .journal-video-preview-label { background: var(--gold); color: #111; }
+    .journal-video-preview:focus-visible { outline: 2px solid var(--gold); outline-offset: 2px; }
+    .journal-document-viewer { aspect-ratio: 8.5 / 11; max-height: 85vh; }
+    .journal-detail audio { display: block; width: 100%; margin: 1.25rem 0; }
+    .journal-tv-layout { grid-column: 1 / -1; display: grid; grid-template-columns: minmax(0, 1fr) minmax(260px, 350px); gap: 1.25rem; align-items: start; }
+    .journal-tv-player, .journal-tv-playlist { min-width: 0; padding: clamp(1rem, 2vw, 1.5rem); border: 1px solid var(--border); background: var(--bg-card); }
+    .journal-tv-player h2, .journal-tv-playlist h2 { margin: 1rem 0 0.5rem; }
+    .journal-tv-viewer { width: 100%; aspect-ratio: 16 / 9; background: #080808; }
+    .journal-tv-viewer iframe, .journal-tv-viewer video { display: block; width: 100%; height: 100%; border: 0; }
+    .journal-tv-playlist { position: sticky; top: 1rem; }
+    .journal-tv-playlist-items { display: grid; gap: 0.5rem; max-height: min(70vh, 42rem); overflow: auto; }
+    .journal-tv-playlist-item { display: flex; align-items: center; gap: 0.75rem; width: 100%; padding: 0.65rem; border: 1px solid transparent; background: transparent; color: inherit; text-align: left; font: inherit; cursor: pointer; }
+    .journal-tv-playlist-item:hover, .journal-tv-playlist-item[aria-current="true"] { border-color: var(--border-g); background: var(--bg3); }
+    .journal-tv-playlist-item img, .journal-tv-playlist-number { flex: 0 0 6rem; width: 6rem; height: 3.4rem; margin: 0; object-fit: cover; background: #111; }
+    .journal-tv-playlist-number { display: grid; place-items: center; color: var(--gold); }
+    .journal-tv-playlist-text { display: grid; gap: 0.3rem; min-width: 0; overflow-wrap: anywhere; }
+    .journal-tv-playlist-text .journal-meta { margin: 0; }
+    .journal-tv-playlist-item:focus-visible { outline: 2px solid var(--gold); outline-offset: 2px; }
+    .journal-admin-preview { display: block; width: min(100%, 720px); aspect-ratio: 16 / 9; border: 0; background: #080808; }
+    video.journal-admin-preview { height: auto; }
+    @media (max-width: 900px) { .journal-tv-layout { grid-template-columns: minmax(0, 1fr); } .journal-tv-playlist { position: static; } .journal-tv-playlist-items { max-height: 26rem; } }
+    @media (max-width: 700px) {
+      .journal-main { padding: calc(var(--nav-h) + 1.5rem) 0 5rem; }
+      .journal-tabs { flex-wrap: nowrap; gap: 0.25rem; }
+      .journal-tab { flex: 1 1 0; padding-inline: 0.25rem; white-space: nowrap; font-size: clamp(0.72rem, 3.4vw, 0.9rem); }
+    }
+  </style>
+</head>
+<body>
+  <header class="navbar" id="navbar">
+    <div class="nav-container">
+      <a href="index.html" class="nav-logo" aria-label="ARTGALZIM CENTER Home">
+        <img src="images/logo.jpg" alt="ARTGALZIM Center" class="logo-img" />
+        <div class="nav-site-name"><span class="name-main">ARTGALZIM</span><span class="name-sub">CENTER</span></div>
+      </a>
+      <nav class="nav-links" id="navLinks">
+        <a href="index.html" class="nav-link">Home</a>
+        <a href="artists.html" class="nav-link">Artists</a>
+        <a href="artworks.html" class="nav-link">Artworks</a>
+        <a href="exhibitions.html" class="nav-link">Exhibitions</a>
+        <a href="journal.html" class="nav-link active">Journal &amp; Media</a>
+        <a href="scholarships.html" class="nav-link">Scholarships</a>
+        <a href="testimonials.html" class="nav-link">Testimonials &amp; Reviews</a>
+        <a href="contact.html" class="nav-link">Contact</a>
+      </nav>
+      <div class="nav-controls"><a href="donate.html" class="donate-btn-link" aria-label="Donate"><span class="donate-text">Donate</span><svg class="donate-icon" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s-8-4.6-8-11a4.5 4.5 0 0 1 8-2.9A4.5 4.5 0 0 1 20 10c0 6.4-8 11-8 11Z" /></svg></a></div>
+    </div>
+  </header>
+  <main class="journal-main">
+    <div class="container">
+      <header class="journal-heading">
+        <span class="section-eyebrow">From the Gallery</span>
+        <h1 class="page-title">Journal &amp; Media</h1>
+      </header>
+      <div class="journal-tabs" role="tablist" aria-label="Journal sections">
+        <button class="journal-tab active" id="journal-tab-journal" type="button" role="tab" aria-selected="true" aria-controls="journalFeed" data-journal-tab="journal">Journal and Gallery</button>
+        <button class="journal-tab" id="journal-tab-tv" type="button" role="tab" aria-selected="false" aria-controls="journalFeed" data-journal-tab="tv">ARTGALZIM TV</button>
+      </div>
+      <section class="journal-feed" id="journalFeed" role="tabpanel" tabindex="0" aria-labelledby="journal-tab-journal" aria-live="polite">
+        <p class="journal-empty">Loading published content...</p>
+      </section>
+    </div>
+  </main>
+  <script type="module" src="/js/journal.js"></script>
+  <script type="module" src="/js/main.js"></script>
+</body>
+</html>
