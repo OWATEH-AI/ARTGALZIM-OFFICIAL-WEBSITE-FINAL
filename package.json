@@ -27,6 +27,7 @@
   },
   "dependencies": {
     "@neondatabase/serverless": "^1.1.0",
-    "dotenv": "^17.4.2"
+    "dotenv": "^17.4.2",
+    "sanitize-html": "^2.18.0"
   }
 }

@@ -1,7 +1,18 @@
+import { getTvVideoOrientation } from './js/tv-layout.js';
+import sanitizeHtml from 'sanitize-html';
+
 const API_VERSION = '2025-02-19';
 const SESSION_COOKIE = 'ag_admin_session';
 const encoder = new TextEncoder();
 const ARTIST_TIERS = ['Keith Zenda', 'Emerging Artists', 'Student Artists'];
+const JOURNAL_RICH_TEXT_OPTIONS = {
+  allowedTags: ['a', 'b', 'blockquote', 'br', 'em', 'h2', 'h3', 'h4', 'hr', 'i', 'li', 'mark', 'ol', 'p', 'strong', 'u', 'ul'],
+  allowedAttributes: { a: ['href', 'target', 'rel'] },
+  allowedSchemes: ['http', 'https', 'mailto'],
+  transformTags: {
+    a: sanitizeHtml.simpleTransform('a', { rel: 'noopener noreferrer', target: '_blank' })
+  }
+};
 
 const json = (body, status = 200, headers = {}) => new Response(JSON.stringify(body), {
   status,
@@ -91,6 +102,36 @@ export function createSanityGateway(env) {
     const result = await response.json();
     if (!response.ok) throw new Error(result.message || `Sanity mutation failed (${response.status})`);
     return result;
+  }
+
+  async function getImageAssetId(image, url) {
+    const referenceId = image?.asset?._ref;
+    if (referenceId) return referenceId;
+    if (!url) return '';
+    const asset = (await query(`*[_type == "sanity.imageAsset" && url == ${JSON.stringify(url)}][0]{_id}`, { privateRead: true }))[0];
+    return asset?._id || '';
+  }
+
+  function pendingCoverAssetIds(existing, previousAssetId) {
+    return [...new Set([
+      ...(Array.isArray(existing?.pendingCoverAssetCleanup) ? existing.pendingCoverAssetCleanup : []),
+      ...(previousAssetId ? [previousAssetId] : [])
+    ])];
+  }
+
+  async function deleteImageAssetIfUnreferenced(assetId) {
+    if (!assetId?.startsWith('image-')) return;
+    const asset = (await query(`*[_type == "sanity.imageAsset" && _id == ${JSON.stringify(assetId)}][0]{_id, url}`, { privateRead: true }))[0];
+    if (!asset) return;
+    const assetUrl = asset.url ? JSON.stringify(asset.url) : '';
+    const urlReferences = assetUrl
+      ? ` || imageUrl == ${assetUrl} || coverSrc == ${assetUrl} || coverUrl == ${assetUrl} || assetUrl == ${assetUrl} || posterUrl == ${assetUrl} || attachmentUrl == ${assetUrl} || ${assetUrl} in imagesUrl`
+      : '';
+    const references = await query(
+      `*[references(${JSON.stringify(assetId)}) || assetRef == ${JSON.stringify(assetId)}${urlReferences}]{_id}`,
+      { privateRead: true }
+    );
+    if (!references.length) await mutate([{ delete: { id: assetId } }]);
   }
 
   async function upload(file) {
@@ -261,17 +302,38 @@ export function createSanityGateway(env) {
   }
 
   async function publicGallery() {
-    const docs = await query('*[_type == "artwork" && (!defined(isDeleted) || isDeleted == false)]{title, artist, artistTier, category, medium, size, year, price, purchaseType, paymentLink, description, "imageUrl": coalesce(image.asset->url, imageUrl), sourcePath, filename}');
+    const [albumDocs, artworkDocs] = await Promise.all([
+      query('*[_type == "album" && (!defined(isDeleted) || isDeleted == false)]{artist, name, coverSrc}'),
+      query('*[_type == "artwork" && (!defined(isDeleted) || isDeleted == false)]{title, artist, artistTier, category, medium, size, year, price, purchaseType, paymentLink, description, "imageUrl": coalesce(image.asset->url, imageUrl), sourcePath, filename}')
+    ]);
     const artistsCollections = {};
+    const albumCovers = new Map();
+    for (const doc of albumDocs) {
+      const artist = String(doc.artist || '').trim();
+      const category = String(doc.name || '').trim() || 'Artworks';
+      const key = `${artist}/${category}`;
+      if (!artistsCollections[key]) artistsCollections[key] = { images: [], cover: null };
+      if (doc.coverSrc) {
+        artistsCollections[key].cover = doc.coverSrc;
+        albumCovers.set(key, doc.coverSrc);
+      }
+    }
+
     const artworks = [];
-    for (const doc of docs) {
+    for (const doc of artworkDocs) {
       const item = cleanArtwork(doc);
       const key = `${item.artist}/${item.category}`;
       if (!artistsCollections[key]) artistsCollections[key] = { images: [], cover: null };
-      artistsCollections[key].images.push(item);
-      artistsCollections[key].cover ||= item.src;
+      if (item.src) artistsCollections[key].images.push(item);
+      if (!artistsCollections[key].cover && item.src) artistsCollections[key].cover = item.src;
       artworks.push(item);
     }
+
+    for (const [key, entry] of Object.entries(artistsCollections)) {
+      const albumCover = albumCovers.get(key);
+      if (albumCover) entry.cover = albumCover;
+    }
+
     return { artistsCollections, artworks };
   }
 
@@ -289,8 +351,41 @@ export function createSanityGateway(env) {
     if (method === 'POST' && path === '/api/set-album-cover') {
       const { artist, category, src } = await body();
       if (!artist || !category || !src) return json({ error: 'Missing artist, category or src' }, 400);
-      await saveDraft('album', `album-${slug(artist)}-${slug(category)}`, { artist, name: category, coverSrc: src });
+      const album = await getDocById('album', `album-${slug(artist)}-${slug(category)}`);
+      const albumId = album?._id.replace(/^drafts\./, '') || `album-${slug(artist)}-${slug(category)}`;
+      const previousAssetId = await getImageAssetId(null, album?.coverSrc);
+      await saveDraft('album', albumId, {
+        artist, name: category, coverSrc: src,
+        ...(pendingCoverAssetIds(album, previousAssetId).length
+          ? { pendingCoverAssetCleanup: pendingCoverAssetIds(album, previousAssetId) }
+          : {})
+      });
       return json({ ok: true, cover: src });
+    }
+    if (method === 'POST' && path === '/api/set-folder-cover') {
+      const form = await request.formData();
+      const requestedArtist = String(form.get('artist') || '').trim();
+      const category = String(form.get('category') || '').trim();
+      const file = form.get('cover');
+      if (!requestedArtist || !category) return json({ error: 'Artist and folder name are required.' }, 400);
+      if (!(file instanceof File) || !file.size) return json({ error: 'Choose an image for the folder cover.' }, 400);
+      if (!file.type.startsWith('image/')) return json({ error: 'Folder covers must be image files.' }, 400);
+
+      const artist = (await findArtistDoc(requestedArtist))?.name || requestedArtist;
+      const albums = (await getAllDocuments()).filter(doc => doc._type === 'album');
+      const album = albums.find(doc => String(doc.artist || '').trim().toLocaleLowerCase() === artist.toLocaleLowerCase()
+        && String(doc.name || '').trim().toLocaleLowerCase() === category.toLocaleLowerCase());
+      const albumId = album?._id || `album-${slug(artist)}-${slug(category)}`;
+      const previousAssetId = await getImageAssetId(null, album?.coverSrc);
+      const asset = await upload(file);
+      if (!asset?.url) return json({ error: 'Sanity did not return a URL for the uploaded cover.' }, 502);
+
+      const pendingCleanup = pendingCoverAssetIds(album, previousAssetId);
+      await saveDraft('album', albumId, {
+        artist, name: album?.name || category, coverSrc: asset.url,
+        ...(pendingCleanup.length ? { pendingCoverAssetCleanup: pendingCleanup } : {})
+      });
+      return json({ ok: true, cover: asset.url, draft: true, publishRequired: true });
     }
     if (method === 'POST' && path === '/api/upload-artwork') {
       const form = await request.formData();
@@ -299,6 +394,11 @@ export function createSanityGateway(env) {
       if (!artist || !category) return json({ error: 'Artist and album names are required.' }, 400);
       const files = form.getAll('images').filter(file => file instanceof File && file.size);
       if (!files.length) return json({ error: 'No files uploaded' }, 400);
+      if (files.some(file => !file.type.startsWith('image/'))) return json({ error: 'Artwork uploads must be image files.' }, 400);
+      const filenameKeys = files.map(file => file.name.trim().toLocaleLowerCase());
+      if (new Set(filenameKeys).size !== filenameKeys.length) {
+        return json({ error: 'Each artwork in one upload must have a unique filename.' }, 409);
+      }
       const purchaseType = String(form.get('purchaseType') || 'inquire');
       const paymentLink = String(form.get('paymentLink') || '');
       if (!['inquire', 'direct'].includes(purchaseType)) return json({ error: 'Invalid purchase type.' }, 400);
@@ -311,13 +411,22 @@ export function createSanityGateway(env) {
           return json({ error: 'Enter a valid http or https payment link.' }, 400);
         }
       }
-      const artistRecord = await ensureArtistAndAlbum(artist, category);
+      const artworkTargets = [];
       for (const file of files) {
-        const asset = await upload(file);
         const filename = file.name;
         const sourcePath = `ARTISTS/${artist}/${category}/${filename}`;
         const existing = await getDocBySource(sourcePath);
         const id = existing?._id.replace(/^drafts\./, '') || `artwork-${slug(artist)}-${slug(category)}-${slug(filename)}`;
+        const idCollision = await getDocById('artwork', id);
+        if (idCollision && idCollision.sourcePath && idCollision.sourcePath !== sourcePath) {
+          return json({ error: `An artwork already uses the generated Sanity ID for "${filename}". Choose a different filename.` }, 409);
+        }
+        artworkTargets.push({ file, filename, sourcePath, existing, id });
+      }
+
+      const artistRecord = await ensureArtistAndAlbum(artist, category);
+      for (const { file, filename, sourcePath, id } of artworkTargets) {
+        const asset = await upload(file);
         const imageUrl = asset?.url || '';
         const suppliedTitle = String(form.get('title') || '').trim();
         const isFilenameTitle = /^whats?ap(?:p|ge)?(?:\s|$)/i.test(suppliedTitle);
@@ -341,11 +450,10 @@ export function createSanityGateway(env) {
       const artistInput = String(form.get('artist') || existing.artist).trim();
       const category = String(form.get('category') || existing.category).trim();
       if (!artistInput || !category) return json({ error: 'Artist and album names are required.' }, 400);
-      const artistRecord = await ensureArtistAndAlbum(artistInput, category);
-      const artist = artistRecord.artist;
       const file = form.get('imageFile');
-      const asset = file instanceof File && file.size ? await upload(file) : null;
-      const sourcePath = `ARTISTS/${artist}/${category}/${file?.name || existing.filename || 'artwork'}`;
+      if (file instanceof File && file.size && !file.type.startsWith('image/')) {
+        return json({ error: 'Replacement artwork must be an image file.' }, 400);
+      }
       const purchaseType = String(form.get('purchaseType') || 'inquire');
       const paymentLink = String(form.get('paymentLink') || '');
       if (!['inquire', 'direct'].includes(purchaseType)) return json({ error: 'Invalid purchase type.' }, 400);
@@ -359,6 +467,24 @@ export function createSanityGateway(env) {
         }
       }
       const id = existing._id.replace(/^drafts\./, '');
+      const canonicalArtist = (await findArtistDoc(artistInput))?.name || artistInput;
+      const sourcePath = `ARTISTS/${canonicalArtist}/${category}/${file instanceof File && file.size ? file.name : existing.filename || 'artwork'}`;
+      const collision = await getDocBySource(sourcePath);
+      if (collision && collision._id.replace(/^drafts\./, '') !== id) {
+        return json({ error: 'Another artwork already uses that artist, folder, and filename. Choose a different replacement filename.' }, 409);
+      }
+      if (sourcePath !== existing.sourcePath) {
+        const generatedId = `artwork-${slug(canonicalArtist)}-${slug(category)}-${slug(file instanceof File && file.size ? file.name : existing.filename || 'artwork')}`;
+        const generatedIdCollision = await getDocById('artwork', generatedId);
+        if (generatedIdCollision && generatedIdCollision._id.replace(/^drafts\./, '') !== id
+          && generatedIdCollision.sourcePath !== sourcePath) {
+          return json({ error: 'Another artwork already uses the Sanity ID generated for this filename. Choose a different filename.' }, 409);
+        }
+      }
+
+      const asset = file instanceof File && file.size ? await upload(file) : null;
+      const artistRecord = await ensureArtistAndAlbum(artistInput, category);
+      const artist = artistRecord.artist;
       const saved = await saveDraft('artwork', id, {
         title: String(form.get('title') || ''), artist, category, artistTier: artistRecord.tier, medium: String(form.get('medium') || ''),
         size: String(form.get('size') || ''), year: String(form.get('year') || '2026'), price: String(form.get('price') || ''),
@@ -374,8 +500,69 @@ export function createSanityGateway(env) {
       const src = String(data.src || '').replace(/^\//, '');
       const doc = await getDocBySource(src) || (await query(`*[_type == "artwork" && imageUrl == ${JSON.stringify(data.src)}][0]`, { privateRead: true }))[0];
       if (!doc) return json({ error: 'Artwork not found in Sanity.' }, 404);
+
+      const artworkId = doc._id.replace(/^drafts\./, '');
+      const activeDocuments = await getAllDocuments();
+      const deletedSources = new Set([doc.imageUrl, doc.sourcePath].filter(Boolean));
+      const coverAlbum = activeDocuments.find(item => item._type === 'album'
+        && String(item.artist || '').trim().toLocaleLowerCase() === String(doc.artist || '').trim().toLocaleLowerCase()
+        && String(item.name || '').trim().toLocaleLowerCase() === String(doc.category || '').trim().toLocaleLowerCase()
+        && deletedSources.has(item.coverSrc));
+      if (coverAlbum) {
+        const replacementArtwork = activeDocuments.find(item => item._type === 'artwork'
+          && item._id !== artworkId
+          && String(item.artist || '').trim().toLocaleLowerCase() === String(doc.artist || '').trim().toLocaleLowerCase()
+          && String(item.category || '').trim().toLocaleLowerCase() === String(doc.category || '').trim().toLocaleLowerCase());
+        await saveDraft('album', coverAlbum._id.replace(/^drafts\./, ''), {
+          artist: coverAlbum.artist,
+          name: coverAlbum.name,
+          coverSrc: replacementArtwork?.imageUrl || replacementArtwork?.sourcePath || ''
+        });
+      }
       await saveDraft('artwork', doc._id.replace(/^drafts\./, ''), { ...doc, isDeleted: true });
-      return json({ ok: true, message: 'Artwork removal staged in Sanity.' });
+      return json({ ok: true, message: 'Artwork removal staged in Sanity.', coverUpdated: Boolean(coverAlbum) });
+    }
+    if (method === 'DELETE' && path === '/api/delete-artist-folder') {
+      const data = await body();
+      const requestedArtist = String(data.artist || '').trim();
+      const requestedCategory = String(data.category || '').trim();
+      if (!requestedArtist || !requestedCategory) {
+        return json({ error: 'Artist and folder name are required.' }, 400);
+      }
+
+      const documents = await getAllDocuments();
+      const normalize = value => String(value || '').trim().toLocaleLowerCase();
+      const album = documents.find(doc => doc._type === 'album'
+        && normalize(doc.artist) === normalize(requestedArtist)
+        && normalize(doc.name) === normalize(requestedCategory));
+      if (!album) return json({ error: 'Artist folder not found in Sanity.' }, 404);
+
+      const artworks = documents.filter(doc => doc._type === 'artwork'
+        && normalize(doc.artist) === normalize(album.artist)
+        && normalize(doc.category) === normalize(album.name));
+      const coverAssetId = await getImageAssetId(null, album.coverSrc);
+      const pendingAssetCleanup = [...new Set([
+        ...(Array.isArray(album.pendingCoverAssetCleanup) ? album.pendingCoverAssetCleanup : []),
+        ...(coverAssetId ? [coverAssetId] : [])
+      ])];
+
+      await saveDraft('album', album._id.replace(/^drafts\./, ''), {
+        ...album,
+        isDeleted: true,
+        ...(pendingAssetCleanup.length ? { pendingCoverAssetCleanup: pendingAssetCleanup } : {})
+      });
+      for (const artwork of artworks) {
+        await saveDraft('artwork', artwork._id.replace(/^drafts\./, ''), { ...artwork, isDeleted: true });
+      }
+
+      return json({
+        ok: true,
+        artist: album.artist,
+        category: album.name,
+        artworkCount: artworks.length,
+        publishRequired: true,
+        message: 'Folder and its artworks are staged for deletion in Sanity. Push & Sync Changes to publish.'
+      });
     }
     if (method === 'POST' && path === '/api/create-artist-folder') {
       const data = await body();
@@ -533,15 +720,53 @@ export function createSanityGateway(env) {
         const id = String(form.get('id') || `journal-folder-${slug(title)}-${Date.now()}`).replace(/^drafts\./, '');
         const existing = form.get('id') ? await getDocById('journalFolder', id) : null;
         if (form.get('id') && !existing) return json({ error: 'Journal folder not found.' }, 404);
+        const parentFolderId = String(form.get('parentFolderId') || '').trim().replace(/^drafts\./, '');
+        const activeFolders = (await getAllDocuments()).filter(doc => doc._type === 'journalFolder' && !doc.isDeleted);
+        if (parentFolderId) {
+          const parentFolder = activeFolders.find(folder => folder._id === parentFolderId);
+          if (!parentFolder) return json({ error: 'Choose an existing parent folder.' }, 400);
+          const seen = new Set();
+          let ancestor = parentFolder;
+          while (ancestor && !seen.has(ancestor._id)) {
+            if (ancestor._id === id) return json({ error: 'A folder cannot be moved inside itself or one of its subfolders.' }, 400);
+            seen.add(ancestor._id);
+            ancestor = activeFolders.find(folder => folder._id === ancestor.parentFolderId);
+          }
+        }
         const file = form.get('cover');
         const coverAsset = file instanceof File && file.size ? await upload(file) : null;
+        const previousAssetId = coverAsset
+          ? await getImageAssetId(existing?.cover, existing?.coverUrl)
+          : '';
+        const pendingCleanup = pendingCoverAssetIds(existing, previousAssetId);
         const folderSlug = slug(form.get('slug') || title);
+        const updateUrl = String(form.get('updateUrl') || '').trim();
+        if (form.has('updateUrl') && updateUrl) {
+          let parsedUpdateUrl;
+          try {
+            parsedUpdateUrl = new URL(updateUrl);
+          } catch {
+            return json({ error: 'Enter a valid HTTPS or HTTP update link.' }, 400);
+          }
+          if (!['http:', 'https:'].includes(parsedUpdateUrl.protocol)) {
+            return json({ error: 'Enter a valid HTTPS or HTTP update link.' }, 400);
+          }
+        }
         await saveDraft('journalFolder', id, {
           title,
           slug: folderSlug,
-          category: String(form.get('category') || 'Other'),
-          organization: String(form.get('organization') || '').trim(),
-          description: String(form.get('description') || '').trim(),
+          category: form.has('category')
+            ? String(form.get('category') || 'Other')
+            : existing?.category || 'Other',
+          parentFolderId: form.has('parentFolderId') ? parentFolderId : existing?.parentFolderId || '',
+          ...(form.has('organization') ? { organization: String(form.get('organization') || '').trim() } : {}),
+          ...(form.has('description') ? { description: String(form.get('description') || '').trim() } : {}),
+          ...(form.has('eyebrow') ? { eyebrow: String(form.get('eyebrow') || '').trim() } : {}),
+          ...(form.has('coverHeading') ? { coverHeading: String(form.get('coverHeading') || '').trim() } : {}),
+          ...(form.has('coverSubheading') ? { coverSubheading: String(form.get('coverSubheading') || '').trim() } : {}),
+          ...(form.has('updateText') ? { updateText: String(form.get('updateText') || '').trim() } : {}),
+          ...(form.has('updateUrl') ? { updateUrl } : {}),
+          ...(pendingCleanup.length ? { pendingCoverAssetCleanup: pendingCleanup } : {}),
           ...(coverAsset?._id ? {
             cover: { _type: 'image', asset: { _type: 'reference', _ref: coverAsset._id } },
             coverUrl: coverAsset.url
@@ -555,6 +780,8 @@ export function createSanityGateway(env) {
         if (!folder || folder.isDeleted) return json({ error: 'Journal folder not found.' }, 404);
         const hasEntries = (await getAllDocuments()).some(doc => doc._type === 'journalEntry' && doc.folderId === id);
         if (hasEntries) return json({ error: 'Move or delete this folder’s entries before deleting the folder.' }, 409);
+        const hasChildren = (await getAllDocuments()).some(doc => doc._type === 'journalFolder' && !doc.isDeleted && doc.parentFolderId === id);
+        if (hasChildren) return json({ error: 'Move or delete this folder’s subfolders before deleting the folder.' }, 409);
         await saveDraft('journalFolder', folder._id.replace(/^drafts\./, ''), { ...folder, isDeleted: true });
         return json({ ok: true });
       }
@@ -596,6 +823,10 @@ export function createSanityGateway(env) {
         if (mediaType && !['video', 'document', 'social'].includes(mediaType)) {
           return json({ error: 'Choose a valid media format.' }, 400);
         }
+        const submittedVideoOrientation = String(form.get('videoOrientation') || '');
+        if (submittedVideoOrientation && !['auto', 'landscape', 'portrait'].includes(submittedVideoOrientation)) {
+          return json({ error: 'Choose Auto-detect, Landscape video, or Short (portrait).' }, 400);
+        }
         let mediaUrl;
         try {
           mediaUrl = validateJournalMediaUrl(form.get('mediaUrl'), mediaType);
@@ -606,9 +837,29 @@ export function createSanityGateway(env) {
         if (destination === 'tv' && !uploadedVideo && (!mediaUrl || !['video', 'social'].includes(mediaType))) {
           return json({ error: 'ARTGALZIM TV entries need a supported video link or an MP4, WebM, or Ogg video upload.' }, 400);
         }
-        const imageAsset = imageFile instanceof File && imageFile.size ? await upload(imageFile) : null;
+        const videoOrientation = destination === 'tv'
+          ? submittedVideoOrientation === 'landscape' || submittedVideoOrientation === 'portrait'
+            ? submittedVideoOrientation
+            : getTvVideoOrientation({
+              mediaUrl: mediaUrl || existing?.mediaUrl || '',
+              videoOrientation: submittedVideoOrientation ? '' : existing?.videoOrientation
+            })
+          : '';
+        const imageFiles = destination === 'journal' ? [
+          ...form.getAll('images').filter(file => file instanceof File && file.size),
+          ...(imageFile instanceof File && imageFile.size ? [imageFile] : [])
+        ] : [];
+        if (imageFiles.length > 12) return json({ error: 'Choose up to 12 images for one News & Gallery entry.' }, 400);
+        if (imageFiles.some(file => !file.type.startsWith('image/'))) {
+          return json({ error: 'Every News & Gallery gallery upload must be an image.' }, 400);
+        }
+        const imageAssets = await Promise.all(imageFiles.map(file => upload(file)));
+        if (imageAssets.some(asset => !asset?._id || !asset.url)) throw new Error('Sanity did not return a usable image asset for this gallery upload.');
+        const posterAsset = destination === 'tv' && imageFile instanceof File && imageFile.size ? await upload(imageFile) : null;
         const attachmentAsset = attachmentFile instanceof File && attachmentFile.size ? await upload(attachmentFile) : null;
         const entrySlug = slug(form.get('slug') || title);
+        const excerpt = String(form.get('excerpt') || '').trim();
+        const bodyText = String(form.get('body') || '').trim();
         await saveDraft('journalEntry', id, {
           title,
           slug: entrySlug,
@@ -618,16 +869,34 @@ export function createSanityGateway(env) {
           destination,
           mediaType,
           mediaUrl,
-          excerpt: String(form.get('excerpt') || '').trim(),
-          body: String(form.get('body') || '').trim(),
+          ...(destination === 'tv' ? { videoOrientation } : {}),
+          excerpt: destination === 'journal' ? sanitizeHtml(excerpt, JOURNAL_RICH_TEXT_OPTIONS) : excerpt,
+          ...(destination === 'journal' && form.has('artistCurator')
+            ? { artistCurator: String(form.get('artistCurator') || '').trim() }
+            : {}),
+          ...(destination === 'journal' && form.has('category')
+            ? { category: String(form.get('category') || '').trim() }
+            : {}),
+          body: destination === 'journal' ? sanitizeHtml(bodyText, JOURNAL_RICH_TEXT_OPTIONS) : bodyText,
           ...(form.get('eventDate') ? { eventDate: String(form.get('eventDate')) } : {}),
           ...(form.get('endDate') ? { endDate: String(form.get('endDate')) } : {}),
           location: String(form.get('location') || '').trim(),
-          author: String(form.get('author') || '').trim(),
+          ...(destination === 'tv' || form.has('author')
+            ? { author: String(form.get('author') || '').trim() }
+            : {}),
           publishedAt: existing?.publishedAt || new Date().toISOString(),
-          ...(imageAsset?._id ? {
-            image: { _type: 'image', asset: { _type: 'reference', _ref: imageAsset._id } },
-            imageUrl: imageAsset.url
+          ...(imageAssets.length ? {
+            images: imageAssets.map(asset => ({
+              _type: 'image',
+              asset: { _type: 'reference', _ref: asset._id }
+            })),
+            imagesUrl: imageAssets.map(asset => asset.url),
+            image: { _type: 'image', asset: { _type: 'reference', _ref: imageAssets[0]._id } },
+            imageUrl: imageAssets[0].url
+          } : {}),
+          ...(posterAsset?._id ? {
+            image: { _type: 'image', asset: { _type: 'reference', _ref: posterAsset._id } },
+            imageUrl: posterAsset.url
           } : {}),
           ...(attachmentAsset?._id ? {
             attachment: { _type: 'file', asset: { _type: 'reference', _ref: attachmentAsset._id } },
@@ -677,6 +946,8 @@ export function createSanityGateway(env) {
     }
     if (method === 'POST' && path === '/api/sync') {
       const drafts = await query('*[_id match "drafts.*"]', { privateRead: true });
+      const pendingCoverAssetIds = new Set(drafts.flatMap(draft =>
+        Array.isArray(draft.pendingCoverAssetCleanup) ? draft.pendingCoverAssetCleanup : []));
       const mutations = [];
       for (const draft of drafts) {
         const publishedId = draft._id.slice('drafts.'.length);
@@ -692,6 +963,15 @@ export function createSanityGateway(env) {
         mutations.push({ delete: { id: draft._id } });
       }
       for (let index = 0; index < mutations.length; index += 100) await mutate(mutations.slice(index, index + 100));
+      const coverCleanupDocs = (await query('*[_type in ["album", "journalFolder"]]{_id, pendingCoverAssetCleanup}', { privateRead: true }))
+        .filter(doc => Array.isArray(doc.pendingCoverAssetCleanup) && doc.pendingCoverAssetCleanup.length);
+      for (const doc of coverCleanupDocs) {
+        for (const assetId of doc.pendingCoverAssetCleanup) pendingCoverAssetIds.add(assetId);
+      }
+      for (const assetId of pendingCoverAssetIds) await deleteImageAssetIfUnreferenced(assetId);
+      for (const doc of coverCleanupDocs) {
+        await mutate([{ patch: { id: doc._id, unset: ['pendingCoverAssetCleanup'] } }]);
+      }
       return json({ ok: true, published: drafts.length, output: `Published ${drafts.length} Sanity document(s).` });
     }
     return json({ error: 'API route not found.' }, 404);
@@ -709,7 +989,7 @@ export function createSanityGateway(env) {
       }
       if (url.pathname === '/api/public-gallery' && request.method === 'GET') return json({ data: await publicGallery() });
       if (url.pathname === '/api/public-content' && request.method === 'GET') {
-        const docs = await query('*[_type in ["post", "libraryItem", "exhibition", "journalFolder", "journalEntry"] && (!defined(isDeleted) || isDeleted == false)]{_id, _type, id, title, slug, excerpt, body, description, conditions, publishedAt, kind, assetUrl, artist, category, organization, folderId, folderTitle, entryType, destination, mediaType, mediaUrl, eventDate, endDate, author, attachmentName, location, startDate, startTime, endTime, theme, status, contactLink, registrationLink, ctaText, registrationFee, timeRange, isPlaceholder, displayDateOverride, "fileUrl": coalesce(file.asset->url, attachment.asset->url, attachmentUrl), "imageUrl": coalesce(image.asset->url, poster.asset->url, imageUrl), "coverUrl": coalesce(cover.asset->url, coverUrl)} | order(publishedAt desc)');
+        const docs = await query('*[_type in ["post", "libraryItem", "exhibition", "journalFolder", "journalEntry"] && (!defined(isDeleted) || isDeleted == false)]{_id, _type, id, title, slug, excerpt, body, description, eyebrow, coverHeading, coverSubheading, updateText, updateUrl, conditions, publishedAt, kind, assetUrl, artist, artistCurator, category, organization, parentFolderId, folderId, folderTitle, entryType, destination, mediaType, mediaUrl, videoOrientation, eventDate, endDate, author, attachmentName, location, startDate, startTime, endTime, theme, status, contactLink, registrationLink, ctaText, registrationFee, timeRange, isPlaceholder, displayDateOverride, "fileUrl": coalesce(file.asset->url, attachment.asset->url, attachmentUrl), "imageUrl": coalesce(image.asset->url, poster.asset->url, imageUrl), "imageUrls": coalesce(images[].asset->url, imagesUrl), "coverUrl": coalesce(cover.asset->url, coverUrl)} | order(publishedAt desc)');
         return json({ data: docs });
       }
       if (url.pathname === '/api/login' && request.method === 'POST') {

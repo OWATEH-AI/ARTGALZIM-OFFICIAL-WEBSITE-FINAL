@@ -98,11 +98,15 @@ function getImages() {
                     }).map(file => `/ARTISTS/${artist}/${category}/${file}`);
                     
                     const folderKey = `${artist}/${category}`;
+                    const customCover = customCovers[folderKey];
+                    const customCoverIsValid = !!customCover && (
+                        images.includes(customCover) || fs.existsSync(path.join(__dirname, customCover.replace(/^\//, '')))
+                    );
                     let coverPath = null;
 
-                    // 1. Check custom user-selected cover from admin
-                    if (customCovers[folderKey] && images.includes(customCovers[folderKey])) {
-                        coverPath = customCovers[folderKey];
+                    // 1. Check custom user-selected cover from admin (even when it is not in the folder image list)
+                    if (customCoverIsValid) {
+                        coverPath = customCover;
                     } else {
                         // 2. Fallback to cover file starting with "cover" or first image
                         const coverFile = files.find(file => file.toLowerCase().startsWith('cover'));

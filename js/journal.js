@@ -1,3 +1,5 @@
+import { getTvVideoOrientation, groupTvVideos } from './tv-layout.js';
+
 const feed = document.getElementById('journalFeed');
 let journalFolders = [];
 let journalEntries = [];
@@ -5,6 +7,29 @@ let legacyEntries = [];
 let currentFolderId = null;
 let currentEntryId = null;
 let currentJournalTab = 'journal';
+let pendingFolderLoadId = null;
+let folderLoadingTimer = null;
+let galleryHistoryDepth = 0;
+let folderPreloaderActive = false;
+
+function showFolderPreloader() {
+  const preloader = document.getElementById('preloader');
+  if (!preloader) throw new Error('The shared page preloader is missing.');
+  preloader.classList.remove('hidden');
+  const fill = preloader.querySelector('.preloader-fill');
+  if (fill) fill.replaceWith(fill.cloneNode(true));
+  document.documentElement.style.overflow = 'hidden';
+  document.body.style.overflow = 'hidden';
+  folderPreloaderActive = true;
+}
+
+function hideFolderPreloader() {
+  if (!folderPreloaderActive) return;
+  document.getElementById('preloader')?.classList.add('hidden');
+  document.documentElement.style.overflow = '';
+  document.body.style.overflow = '';
+  folderPreloaderActive = false;
+}
 
 function isTvEntry(entry) {
   return entry.destination === 'tv' || (!entry.destination && entry.entryType === 'ARTGALZIM TV');
@@ -28,6 +53,45 @@ function addText(parent, tagName, text, className = '') {
   return element;
 }
 
+function safeRichHref(value) {
+  if (typeof value !== 'string' || !value.trim()) return '';
+  try {
+    const url = new URL(value, window.location.href);
+    return ['https:', 'http:', 'mailto:'].includes(url.protocol) ? url.href : '';
+  } catch {
+    return '';
+  }
+}
+
+function appendSafeRichContent(parent, value) {
+  const parsed = new DOMParser().parseFromString(String(value || ''), 'text/html');
+  const allowed = new Set(['A', 'B', 'BLOCKQUOTE', 'BR', 'EM', 'H2', 'H3', 'H4', 'HR', 'I', 'LI', 'MARK', 'OL', 'P', 'STRONG', 'U', 'UL']);
+  const blocked = new Set(['SCRIPT', 'STYLE', 'IFRAME', 'OBJECT', 'SVG', 'MATH']);
+  const appendSafe = (node, target) => {
+    if (node.nodeType === Node.TEXT_NODE) {
+      target.appendChild(document.createTextNode(node.textContent || ''));
+      return;
+    }
+    if (node.nodeType !== Node.ELEMENT_NODE || blocked.has(node.tagName)) return;
+    if (!allowed.has(node.tagName)) {
+      node.childNodes.forEach(child => appendSafe(child, target));
+      return;
+    }
+    const element = document.createElement(node.tagName.toLowerCase());
+    if (node.tagName === 'A') {
+      const href = safeRichHref(node.getAttribute('href'));
+      if (href) {
+        element.href = href;
+        element.target = '_blank';
+        element.rel = 'noopener noreferrer';
+      }
+    }
+    node.childNodes.forEach(child => appendSafe(child, element));
+    target.appendChild(element);
+  };
+  parsed.body.childNodes.forEach(node => appendSafe(node, parent));
+}
+
 function addButton(parent, text, onClick, className = 'journal-button') {
   const button = document.createElement('button');
   button.type = 'button';
@@ -42,6 +106,24 @@ function formatDate(value) {
   if (!value) return '';
   const date = new Date(value);
   return Number.isNaN(date.getTime()) ? '' : date.toLocaleDateString();
+}
+
+function addEntryMetadata(parent, entry) {
+  const fields = [
+    ['Artist / Curator', entry.artistCurator],
+    ['Category', entry.category],
+    ['Description', entry.excerpt],
+    ['School', entry.location],
+    ['Author / Reporter', entry.author]
+  ].filter(([, value]) => typeof value === 'string' && value.trim());
+  if (!fields.length) return;
+  const metadata = document.createElement('dl');
+  metadata.className = 'journal-entry-metadata';
+  for (const [label, value] of fields) {
+    addText(metadata, 'dt', label);
+    addText(metadata, 'dd', value.trim());
+  }
+  parent.appendChild(metadata);
 }
 
 function youtubeVideoId(url, host) {
@@ -167,52 +249,166 @@ function updateJournalTabs() {
 }
 
 function setJournalTab(tab) {
-  currentJournalTab = tab === 'tv' ? 'tv' : 'journal';
-  currentEntryId = null;
-  currentFolderId = null;
-  updateJournalTabs();
-  renderJournal();
+  navigateGallery({ tab: tab === 'tv' ? 'tv' : 'journal', folderId: null, entryId: null });
 }
 
-function section(title, className = '') {
+function galleryRouteFromLocation(state = history.state) {
+  if (state?.galleryRoute) return state.galleryRoute;
+  if (!location.hash.startsWith('#gallery?')) return null;
+  const params = new URLSearchParams(location.hash.slice('#gallery?'.length));
+  return {
+    tab: params.get('tab') === 'tv' ? 'tv' : 'journal',
+    folderId: params.get('folder') || null,
+    entryId: params.get('entry') || null,
+    depth: 0
+  };
+}
+
+function syncGalleryHistory(replace = false) {
+  if (!replace) galleryHistoryDepth += 1;
+  const route = {
+    tab: currentJournalTab,
+    folderId: currentFolderId,
+    entryId: currentEntryId,
+    depth: galleryHistoryDepth
+  };
+  const params = new URLSearchParams();
+  if (route.tab === 'tv') params.set('tab', 'tv');
+  if (route.folderId) params.set('folder', route.folderId);
+  if (route.entryId) params.set('entry', route.entryId);
+  const url = new URL(location.href);
+  url.hash = params.size ? `gallery?${params}` : '';
+  const state = { ...(history.state || {}), galleryRoute: route };
+  if (replace) history.replaceState(state, '', url);
+  else history.pushState(state, '', url);
+}
+
+function navigateGallery({ tab = currentJournalTab, folderId = null, entryId = null }, { loadingFolder = false, replace = false } = {}) {
+  clearTimeout(folderLoadingTimer);
+  hideFolderPreloader();
+  currentJournalTab = tab;
+  currentFolderId = folderId;
+  currentEntryId = entryId;
+  pendingFolderLoadId = loadingFolder ? folderId : null;
+  syncGalleryHistory(replace);
+  renderJournal();
+  if (pendingFolderLoadId) {
+    const loadingFolderId = pendingFolderLoadId;
+    folderLoadingTimer = setTimeout(() => {
+      if (pendingFolderLoadId !== loadingFolderId) return;
+      pendingFolderLoadId = null;
+      hideFolderPreloader();
+      renderJournal();
+    }, 1550);
+  }
+}
+
+function navigateBack(fallback) {
+  if (galleryHistoryDepth > 0) {
+    history.back();
+    return;
+  }
+  navigateGallery(fallback);
+}
+
+function section(title, className = '', parent = feed) {
   const wrapper = document.createElement('section');
   wrapper.className = `journal-section ${className}`.trim();
   addText(wrapper, 'h2', title);
   const grid = document.createElement('div');
   grid.className = 'journal-cards';
   wrapper.appendChild(grid);
-  feed.appendChild(wrapper);
+  parent.appendChild(wrapper);
   return grid;
 }
 
 function renderFolderCard(folder, target) {
   const card = document.createElement('article');
   card.className = 'journal-item journal-folder';
+  const openFolder = document.createElement('a');
+  openFolder.className = 'journal-folder-open';
+  openFolder.href = `#gallery?tab=journal&folder=${encodeURIComponent(folder._id)}`;
+  openFolder.setAttribute('aria-label', `Open folder: ${folder.title || 'Untitled folder'}`);
+  openFolder.addEventListener('click', event => {
+    event.preventDefault();
+    navigateGallery({ tab: 'journal', folderId: folder._id }, { loadingFolder: true });
+  });
+  const cover = document.createElement('div');
+  cover.className = 'journal-folder-cover';
   const coverUrl = safeMediaUrl(folder.coverUrl);
   if (coverUrl) {
     const image = document.createElement('img');
     image.src = coverUrl;
     image.alt = folder.title ? `${folder.title} folder cover` : 'Journal folder cover';
     image.loading = 'lazy';
-    card.appendChild(image);
+    cover.appendChild(image);
   }
-  addText(card, 'p', folder.category || 'Journal', 'section-eyebrow');
-  addText(card, 'h3', folder.title || 'Untitled folder');
-  if (folder.organization) addText(card, 'p', folder.organization, 'journal-meta');
-  if (folder.description) addText(card, 'p', folder.description);
-  const count = journalEntries.filter(entry => !isTvEntry(entry) && entry.folderId === folder._id).length;
-  addText(card, 'p', `${count} ${count === 1 ? 'story' : 'stories'}`, 'journal-meta');
-  addButton(card, 'Open folder', () => {
-    currentFolderId = folder._id;
-    currentEntryId = null;
-    renderJournal();
+  const coverText = document.createElement('div');
+  coverText.className = 'journal-folder-cover-text';
+  addText(coverText, 'h2', folder.coverHeading || folder.title || 'News & Gallery');
+  const coverSubheading = folder.coverSubheading || folder.category;
+  if (coverSubheading) addText(coverText, 'p', coverSubheading);
+  cover.appendChild(coverText);
+  openFolder.appendChild(cover);
+
+  const content = document.createElement('div');
+  content.className = 'journal-folder-content';
+  addText(content, 'p', folder.eyebrow || 'FOLLOW OUR SOCIALS FOR UPDATES', 'journal-folder-eyebrow');
+  addText(content, 'h3', folder.title || 'Untitled folder');
+  const categoryLine = [folder.category, folder.organization].filter(Boolean).join(' · ');
+  if (categoryLine) addText(content, 'p', categoryLine, 'journal-folder-category');
+  if (folder.description) addText(content, 'p', folder.description, 'journal-folder-description');
+  openFolder.appendChild(content);
+  card.appendChild(openFolder);
+
+  const actions = document.createElement('div');
+  actions.className = 'journal-folder-actions';
+  const detailsButton = document.createElement('button');
+  detailsButton.type = 'button';
+  detailsButton.className = 'journal-folder-details';
+  detailsButton.setAttribute('aria-label', `View details for ${folder.title || 'folder'}`);
+  const eyeIcon = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+  eyeIcon.setAttribute('viewBox', '0 0 24 24');
+  eyeIcon.setAttribute('width', '18');
+  eyeIcon.setAttribute('height', '18');
+  eyeIcon.setAttribute('fill', 'none');
+  eyeIcon.setAttribute('stroke', 'currentColor');
+  eyeIcon.setAttribute('stroke-width', '2');
+  eyeIcon.setAttribute('aria-hidden', 'true');
+  const eyeOutline = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+  eyeOutline.setAttribute('d', 'M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z');
+  const eyePupil = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+  eyePupil.setAttribute('cx', '12');
+  eyePupil.setAttribute('cy', '12');
+  eyePupil.setAttribute('r', '3');
+  eyeIcon.append(eyeOutline, eyePupil);
+  detailsButton.append(eyeIcon, document.createTextNode('VIEW DETAILS'));
+  detailsButton.addEventListener('click', () => {
+    navigateGallery({ tab: 'journal', folderId: folder._id }, { loadingFolder: true });
   });
+  actions.appendChild(detailsButton);
+  const updateUrl = safeMediaUrl(folder.updateUrl);
+  if (updateUrl) {
+    const updateLink = document.createElement('a');
+    updateLink.href = updateUrl;
+    updateLink.target = '_blank';
+    updateLink.rel = 'noopener noreferrer';
+    updateLink.className = 'journal-folder-update';
+    updateLink.textContent = `${folder.updateText || 'STAY UPDATED'} →`;
+    updateLink.setAttribute('aria-label', `${folder.updateText || 'Stay updated'}: ${folder.title || 'News & Gallery folder'}`);
+    actions.appendChild(updateLink);
+  } else {
+    addButton(actions, `${folder.updateText || 'STAY UPDATED'} →`, () => {
+      navigateGallery({ tab: 'journal', folderId: folder._id }, { loadingFolder: true });
+    }, 'journal-folder-update');
+  }
+  card.appendChild(actions);
   target.appendChild(card);
 }
 
 function renderEntryCard(entry, target) {
   const card = document.createElement('article');
-  card.className = 'journal-item';
+  card.className = 'journal-item journal-entry-card';
   const imageUrl = safeMediaUrl(entry.imageUrl);
   if (imageUrl) {
     const image = document.createElement('img');
@@ -224,13 +420,13 @@ function renderEntryCard(entry, target) {
   addText(card, 'p', entry.entryType || 'Story', 'section-eyebrow');
   addText(card, 'h3', entry.title || 'Untitled story');
   const dateLabel = formatDate(entry.eventDate || entry.publishedAt);
-  const meta = [dateLabel, entry.location].filter(Boolean).join(' · ');
+  const meta = dateLabel;
   if (meta) addText(card, 'p', meta, 'journal-meta');
-  if (entry.excerpt) addText(card, 'p', entry.excerpt);
-  addButton(card, ['video', 'social', 'document'].includes(entry.mediaType) ? 'Watch / view' : 'Read more', () => {
-    currentEntryId = entry._id;
-    renderJournal();
-  });
+  addEntryMetadata(card, entry);
+  const readButton = addButton(card, 'READ →', () => {
+    navigateGallery({ folderId: currentFolderId, entryId: entry._id });
+  }, 'journal-button journal-entry-action');
+  readButton.setAttribute('aria-label', `Read ${entry.title || 'story'}`);
   target.appendChild(card);
 }
 
@@ -282,15 +478,138 @@ function renderEntryDetail(entry) {
   const article = document.createElement('article');
   article.className = 'journal-item journal-detail';
   addButton(article, currentJournalTab === 'tv' ? 'Back to ARTGALZIM TV' : 'Back to folder', () => {
-    currentEntryId = null;
-    renderJournal();
+    navigateBack({ tab: currentJournalTab, folderId: entry.folderId || null, entryId: null });
   }, 'journal-back');
+  if (currentJournalTab !== 'tv') {
+    const layout = document.createElement('div');
+    layout.className = 'journal-detail-layout';
+    const mediaColumn = document.createElement('section');
+    mediaColumn.className = 'journal-detail-media-column';
+    const imageUrls = [...new Set([
+      ...(Array.isArray(entry.imageUrls) ? entry.imageUrls : []),
+      entry.imageUrl
+    ].map(safeMediaUrl).filter(Boolean))];
+    if (imageUrls.length) {
+      const gallery = document.createElement('div');
+      gallery.className = 'journal-detail-gallery';
+      const mainImage = document.createElement('img');
+      mainImage.className = 'journal-detail-image';
+      mainImage.src = imageUrls[0];
+      mainImage.alt = entry.title || 'News & Gallery story';
+      mainImage.loading = 'lazy';
+      gallery.appendChild(mainImage);
+      if (imageUrls.length > 1) {
+        const thumbnails = document.createElement('div');
+        thumbnails.className = 'journal-detail-thumbnails';
+        imageUrls.forEach((url, index) => {
+          const button = document.createElement('button');
+          button.type = 'button';
+          button.className = 'journal-detail-thumbnail';
+          button.setAttribute('aria-label', `Show image ${index + 1}`);
+          button.setAttribute('aria-pressed', index === 0 ? 'true' : 'false');
+          const thumbnail = document.createElement('img');
+          thumbnail.src = url;
+          thumbnail.alt = '';
+          thumbnail.loading = 'lazy';
+          button.appendChild(thumbnail);
+          button.addEventListener('click', () => {
+            mainImage.src = url;
+            thumbnails.querySelectorAll('button').forEach(item => item.setAttribute('aria-pressed', 'false'));
+            button.setAttribute('aria-pressed', 'true');
+          });
+          thumbnails.appendChild(button);
+        });
+        gallery.appendChild(thumbnails);
+      }
+      mediaColumn.appendChild(gallery);
+    }
+    const mediaUrl = safeMediaUrl(entry.mediaUrl);
+    const mediaType = entry.mediaType || '';
+    if (mediaUrl) {
+      if (!addMediaViewer(mediaColumn, mediaUrl, mediaType, entry.title, 'journal-media-viewer', imageUrls[0])) {
+        addText(mediaColumn, 'p', 'This media link cannot be embedded. Please contact the gallery for access.', 'journal-meta');
+      }
+    }
+    const attachmentUrl = safeMediaUrl(entry.fileUrl || entry.attachmentUrl);
+    if (attachmentUrl) {
+      const attachmentName = entry.attachmentName || '';
+      if (/\.pdf$/i.test(attachmentName)) {
+        addMediaViewer(mediaColumn, attachmentUrl, 'document', entry.title, 'journal-document-viewer');
+      } else if (/\.(mp4|webm|ogv)$/i.test(attachmentName)) {
+        addMediaViewer(mediaColumn, attachmentUrl, 'video', entry.title, 'journal-media-viewer', imageUrls[0], true);
+      } else if (/\.(mp3|m4a|wav|ogg)$/i.test(attachmentName)) {
+        const audio = document.createElement('audio');
+        audio.src = attachmentUrl;
+        audio.controls = true;
+        audio.preload = 'metadata';
+        audio.setAttribute('aria-label', entry.title || 'News & Gallery audio');
+        mediaColumn.appendChild(audio);
+      } else if (/\.(jpe?g|png|gif|webp|avif)$/i.test(attachmentName)) {
+        const image = document.createElement('img');
+        image.className = 'journal-detail-image';
+        image.src = attachmentUrl;
+        image.alt = entry.title || 'News & Gallery attachment';
+        image.loading = 'lazy';
+        mediaColumn.appendChild(image);
+      }
+    }
+    const actions = document.createElement('div');
+    actions.className = 'journal-media-actions';
+    if (mediaUrl) {
+      const mediaLink = document.createElement('a');
+      mediaLink.href = mediaUrl;
+      mediaLink.target = '_blank';
+      mediaLink.rel = 'noopener noreferrer';
+      mediaLink.textContent = mediaType === 'video' ? 'Open video' : 'Open media';
+      actions.appendChild(mediaLink);
+    }
+    if (attachmentUrl) {
+      const fileLink = document.createElement('a');
+      fileLink.href = attachmentUrl;
+      fileLink.target = '_blank';
+      fileLink.rel = 'noopener noreferrer';
+      fileLink.textContent = entry.attachmentName || 'Open attachment';
+      actions.appendChild(fileLink);
+    }
+    if (actions.childElementCount) mediaColumn.appendChild(actions);
+
+    const copy = document.createElement('div');
+    copy.className = 'journal-detail-content';
+    addText(copy, 'p', entry.entryType || 'Story', 'section-eyebrow');
+    addText(copy, 'h2', entry.title || 'Untitled story');
+    const dateLabel = formatDate(entry.eventDate || entry.publishedAt);
+    const dates = [dateLabel, formatDate(entry.endDate)].filter(Boolean).join(' – ');
+    if (dates) addText(copy, 'p', dates, 'journal-meta');
+    addEntryMetadata(copy, entry);
+    if (folder) addText(copy, 'p', folder.title, 'journal-meta');
+    if (entry.excerpt) {
+      addText(copy, 'h3', 'Description', 'journal-detail-section-title');
+      const description = document.createElement('div');
+      description.className = 'journal-detail-excerpt journal-rich-content';
+      appendSafeRichContent(description, entry.excerpt);
+      copy.appendChild(description);
+    }
+    if (entry.body) {
+      addText(copy, 'h3', 'Story details', 'journal-detail-section-title');
+      const story = document.createElement('div');
+      story.className = 'journal-detail-body journal-rich-content';
+      appendSafeRichContent(story, entry.body);
+      copy.appendChild(story);
+    }
+    layout.append(mediaColumn, copy);
+    article.appendChild(layout);
+    feed.appendChild(article);
+    return;
+  }
   addText(article, 'p', entry.entryType || 'Story', 'section-eyebrow');
   addText(article, 'h2', entry.title || 'Untitled story');
   const dateLabel = formatDate(entry.eventDate || entry.publishedAt);
   const dates = [dateLabel, formatDate(entry.endDate)].filter(Boolean).join(' – ');
-  const meta = [dates, entry.location, entry.author ? `By ${entry.author}` : ''].filter(Boolean).join(' · ');
+  const meta = currentJournalTab === 'tv'
+    ? [dates, entry.location, entry.author ? `By ${entry.author}` : ''].filter(Boolean).join(' · ')
+    : dates;
   if (meta) addText(article, 'p', meta, 'journal-meta');
+  if (currentJournalTab !== 'tv') addEntryMetadata(article, entry);
   if (folder) addText(article, 'p', folder.title, 'journal-meta');
   const imageUrl = safeMediaUrl(entry.imageUrl);
   if (imageUrl) {
@@ -305,7 +624,7 @@ function renderEntryDetail(entry) {
   if (mediaUrl && !addMediaViewer(article, mediaUrl, mediaType, entry.title, 'journal-media-viewer', entry.imageUrl)) {
     addText(article, 'p', 'This media link cannot be embedded. Please contact the gallery for access.', 'journal-meta');
   }
-  if (entry.excerpt) addText(article, 'p', entry.excerpt, 'journal-detail-excerpt');
+  if (entry.excerpt && currentJournalTab === 'tv') addText(article, 'p', entry.excerpt, 'journal-detail-excerpt');
   if (entry.body) addText(article, 'p', entry.body, 'journal-detail-body');
   const attachmentUrl = safeMediaUrl(entry.fileUrl || entry.attachmentUrl);
   if (attachmentUrl) {
@@ -350,21 +669,31 @@ function renderTv() {
     return;
   }
 
-  const selected = videos.find(entry => entry._id === currentEntryId) || videos[0];
+  const groups = groupTvVideos(videos);
+  const selected = videos.find(entry => entry._id === currentEntryId)
+    || groups.landscape[0]
+    || groups.shorts[0];
+  const selectedOrientation = getTvVideoOrientation(selected);
+  const selectedShape = selectedOrientation === 'portrait' ? 'short' : 'landscape';
   const uploadedVideoUrl = selected.fileUrl || selected.attachmentUrl || '';
   const uploadedVideo = Boolean(uploadedVideoUrl && /\.(mp4|webm|ogv)$/i.test(selected.attachmentName || ''));
   const selectedVideoUrl = uploadedVideo ? uploadedVideoUrl : selected.mediaUrl;
   const layout = document.createElement('div');
   layout.className = 'journal-tv-layout';
   const player = document.createElement('article');
-  player.className = 'journal-tv-player';
-  const playlist = document.createElement('aside');
-  playlist.className = 'journal-tv-playlist';
-  playlist.setAttribute('aria-label', 'ARTGALZIM TV playlist');
+  player.className = `journal-tv-player is-${selectedShape}`;
   feed.append(layout);
-  layout.append(player, playlist);
+  layout.append(player);
 
-  if (!addMediaViewer(player, selectedVideoUrl, selected.mediaType, selected.title, 'journal-tv-viewer', selected.imageUrl, uploadedVideo)) {
+  if (!addMediaViewer(
+    player,
+    selectedVideoUrl,
+    selected.mediaType,
+    selected.title,
+    `journal-tv-viewer is-${selectedShape}`,
+    selected.imageUrl,
+    uploadedVideo
+  )) {
     addText(player, 'p', 'This video could not be embedded. Check that it is public and supports embedding.', 'journal-meta');
   }
   addText(player, 'h2', selected.title || 'Untitled video');
@@ -373,55 +702,55 @@ function renderTv() {
   if (selected.excerpt) addText(player, 'p', selected.excerpt, 'journal-detail-excerpt');
   if (selected.body) addText(player, 'p', selected.body, 'journal-detail-body');
 
-  addText(playlist, 'h2', 'ARTGALZIM TV');
-  addText(playlist, 'p', `${videos.length} ${videos.length === 1 ? 'video' : 'videos'}`, 'journal-meta');
-  const list = document.createElement('div');
-  list.className = 'journal-tv-playlist-items';
-  playlist.appendChild(list);
-  videos.forEach((entry, index) => {
-    const item = document.createElement('button');
-    item.type = 'button';
-    item.className = 'journal-tv-playlist-item';
-    item.setAttribute('aria-current', String(entry._id === selected._id));
-    const videoEmbed = entry.mediaType === 'video' && entry.mediaUrl ? mediaEmbed(entry.mediaUrl, 'video') : null;
-    const imageUrl = safeMediaUrl(entry.imageUrl) || videoEmbed?.thumbnails?.[0] || '';
-    if (imageUrl) {
-      const image = document.createElement('img');
-      image.src = imageUrl;
-      image.alt = '';
-      image.loading = 'lazy';
-      const thumbnailSources = videoEmbed?.thumbnails || [];
-      let thumbnailIndex = thumbnailSources.indexOf(imageUrl);
-      image.addEventListener('error', () => {
-        thumbnailIndex += 1;
-        if (thumbnailIndex >= 0 && thumbnailIndex < thumbnailSources.length) {
-          image.src = thumbnailSources[thumbnailIndex];
-        } else {
-          const number = document.createElement('span');
-          number.className = 'journal-tv-playlist-number';
-          number.textContent = String(index + 1).padStart(2, '0');
-          image.replaceWith(number);
-        }
+  function renderVideoSection(title, entries, isShorts) {
+    if (!entries.length) return;
+    const section = document.createElement('section');
+    section.className = `journal-tv-section${isShorts ? ' is-shorts' : ''}`;
+    addText(section, 'h2', title);
+    const cards = document.createElement('div');
+    cards.className = `journal-tv-cards${isShorts ? ' journal-tv-shorts-row' : ''}`;
+    section.appendChild(cards);
+    layout.appendChild(section);
+    entries.forEach(entry => {
+      const item = document.createElement('button');
+      item.type = 'button';
+      item.className = `journal-tv-card${isShorts ? ' is-short' : ''}`;
+      item.setAttribute('aria-label', `Play ${isShorts ? 'Short' : 'video'}: ${entry.title || 'Untitled video'}`);
+      item.setAttribute('aria-current', String(entry._id === selected._id));
+      const videoEmbed = entry.mediaType === 'video' && entry.mediaUrl ? mediaEmbed(entry.mediaUrl, 'video') : null;
+      const imageUrl = safeMediaUrl(entry.imageUrl) || videoEmbed?.thumbnails?.[0] || '';
+      const thumbnail = document.createElement('span');
+      thumbnail.className = 'journal-tv-card-thumbnail';
+      if (imageUrl) {
+        const image = document.createElement('img');
+        image.src = imageUrl;
+        image.alt = '';
+        image.loading = 'lazy';
+        image.addEventListener('error', () => image.remove(), { once: true });
+        thumbnail.appendChild(image);
+      } else {
+        const placeholder = document.createElement('span');
+        placeholder.className = 'journal-tv-card-placeholder';
+        placeholder.textContent = isShorts ? 'SHORT' : 'ARTGALZIM TV';
+        thumbnail.appendChild(placeholder);
+      }
+      item.appendChild(thumbnail);
+      const text = document.createElement('span');
+      text.className = 'journal-tv-card-text';
+      addText(text, 'strong', entry.title || 'Untitled video');
+      const date = formatDate(entry.eventDate || entry.publishedAt);
+      if (date) addText(text, 'span', date, 'journal-meta');
+      item.appendChild(text);
+      item.addEventListener('click', () => {
+        currentEntryId = entry._id;
+        renderJournal();
       });
-      item.appendChild(image);
-    } else {
-      const number = document.createElement('span');
-      number.className = 'journal-tv-playlist-number';
-      number.textContent = String(index + 1).padStart(2, '0');
-      item.appendChild(number);
-    }
-    const text = document.createElement('span');
-    text.className = 'journal-tv-playlist-text';
-    addText(text, 'strong', entry.title || 'Untitled video');
-    const date = formatDate(entry.eventDate || entry.publishedAt);
-    if (date) addText(text, 'span', date, 'journal-meta');
-    item.appendChild(text);
-    item.addEventListener('click', () => {
-      currentEntryId = entry._id;
-      renderJournal();
+      cards.appendChild(item);
     });
-    list.appendChild(item);
-  });
+  }
+
+  renderVideoSection('Videos', groups.landscape, false);
+  renderVideoSection('Shorts', groups.shorts, true);
 }
 
 function renderJournal() {
@@ -446,33 +775,82 @@ function renderJournal() {
       renderJournal();
       return;
     }
+    if (pendingFolderLoadId === currentFolderId) {
+      showFolderPreloader();
+      return;
+    }
     const heading = document.createElement('section');
     heading.className = 'journal-folder-heading';
-    addButton(heading, 'All folders', () => {
-      currentFolderId = null;
-      renderJournal();
+    const folderFrame = document.createElement('section');
+    folderFrame.className = 'journal-folder-frame';
+    folderFrame.setAttribute('aria-label', `${folder.title || 'Folder'} contents`);
+    const parentFolder = journalFolders.find(item => item._id === folder.parentFolderId) || null;
+    addButton(heading, parentFolder ? '← Back' : '← All folders', () => {
+      navigateBack({ folderId: parentFolder?._id || null, entryId: null });
     }, 'journal-back');
+    const breadcrumb = document.createElement('nav');
+    breadcrumb.className = 'journal-folder-breadcrumb';
+    breadcrumb.setAttribute('aria-label', 'Folder path');
+    const ancestors = [];
+    const seenFolderIds = new Set([folder._id]);
+    let ancestor = parentFolder;
+    while (ancestor && !seenFolderIds.has(ancestor._id)) {
+      seenFolderIds.add(ancestor._id);
+      ancestors.unshift(ancestor);
+      ancestor = journalFolders.find(item => item._id === ancestor.parentFolderId) || null;
+    }
+    const rootCrumb = document.createElement('button');
+    rootCrumb.type = 'button';
+    rootCrumb.textContent = 'All folders';
+    rootCrumb.addEventListener('click', () => navigateGallery({ folderId: null }));
+    breadcrumb.appendChild(rootCrumb);
+    [...ancestors, folder].forEach((item, index, path) => {
+      const separator = document.createElement('span');
+      separator.setAttribute('aria-hidden', 'true');
+      separator.textContent = '/';
+      breadcrumb.appendChild(separator);
+      if (index === path.length - 1) {
+        const current = addText(breadcrumb, 'span', item.title || 'Untitled folder');
+        current.setAttribute('aria-current', 'page');
+      } else {
+        const crumb = document.createElement('button');
+        crumb.type = 'button';
+        crumb.textContent = item.title || 'Untitled folder';
+        crumb.addEventListener('click', () => navigateGallery({ folderId: item._id }, { loadingFolder: true }));
+        breadcrumb.appendChild(crumb);
+      }
+    });
+    heading.appendChild(breadcrumb);
     addText(heading, 'p', folder.category || 'Journal', 'section-eyebrow');
     addText(heading, 'h2', folder.title || 'Untitled folder');
     if (folder.organization) addText(heading, 'p', folder.organization, 'journal-meta');
     if (folder.description) addText(heading, 'p', folder.description);
-    feed.appendChild(heading);
+    folderFrame.appendChild(heading);
+    feed.appendChild(folderFrame);
+    const childFolders = journalFolders
+      .filter(item => item.parentFolderId === folder._id)
+      .sort((a, b) => String(a.title || '').localeCompare(String(b.title || '')));
+    if (childFolders.length) {
+      const grid = section('Folders', 'journal-folder-section', folderFrame);
+      childFolders.forEach(child => renderFolderCard(child, grid));
+    }
     const entries = journalEntries
       .filter(entry => !isTvEntry(entry) && entry.folderId === folder._id)
       .sort((a, b) => String(b.eventDate || b.publishedAt || '').localeCompare(String(a.eventDate || a.publishedAt || '')));
-    if (!entries.length) addText(feed, 'p', 'No published stories in this folder yet.', 'journal-empty');
-    else {
+    if (entries.length) {
       const grid = document.createElement('div');
-      grid.className = 'journal-cards';
-      feed.appendChild(grid);
+      grid.className = 'journal-section journal-cards journal-folder-entries';
+      folderFrame.appendChild(grid);
       entries.forEach(entry => renderEntryCard(entry, grid));
     }
+    if (!entries.length && !childFolders.length) addText(folderFrame, 'p', 'This folder is empty. Published stories, media, and subfolders will appear here.', 'journal-empty');
     return;
   }
   const folders = [...journalFolders].sort((a, b) => String(a.title || '').localeCompare(String(b.title || '')));
-  if (folders.length) {
-    const grid = section('Folders');
-    folders.forEach(folder => renderFolderCard(folder, grid));
+  const rootFolders = folders.filter(folder => !folder.parentFolderId);
+  if (rootFolders.length) {
+    const grid = section('Folders', 'journal-folder-section');
+    rootFolders.forEach(folder => renderFolderCard(folder, grid));
   }
   const legacy = [...legacyEntries].sort((a, b) =>
     String(b.publishedAt || '').localeCompare(String(a.publishedAt || ''))
@@ -488,7 +866,7 @@ function renderJournal() {
     const grid = section(folders.length ? 'More from the Gallery' : 'Stories & Media');
     legacy.forEach(item => grid.appendChild(item._type === 'post' ? renderLegacyPost(item) : renderLegacyMedia(item)));
   }
-  if (!folders.length && !legacy.length) addText(feed, 'p', 'No published stories or media yet.', 'journal-empty');
+  if (!rootFolders.length && !legacy.length) addText(feed, 'p', 'No published stories or media yet.', 'journal-empty');
 }
 
 async function loadJournal() {
@@ -507,6 +885,28 @@ async function loadJournal() {
     addText(feed, 'p', error.message, 'journal-empty');
   }
 }
+
+function restoreGalleryRoute(route) {
+  if (!route) return;
+  clearTimeout(folderLoadingTimer);
+  hideFolderPreloader();
+  currentJournalTab = route.tab === 'tv' ? 'tv' : 'journal';
+  currentFolderId = route.folderId || null;
+  currentEntryId = route.entryId || null;
+  pendingFolderLoadId = null;
+  galleryHistoryDepth = Number.isInteger(route.depth) ? Math.max(0, route.depth) : 0;
+  renderJournal();
+}
+
+const initialGalleryRoute = galleryRouteFromLocation();
+if (initialGalleryRoute) {
+  currentJournalTab = initialGalleryRoute.tab === 'tv' ? 'tv' : 'journal';
+  currentFolderId = initialGalleryRoute.folderId || null;
+  currentEntryId = initialGalleryRoute.entryId || null;
+  galleryHistoryDepth = Number.isInteger(initialGalleryRoute.depth) ? Math.max(0, initialGalleryRoute.depth) : 0;
+}
+syncGalleryHistory(true);
+window.addEventListener('popstate', event => restoreGalleryRoute(galleryRouteFromLocation(event.state)));
 
 document.querySelectorAll('[data-journal-tab]').forEach(button => {
   button.addEventListener('click', () => setJournalTab(button.dataset.journalTab));

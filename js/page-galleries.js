@@ -50,10 +50,6 @@ const PageGalleries = {
       ],
       "cover": "/ARTISTS/FLORAH MAPHOSA/Abstract/Heritage Unwrapped.jpeg"
     },
-    "FLORAH MAPHOSA/Commissions": {
-      "images": [],
-      "cover": null
-    },
     "FLORAH MAPHOSA/Portraits": {
       "images": [
         "/ARTISTS/FLORAH MAPHOSA/Portraits/Heritage Unwrapped.jpeg",
@@ -112,15 +108,15 @@ const PageGalleries = {
     },
     "Samuel T Samoyo/Abstract": {
       "images": [],
-      "cover": null
+      "cover": "/ARTISTS/Samuel T Samoyo/Abstract/samuel-t-samoyo-abstract-cover.svg"
     },
     "Samuel T Samoyo/Commissions": {
       "images": [],
-      "cover": null
+      "cover": "/ARTISTS/Samuel T Samoyo/Commissions/samuel-t-samoyo-commissions-cover.svg"
     },
     "Samuel T Samoyo/Portraits": {
       "images": [],
-      "cover": null
+      "cover": "/ARTISTS/Samuel T Samoyo/Portraits/samuel-t-samoyo-portraits-cover.svg"
     }
   }
 };

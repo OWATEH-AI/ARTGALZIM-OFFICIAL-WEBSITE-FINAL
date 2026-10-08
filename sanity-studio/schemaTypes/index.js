@@ -1,4 +1,4 @@
-import { defineField, defineType } from 'sanity';
+import { defineArrayMember, defineField, defineType } from 'sanity';
 
 const artistTierOptions = [
   { title: 'Keith Zenda', value: 'Keith Zenda' },
@@ -71,6 +71,7 @@ export const schemaTypes = [
       defineField({ name: 'artist', title: 'Artist', type: 'string', validation: rule => rule.required() }),
       defineField({ name: 'name', title: 'Folder Name', type: 'string', validation: rule => rule.required() }),
       defineField({ name: 'coverSrc', title: 'Cover Image URL', type: 'string' }),
+      defineField({ name: 'pendingCoverAssetCleanup', title: 'Pending Cover Asset Cleanup', type: 'array', of: [defineArrayMember({ type: 'string' })], hidden: true, readOnly: true }),
       defineField({ name: 'isDeleted', title: 'Pending Deletion', type: 'boolean', hidden: true, readOnly: true })
     ],
     preview: { select: { title: 'name', subtitle: 'artist' } }
@@ -90,7 +91,7 @@ export const schemaTypes = [
       defineField({ name: 'id', title: 'Dashboard ID', type: 'string', readOnly: true }),
       defineField({ name: 'title', title: 'Title', type: 'string', validation: rule => rule.required() }),
       defineField({ name: 'artist', title: 'Artist', type: 'string' }),
-      defineField({ name: 'location', title: 'Location', type: 'string' }),
+      defineField({ name: 'location', title: 'School / Location', description: 'For News & Gallery, enter the school name. ARTGALZIM TV can use this for a location.', type: 'string' }),
       defineField({ name: 'category', title: 'Category', type: 'string' }),
       defineField({ name: 'theme', title: 'Theme', type: 'string' }),
       defineField({ name: 'description', title: 'Description', type: 'text', rows: 4 }),
@@ -158,34 +159,68 @@ export const schemaTypes = [
   }),
   defineType({
     name: 'journalFolder',
-    title: 'Journal Folder',
+    title: 'News & Gallery Folder',
     type: 'document',
+    groups: [
+      { name: 'folderDetails', title: 'Folder Details', default: true },
+      { name: 'legacyPresentation', title: 'Legacy Page Presentation' }
+    ],
     fields: [
-      defineField({ name: 'title', title: 'Folder Name', type: 'string', validation: rule => rule.required() }),
+      defineField({ name: 'title', title: 'Folder Name', type: 'string', group: 'folderDetails', validation: rule => rule.required() }),
       defineField({
         name: 'category',
         title: 'Folder Type',
         type: 'string',
+        group: 'folderDetails',
         options: { list: ['School', 'Gallery Program', 'Partnership', 'Collaboration', 'Gallery News', 'Other'] }
       }),
-      defineField({ name: 'organization', title: 'School / Organization', type: 'string' }),
-      defineField({ name: 'description', title: 'Short Description', type: 'text', rows: 3 }),
-      defineField({ name: 'slug', title: 'URL Slug', type: 'string' }),
-      defineField({ name: 'cover', title: 'Folder Cover', type: 'image', options: { hotspot: true } }),
-      defineField({ name: 'coverUrl', title: 'Folder Cover URL', type: 'url' }),
+      defineField({
+        name: 'parentFolderId',
+        title: 'Parent Folder ID',
+        description: 'Manage parent folders in the News & Gallery dashboard.',
+        type: 'string',
+        group: 'folderDetails',
+        hidden: true,
+        readOnly: true
+      }),
+      defineField({ name: 'description', title: 'Folder Description', type: 'text', group: 'folderDetails', rows: 3 }),
+      defineField({ name: 'cover', title: 'Folder Cover', type: 'image', group: 'folderDetails', options: { hotspot: true } }),
+      defineField({ name: 'organization', title: 'School / Organization', type: 'string', group: 'legacyPresentation' }),
+      defineField({ name: 'eyebrow', title: 'Folder Label', type: 'string', group: 'legacyPresentation' }),
+      defineField({ name: 'coverHeading', title: 'Cover Heading', type: 'string', group: 'legacyPresentation' }),
+      defineField({ name: 'coverSubheading', title: 'Cover Subheading', type: 'string', group: 'legacyPresentation' }),
+      defineField({ name: 'updateText', title: 'Update Link Text', type: 'string', group: 'legacyPresentation' }),
+      defineField({ name: 'updateUrl', title: 'Update Link URL', type: 'url', group: 'legacyPresentation' }),
+      defineField({ name: 'slug', title: 'URL Slug', type: 'string', group: 'legacyPresentation' }),
+      defineField({ name: 'coverUrl', title: 'Folder Cover URL', type: 'url', group: 'legacyPresentation' }),
+      defineField({ name: 'pendingCoverAssetCleanup', title: 'Pending Cover Asset Cleanup', type: 'array', of: [defineArrayMember({ type: 'string' })], hidden: true, readOnly: true }),
       defineField({ name: 'isDeleted', title: 'Pending Deletion', type: 'boolean', hidden: true, readOnly: true })
     ],
     preview: { select: { title: 'title', subtitle: 'category', media: 'cover' } }
   }),
   defineType({
     name: 'journalEntry',
-    title: 'Journal Entry',
+    title: 'News & Gallery Entry',
     type: 'document',
     fields: [
       defineField({ name: 'title', title: 'Title', type: 'string', validation: rule => rule.required() }),
       defineField({ name: 'slug', title: 'URL Slug', type: 'string' }),
-      defineField({ name: 'folderId', title: 'Folder ID', type: 'string', validation: rule => rule.required() }),
-      defineField({ name: 'folderTitle', title: 'Folder Name', type: 'string' }),
+      defineField({
+        name: 'folderId',
+        title: 'News & Gallery Folder',
+        type: 'string',
+        hidden: ({ document }) => document?.destination === 'tv' || document?.entryType === 'ARTGALZIM TV',
+        validation: rule => rule.custom((value, context) => {
+          const isTv = context.document?.destination === 'tv' || context.document?.entryType === 'ARTGALZIM TV';
+          return isTv || value ? true : 'Choose a folder for News & Gallery entries.';
+        })
+      }),
+      defineField({
+        name: 'folderTitle',
+        title: 'Folder Name',
+        type: 'string',
+        hidden: ({ document }) => document?.destination === 'tv' || document?.entryType === 'ARTGALZIM TV'
+      }),
       defineField({
         name: 'entryType',
         title: 'Entry Type',
@@ -194,9 +229,10 @@ export const schemaTypes = [
       }),
       defineField({
         name: 'destination',
-        title: 'Publish Section',
+        title: 'Content Section',
+        description: 'Choose whether this item appears in News & Gallery or ARTGALZIM TV.',
         type: 'string',
-        options: { list: [{ title: 'Journal and Gallery', value: 'journal' }, { title: 'ARTGALZIM TV', value: 'tv' }] }
+        options: { list: [{ title: 'News & Gallery', value: 'journal' }, { title: 'ARTGALZIM TV', value: 'tv' }] }
       }),
       defineField({
         name: 'mediaType',
@@ -205,14 +241,40 @@ export const schemaTypes = [
         options: { list: [{ title: 'Video (YouTube / direct video)', value: 'video' }, { title: 'Document (Google Drive / PDF)', value: 'document' }, { title: 'Instagram post / reel', value: 'social' }] }
       }),
       defineField({ name: 'mediaUrl', title: 'Video / Document / Social URL', type: 'url' }),
-      defineField({ name: 'excerpt', title: 'Short Description', type: 'text', rows: 3 }),
-      defineField({ name: 'body', title: 'Article', type: 'text', rows: 14 }),
+      defineField({
+        name: 'videoOrientation',
+        title: 'ARTGALZIM TV Layout',
+        type: 'string',
+        options: { list: [{ title: 'Landscape video', value: 'landscape' }, { title: 'Short (portrait)', value: 'portrait' }] }
+      }),
+      defineField({
+        name: 'artistCurator',
+        title: 'Artist / Curator',
+        type: 'string',
+        hidden: ({ document }) => document?.destination === 'tv' || document?.entryType === 'ARTGALZIM TV'
+      }),
+      defineField({
+        name: 'category',
+        title: 'Category',
+        type: 'string',
+        hidden: ({ document }) => document?.destination === 'tv' || document?.entryType === 'ARTGALZIM TV'
+      }),
+      defineField({ name: 'excerpt', title: 'Description', type: 'text', rows: 3 }),
+      defineField({ name: 'body', title: 'Article (formatting is available in the admin editor)', type: 'text', rows: 14 }),
       defineField({ name: 'eventDate', title: 'Program / Event Date', type: 'date' }),
       defineField({ name: 'endDate', title: 'End Date', type: 'date' }),
       defineField({ name: 'location', title: 'Location', type: 'string' }),
       defineField({ name: 'author', title: 'Author / Reporter', type: 'string' }),
       defineField({ name: 'publishedAt', title: 'Publish Date', type: 'datetime' }),
       defineField({ name: 'image', title: 'Story Image', type: 'image', options: { hotspot: true } }),
+      defineField({
+        name: 'images',
+        title: 'Story Image Gallery',
+        description: 'Optional additional images uploaded with the story.',
+        type: 'array',
+        hidden: ({ document }) => document?.destination === 'tv' || document?.entryType === 'ARTGALZIM TV',
+        of: [{ type: 'image', options: { hotspot: true } }]
+      }),
       defineField({ name: 'attachment', title: 'Document / Media Attachment', type: 'file' }),
       defineField({ name: 'imageUrl', title: 'Story Image URL', type: 'url' }),
       defineField({ name: 'attachmentUrl', title: 'Attachment URL', type: 'url' }),

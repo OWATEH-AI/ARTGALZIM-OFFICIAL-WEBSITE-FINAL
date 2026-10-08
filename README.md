@@ -9,6 +9,17 @@
 
 npm install && npm run build
 
+## Secret handling and deployment
+
+Never store live secrets in frontend JavaScript, HTML, the repo, or `wrangler.jsonc`.
+
+- Keep local values in a git-ignored `.env` file only.
+- Keep production secrets in Cloudflare Worker/Pages environment variables or secret storage, not in the source tree.
+- Keep Sanity write credentials and Neon database credentials in the backend runtime environment or platform secret manager.
+- The public site should only receive safe public IDs or dataset names, never the write token.
+
+Cloudflare will only deploy the code and asset bundle that is pushed to the connected GitHub repo or triggered by your CI workflow. It does not automatically pull secrets from the repo; those must be added in the Cloudflare dashboard or via `wrangler secret put`.
+
 ## Sanity content backend
 
 The custom admin dashboard writes to the Sanity `production` dataset through the same-origin API. Artwork, exhibitions, posts, and media edits are saved as drafts. Use **Push & Sync Changes** to publish them. Public gallery and exhibition pages read published Sanity content. The API token is server-side only.
@@ -38,10 +49,13 @@ This repository includes the Studio configuration and document schemas in `sanit
 
 The Studio defaults to project `2a274c3r` and dataset `production`; override these with `SANITY_STUDIO_PROJECT_ID` and `SANITY_STUDIO_DATASET` if needed. The Studio and dashboard share the same Sanity documents. Dashboard deletes remain staged until **Push & Sync Changes** is used; publishing applies the removal in Sanity.
 
+The admin dashboard has separate **News & Gallery** and **ARTGALZIM TV** sections. News & Gallery folders support the cover, overlay headings, label, category/organization, description, and optional update link used by the public folder-card layout. Sanity Studio also separates News & Gallery folders/entries from ARTGALZIM TV videos while keeping the existing `journalEntry` documents and destination fields intact.
+
 ## Sanity API
 
 - `GET /api/public-gallery` serves published artwork to gallery pages.
 - `GET /api/public-content` serves published exhibitions, posts, and media.
+- ARTGALZIM TV entries store landscape/portrait layout metadata; uploaded videos are classified from their dimensions, and the public TV page keeps portrait Shorts in a separate horizontal row.
 - Admin API routes require the HttpOnly dashboard session and server-side secrets.
 - `POST /api/sync` promotes Sanity drafts to published documents.
 

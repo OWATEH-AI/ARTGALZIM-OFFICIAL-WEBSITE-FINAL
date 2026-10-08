@@ -4,6 +4,7 @@
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>ARTGALZIM — Admin Dashboard</title>
+  <link rel="stylesheet" href="css/exhibition-cards.css"/>
   <link rel="preconnect" href="https://fonts.googleapis.com"/>
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
   <style>
@@ -192,27 +193,21 @@
     }
     .artist-card-item {
       background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--r-lg);
-      overflow: hidden; cursor: pointer; isolation: isolate; transform: translateZ(0);
-      -webkit-backface-visibility: hidden; backface-visibility: hidden;
-      transition: transform 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease;
+      overflow: hidden; cursor: pointer;
+      transition: border-color 0.25s ease, box-shadow 0.25s ease;
       display: flex; flex-direction: column; position: relative;
     }
     .artist-card-item:hover {
-      transform: translateY(-3px) translateZ(0); border-color: var(--border-g);
+      border-color: var(--border-g);
       box-shadow: 0 12px 30px rgba(0,0,0,0.5);
     }
     .artist-card-cover {
       width: 100%; height: 190px; position: relative; overflow: hidden; background: #080808;
       display: flex; align-items: center; justify-content: center;
-      transform: translateZ(0);
-      -webkit-backface-visibility: hidden; backface-visibility: hidden;
     }
     .artist-card-cover img {
-      width: 100%; height: 100%; object-fit: cover; display: block; transform: translateZ(0);
-      -webkit-backface-visibility: hidden; backface-visibility: hidden;
-      transition: transform 0.3s ease;
+      width: 100%; height: 100%; object-fit: cover; display: block;
     }
-    .artist-card-item:hover .artist-card-cover img { transform: scale(1.03) translateZ(0); }
     .artist-card-overlay {
       position: absolute; inset: 0; background: linear-gradient(to top, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0.1) 60%);
       display: flex; flex-direction: column; justify-content: flex-end; padding: 1rem 1.25rem;
@@ -319,6 +314,60 @@
       margin-top: 0.75rem; padding-top: 0.75rem; border-top: 1px solid var(--border);
       display: flex; justify-content: space-between; align-items: center;
     }
+    .journal-admin-toolbar { display: flex; justify-content: space-between; align-items: center; gap: 1rem; flex-wrap: wrap; }
+    .journal-admin-toolbar h3 { margin: 0.2rem 0; color: var(--gold); font: 500 1.8rem 'Cormorant Garamond', serif; }
+    .journal-admin-toolbar p { margin: 0; color: var(--muted); font-size: 0.85rem; }
+    .journal-admin-actions { display: flex; justify-content: flex-end; align-items: center; gap: 0.6rem; flex-wrap: wrap; }
+    .journal-rich-editor { min-height: 7rem; padding: 0.8rem; border: 1px solid var(--border); border-radius: 4px; background: var(--bg2); color: var(--text); line-height: 1.6; overflow-wrap: anywhere; }
+    .journal-rich-editor[contenteditable="true"]:empty::before { color: var(--muted); content: attr(data-placeholder); pointer-events: none; }
+    .journal-rich-editor:focus { outline: 2px solid var(--gold); outline-offset: 1px; }
+    .journal-rich-toolbar { display: flex; flex-wrap: wrap; gap: 0.35rem; margin: 0.45rem 0; }
+    .journal-rich-toolbar button, .journal-crop-controls select, .journal-crop-controls input { min-height: 2rem; border: 1px solid var(--border-g); border-radius: 4px; background: var(--bg3); color: var(--text); padding: 0.35rem 0.55rem; }
+    .journal-rich-toolbar button { cursor: pointer; }
+    .journal-rich-toolbar button:hover, .journal-rich-toolbar button:focus-visible { border-color: var(--gold); color: var(--gold); }
+    .journal-crop-controls { display: flex; flex-wrap: wrap; align-items: center; gap: 0.7rem; margin: 0.7rem 0; color: var(--muted); font-size: 0.82rem; }
+    .journal-image-preview-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(110px, 1fr)); gap: 0.6rem; margin: 0.7rem 0 1rem; }
+    .journal-image-preview-grid img { width: 100%; aspect-ratio: 4 / 3; object-fit: cover; border: 1px solid var(--border); border-radius: 4px; background: var(--bg2); }
+    .admin-content-preview[hidden] { display: none; }
+    .admin-content-preview { position: fixed; z-index: 10000; inset: 0; display: grid; place-items: center; overflow-y: auto; padding: 1rem; background: rgba(0,0,0,0.82); }
+    .admin-content-preview-card { width: min(100%, 1080px); max-height: min(92vh, 900px); overflow-y: auto; padding: clamp(1rem, 3vw, 2rem); border: 1px solid var(--border-g); background: var(--bg-card); }
+    .admin-content-preview-header { display: flex; align-items: center; justify-content: space-between; gap: 1rem; margin-bottom: 1rem; }
+    .admin-content-preview-header h2 { margin: 0; color: var(--gold); }
+    .admin-content-preview-layout { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.1fr); gap: clamp(1rem, 3vw, 2rem); }
+    .admin-content-preview-media img { display: block; width: 100%; max-height: 420px; margin-bottom: 0.6rem; object-fit: contain; background: #111; }
+    .admin-content-preview-copy { min-width: 0; overflow-wrap: anywhere; }
+    .admin-content-preview-copy h3 { margin: 0 0 0.5rem; font: 500 clamp(1.7rem, 4vw, 2.5rem) 'Cormorant Garamond', serif; }
+    .admin-content-preview-actions { display: grid; gap: 0.45rem; }
+    .admin-content-preview-actions a { color: var(--gold); overflow-wrap: anywhere; }
+    @media (max-width: 680px) { .admin-content-preview-layout { grid-template-columns: minmax(0, 1fr); } }
+    .journal-admin-folder-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(270px, 1fr)); gap: 1.5rem; }
+    .journal-admin-folder-grid .album-card-item {
+      min-width: 0; cursor: default;
+      transition: border-color 0.25s ease, box-shadow 0.25s ease;
+    }
+    .journal-admin-folder-grid .album-card-item:hover,
+    .journal-admin-folder-grid .album-card-item:focus-within {
+      transform: none;
+      border-color: rgba(201, 168, 76, 0.45);
+      box-shadow: 0 12px 30px rgba(0, 0, 0, 0.35);
+    }
+    .journal-admin-folder-grid .album-card-item:hover .album-card-cover img { transform: none; }
+    .journal-admin-folder-grid .album-card-cover { height: auto; aspect-ratio: 4 / 3; }
+    .journal-admin-folder-grid .album-card-title,
+    .journal-admin-entry-card h5 { overflow-wrap: anywhere; }
+    .journal-admin-folder-grid .album-card-body { min-width: 0; }
+    .journal-admin-folder-grid .album-card-footer { gap: 0.6rem; flex-wrap: wrap; }
+    .journal-admin-folder-preview-category { margin-bottom: 0.4rem; color: var(--gold); font-size: 0.72rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; }
+    .journal-admin-folder-preview-description { margin-top: 0.45rem; color: var(--muted); font-size: 0.8rem; line-height: 1.5; overflow-wrap: anywhere; }
+    .journal-admin-entry-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 1.25rem; }
+    .journal-admin-entry-card { min-width: 0; overflow: hidden; border: 1px solid var(--border); border-radius: var(--r-lg); background: var(--bg-card); }
+    .journal-admin-entry-card > img { display: block; width: 100%; aspect-ratio: 4 / 3; object-fit: cover; background: #080808; }
+    .journal-admin-entry-body { padding: 1rem; }
+    .journal-admin-entry-card h5 { margin: 0.35rem 0; color: var(--text); font: 600 1.15rem 'Cormorant Garamond', serif; }
+    .journal-admin-entry-card p { margin: 0.4rem 0; color: var(--muted); font-size: 0.8rem; line-height: 1.5; overflow-wrap: anywhere; }
+    .journal-admin-entry-actions { display: flex; gap: 0.5rem; flex-wrap: wrap; margin-top: 0.8rem; }
+    .journal-admin-empty { grid-column: 1 / -1; padding: 1.25rem; border: 1px dashed var(--border); color: var(--muted); text-align: center; }
+    .journal-admin-editor[hidden], #journalFolderBrowser[hidden], #journalEntryBrowser[hidden] { display: none; }
 
     /* ── Artworks Grid (Level 3 - Matches Frontend & Rightful Framing) ── */
     .artworks-admin-grid {
@@ -506,6 +555,24 @@
     }
     .form-group input:focus, .form-group textarea:focus, .form-group select:focus { border-color: var(--gold); }
     .form-group textarea { resize: vertical; min-height: 90px; }
+
+    input[type="file"] {
+      display: block; width: 100%; min-width: 0; padding: 0.55rem 0.65rem;
+      background: var(--bg2); border: 1px solid var(--border); border-radius: 4px;
+      color: var(--muted); font: inherit; font-size: 0.82rem;
+    }
+    input[type="file"]::file-selector-button {
+      margin-inline-end: 0.85rem; padding: 0.45rem 0.75rem;
+      background: var(--gold); border: 0; border-radius: 3px;
+      color: #0a0a0a; font: inherit; font-weight: 600; cursor: pointer;
+      transition: background-color 0.2s, color 0.2s;
+    }
+    input[type="file"]:hover::file-selector-button { background: var(--gold-light); }
+    input[type="file"]:focus-visible {
+      border-color: var(--gold); box-shadow: 0 0 0 2px var(--gold-d);
+    }
+    input[type="file"]:disabled { opacity: 0.55; cursor: not-allowed; }
+    input[type="file"]:disabled::file-selector-button { cursor: not-allowed; }
     
     .form-row-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 0.8rem; }
     .form-row-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 0.8rem; }
@@ -573,15 +640,51 @@
     .stat-card .num { font-family: 'Cormorant Garamond', serif; font-size: 2.2rem; color: var(--gold); line-height: 1; }
     .stat-card .lbl { font-size: 0.72rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.1em; margin-top: 0.35rem; }
 
+    .exhibition-editor-layout { display: grid; grid-template-columns: minmax(0, 1fr) minmax(320px, 0.85fr); gap: 1.5rem; align-items: start; }
+    .exhibition-preview-pane {
+      --text-muted: var(--muted);
+      --text-dim: var(--muted);
+      --gold-dim: var(--border-g);
+      --ease: cubic-bezier(0.16, 1, 0.3, 1);
+      position: sticky; top: 1rem; min-width: 0; padding: 1rem;
+      background: var(--bg2); border: 1px solid var(--border); border-radius: var(--r);
+    }
+    .exhibition-preview-pane > h5 { color: var(--gold); font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 0.35rem; }
+    .exhibition-preview-pane > p { color: var(--muted); font-size: 0.78rem; margin-bottom: 1rem; }
+    .exhibition-preview-stage { max-width: 500px; margin-inline: auto; }
+    .exhibition-preview-stage .exh-card { min-width: 0; }
+    .exhibition-crop-controls { display: grid; grid-template-columns: minmax(0, 1fr) minmax(90px, 1.5fr) 3rem; gap: 0.55rem 0.8rem; align-items: center; margin-top: 0.75rem; }
+    .exhibition-crop-controls label { color: var(--muted); font-size: 0.78rem; }
+    .exhibition-crop-controls input[type="range"] { width: 100%; min-width: 0; accent-color: var(--gold); }
+    .exhibition-crop-controls output { color: var(--gold); font-variant-numeric: tabular-nums; text-align: end; font-size: 0.78rem; }
+    .exhibition-admin-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 300px), 1fr)); gap: 1rem; }
+    .exhibition-admin-item { min-width: 0; overflow: hidden; background: var(--bg2); border: 1px solid var(--border); border-radius: 4px; }
+    .exhibition-admin-item-head { display: flex; justify-content: space-between; align-items: center; gap: 0.75rem; padding: 0.75rem; }
+    .exhibition-admin-status { font-size: 0.68rem; color: var(--gold); text-transform: uppercase; letter-spacing: 0.08em; }
+    .exhibition-admin-status.is-published { color: var(--green); }
+    .exhibition-admin-actions { display: flex; flex-wrap: wrap; gap: 0.4rem; }
+    .exhibition-admin-actions button { min-height: 2.5rem; }
+    .exhibition-admin-preview { min-width: 0; }
+    .exhibition-admin-preview .exh-card { height: 100%; }
+    @media (max-width: 1050px) {
+      .exhibition-editor-layout { grid-template-columns: minmax(0, 1fr); }
+      .exhibition-preview-pane { position: static; }
+    }
+    @media (max-width: 600px) {
+      .exhibition-admin-list { grid-template-columns: minmax(0, 1fr); }
+      .exhibition-admin-item-head { align-items: flex-start; flex-direction: column; }
+    }
+
     /* ── Toast ── */
     #toast {
-      position: fixed; bottom: 2rem; right: 2rem; z-index: 99999;
+      position: fixed; top: max(1rem, env(safe-area-inset-top)); left: 50%; right: auto; bottom: auto; z-index: 99999;
       background: var(--bg3); border: 1px solid var(--border); border-radius: 4px;
-      padding: 0.85rem 1.5rem; font-size: 0.85rem; color: var(--text);
-      transform: translateY(120%); transition: transform 0.4s ease; max-width: 380px;
+      padding: 0.85rem 1.5rem; font-size: 0.9rem; line-height: 1.45; color: var(--text);
+      transform: translate(-50%, -150%); transition: transform 0.25s ease;
+      width: max-content; max-width: min(620px, calc(100vw - 2rem)); white-space: normal; overflow-wrap: anywhere;
       box-shadow: 0 10px 30px rgba(0,0,0,0.5);
     }
-    #toast.show { transform: translateY(0); }
+    #toast.show { transform: translate(-50%, 0); }
     #toast.success { border-color: var(--green); color: var(--green); }
     #toast.error   { border-color: var(--red);   color: var(--red); }
     #toast.info    { border-color: var(--gold);  color: var(--gold); }
@@ -740,7 +843,7 @@
       .dialog-card h3 { font-size: 1.3rem; }
 
       /* ── Toast ── */
-      #toast { left: 1rem; right: 1rem; bottom: 1rem; max-width: none; font-size: 0.8rem; }
+      #toast { width: calc(100vw - 2rem); max-width: 620px; font-size: 0.85rem; }
 
       /* ── Gate ── */
       #gate h1 { font-size: 2rem; }
@@ -829,10 +932,13 @@
       </a>
       <a onclick="showPanel('journal-media'); closeMobileSidebar();" id="nav-journal-media">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16v16H4z"/><path d="M8 8h8M8 12h8M8 16h5"/></svg>
-        Journal &amp; Media
+        News &amp; Gallery
+      </a>
+      <a onclick="showPanel('artgalzim-tv'); closeMobileSidebar();" id="nav-artgalzim-tv">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m10 9 5 3-5 3z"/></svg>
+        ARTGALZIM TV
       </a>
       <a onclick="showPanel('scholarships'); closeMobileSidebar();" id="nav-scholarships">Scholarships</a>
-      <a onclick="showPanel('testimonials-reviews'); closeMobileSidebar();" id="nav-testimonials-reviews">Testimonials &amp; Reviews</a>
     </nav>
 
     <div class="sb-server-status">
@@ -848,9 +954,14 @@
         <button class="hamburger-btn" id="hamburgerBtn" onclick="toggleMobileSidebar()">
           <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
         </button>
+        <button class="btn-back-step" id="adminBackButton" type="button" onclick="navStepBack()" aria-label="Go back in the dashboard" title="Go back in the dashboard" style="display:none; align-items:center; gap:0.4rem; background:var(--bg3); border:1px solid var(--border-g); color:var(--gold); padding:0.4rem 0.65rem; border-radius:4px; font-size:0.82rem; cursor:pointer; font-weight:600;">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"></polyline></svg>
+          Back
+        </button>
         <h3 id="panelTitle">Artists &amp; Albums</h3>
       </div>
       <div class="topbar-actions">
+        <button class="btn-action-outline" type="button" onclick="openAdminContentPreview()">Preview</button>
         <button class="btn-sync" onclick="triggerSync()">⟳ Push &amp; Sync Changes</button>
       </div>
     </div>
@@ -917,8 +1028,10 @@
 
       <!-- ═══════════════ EXHIBITIONS PANEL ═══════════════ -->
       <div class="panel" id="panel-exhibitions">
-        <div class="card">
+        <div class="card exhibition-editor-card">
           <h4 id="exFormTitle">Add New Exhibition / Event</h4>
+          <div class="exhibition-editor-layout">
+          <div class="exhibition-editor-fields">
           <input type="hidden" id="ex-id"/>
           <div class="form-row-2" style="margin-bottom:1rem;">
             <div class="form-group">
@@ -1025,25 +1138,57 @@
             <textarea id="ex-conditions" placeholder="Add entry requirements, booking conditions, or other details…"></textarea>
           </div>
           <div class="form-group" style="margin-bottom:1rem;">
-            <label>Exhibition Image (optional replacement)</label>
+            <label for="ex-image">Exhibition image (optional replacement)</label>
             <input type="file" id="ex-image" accept="image/*"/>
+            <div class="exhibition-crop-controls" role="group" aria-label="Exhibition image crop position">
+              <label for="ex-image-focus-x">Horizontal crop position</label>
+              <input type="range" id="ex-image-focus-x" min="0" max="100" value="50" aria-label="Horizontal crop position"/>
+              <output id="ex-image-focus-x-value" for="ex-image-focus-x">50%</output>
+              <label for="ex-image-focus-y">Vertical crop position</label>
+              <input type="range" id="ex-image-focus-y" min="0" max="100" value="50" aria-label="Vertical crop position"/>
+              <output id="ex-image-focus-y-value" for="ex-image-focus-y">50%</output>
+            </div>
+            <p class="exhibition-crop-hint">Adjust the focal point to frame portrait flyers in the public 4:3 card.</p>
           </div>
           <div style="display:flex; gap:1rem; align-items:center;">
             <button class="btn-action-gold" onclick="saveExhibition()">Save Exhibition</button>
             <button class="btn-action-outline" onclick="clearExForm()">Clear</button>
           </div>
+          </div>
+          <aside class="exhibition-preview-pane" aria-live="polite" aria-atomic="true">
+            <h5>Live frontend preview</h5>
+            <p>Previewing your current edits. Save as a draft, then use Push &amp; Sync Changes to publish.</p>
+            <div class="exhibition-preview-stage" id="exhibitionLivePreview"></div>
+          </aside>
+          </div>
         </div>
 
         <div class="card">
           <h4>All Exhibitions</h4>
-          <div id="exhibitionList" style="color:var(--muted); font-size:0.85rem;">Loading...</div>
+          <div id="exhibitionList" class="exhibition-admin-list" style="color:var(--muted); font-size:0.85rem;">Loading...</div>
         </div>
       </div>
 
       <!-- ═══════════════ JOURNAL & MEDIA PANEL ═══════════════ -->
       <div class="panel" id="panel-journal-media">
-        <div class="card">
-          <h4 id="journalFolderFormTitle">Create Journal Folder</h4>
+        <div class="card journal-admin-toolbar">
+          <div>
+            <span class="section-eyebrow">News &amp; Gallery</span>
+            <h3 id="journalAdminTitle">Folders</h3>
+            <p id="journalAdminSubtitle">Browse folders as they appear on the public page.</p>
+          </div>
+          <div id="journalAdminActions" class="journal-admin-actions"></div>
+        </div>
+        <div class="card" id="journalFolderBrowser">
+          <h4 id="journalFolderListTitle">News &amp; Gallery Folders</h4>
+          <div id="journalFolderList" class="journal-admin-folder-grid" style="color:var(--muted);font-size:0.85rem;">Loading...</div>
+        </div>
+        <div class="card" id="journalEntryBrowser" hidden>
+          <h4 id="journalEntryListTitle">Folder Contents</h4>
+          <div id="journalEntryList" class="journal-admin-entry-list" style="color:var(--muted);font-size:0.85rem;"></div>
+        </div>
+        <div class="card" id="journalFolderEditor" hidden>
+          <h4 id="journalFolderFormTitle">Create News &amp; Gallery Folder</h4>
           <input type="hidden" id="journal-folder-id"/>
           <div class="form-row-2" style="margin-bottom:1rem;">
             <div class="form-group">
@@ -1059,12 +1204,14 @@
             </div>
           </div>
           <div class="form-group" style="margin-bottom:1rem;">
-            <label for="journal-folder-organization">School / Organization</label>
-            <input type="text" id="journal-folder-organization" placeholder="Optional organization name"/>
+            <label for="journal-folder-parent">Parent Folder</label>
+            <select id="journal-folder-parent">
+              <option value="">Top level (no parent)</option>
+            </select>
           </div>
           <div class="form-group" style="margin-bottom:1rem;">
-            <label for="journal-folder-description">Short Description</label>
-            <textarea id="journal-folder-description" rows="3" placeholder="What readers will find in this folder"></textarea>
+            <label for="journal-folder-description">Folder Description (optional)</label>
+            <textarea id="journal-folder-description" rows="3" placeholder="A brief note about what this folder contains"></textarea>
           </div>
           <div class="form-group" style="margin-bottom:1rem;">
             <label for="journal-folder-cover">Folder Cover (optional replacement)</label>
@@ -1072,24 +1219,13 @@
           </div>
           <div style="display:flex;gap:1rem;align-items:center;">
             <button class="btn-action-gold" onclick="saveJournalFolder()">Save Folder</button>
-            <button class="btn-action-outline" onclick="clearJournalFolderForm()">Clear</button>
+            <button class="btn-action-outline" onclick="cancelJournalEditor()">Cancel</button>
           </div>
         </div>
-        <div class="card">
-          <h4>Journal Folders</h4>
-          <div id="journalFolderList" style="color:var(--muted);font-size:0.85rem;">Loading...</div>
-        </div>
-        <div class="card">
-          <h4 id="journalEntryFormTitle">Add Journal Entry</h4>
+        <div class="card" id="journalEntryEditor" hidden>
+          <h4 id="journalEntryFormTitle">Add News &amp; Gallery Entry</h4>
           <input type="hidden" id="journal-entry-id"/>
           <div class="form-row-2" style="margin-bottom:1rem;">
-            <div class="form-group">
-              <label for="journal-entry-destination">Publish Section</label>
-              <select id="journal-entry-destination" onchange="toggleJournalDestination()">
-                <option value="journal">Journal and Gallery</option>
-                <option value="tv">ARTGALZIM TV</option>
-              </select>
-            </div>
             <div class="form-group">
               <label for="journal-entry-type">Story Category</label>
               <select id="journal-entry-type">
@@ -1100,8 +1236,7 @@
             </div>
           </div>
           <div class="form-group" id="journal-folder-field" style="margin-bottom:1rem;">
-            <label for="journal-entry-folder">Folder (required for Journal and Gallery)</label>
-            <select id="journal-entry-folder"><option value="">Select a folder</option></select>
+            <input type="hidden" id="journal-entry-folder"/>
           </div>
           <div class="form-row-2" style="margin-bottom:1rem;">
             <div class="form-group">
@@ -1113,13 +1248,42 @@
               <input type="text" id="journal-entry-author" placeholder="Optional"/>
             </div>
           </div>
+          <div class="form-row-2" style="margin-bottom:1rem;">
+            <div class="form-group">
+              <label for="journal-entry-artist-curator">Artist / Curator</label>
+              <input type="text" id="journal-entry-artist-curator" placeholder="Optional"/>
+            </div>
+            <div class="form-group">
+              <label for="journal-entry-category">Category</label>
+              <input type="text" id="journal-entry-category" placeholder="e.g. Open Call, Exhibition, Workshop"/>
+            </div>
+          </div>
           <div class="form-group" style="margin-bottom:1rem;">
-            <label for="journal-entry-excerpt">Short Description</label>
-            <textarea id="journal-entry-excerpt" rows="3" placeholder="A short introduction shown on the folder page"></textarea>
+            <label for="journal-entry-excerpt">Description</label>
+            <div class="journal-rich-toolbar" role="toolbar" aria-label="Description formatting tools">
+              <button type="button" onmousedown="event.preventDefault()" onclick="journalRichCommand('bold')" aria-label="Bold"><strong>B</strong></button>
+              <button type="button" onmousedown="event.preventDefault()" onclick="journalRichCommand('italic')" aria-label="Italic"><em>I</em></button>
+              <button type="button" onmousedown="event.preventDefault()" onclick="journalRichCommand('underline')" aria-label="Underline"><u>U</u></button>
+              <button type="button" onmousedown="event.preventDefault()" onclick="journalRichCommand('hiliteColor')" aria-label="Highlight in yellow"><mark>Highlight</mark></button>
+              <button type="button" onmousedown="event.preventDefault()" onclick="journalRichCommand('createLink')" aria-label="Insert link">Link</button>
+            </div>
+            <div id="journal-entry-excerpt" class="journal-rich-editor" contenteditable="true" role="textbox" aria-multiline="true" aria-label="Description" data-placeholder="A short introduction shown on the folder page" onfocus="setActiveJournalRichEditor(this)"></div>
           </div>
           <div class="form-group" style="margin-bottom:1rem;">
             <label for="journal-entry-body">Article / Activity Details</label>
-            <textarea id="journal-entry-body" rows="10" placeholder="Write the full story or event information"></textarea>
+            <div class="journal-rich-toolbar" role="toolbar" aria-label="Article formatting tools">
+              <button type="button" onmousedown="event.preventDefault()" onclick="journalRichCommand('bold')" aria-label="Bold"><strong>B</strong></button>
+              <button type="button" onmousedown="event.preventDefault()" onclick="journalRichCommand('italic')" aria-label="Italic"><em>I</em></button>
+              <button type="button" onmousedown="event.preventDefault()" onclick="journalRichCommand('underline')" aria-label="Underline"><u>U</u></button>
+              <button type="button" onmousedown="event.preventDefault()" onclick="journalRichCommand('hiliteColor')" aria-label="Highlight in yellow"><mark>Highlight</mark></button>
+              <button type="button" onmousedown="event.preventDefault()" onclick="journalRichCommand('insertUnorderedList')" aria-label="Bulleted list">• List</button>
+              <button type="button" onmousedown="event.preventDefault()" onclick="journalRichCommand('insertOrderedList')" aria-label="Numbered list">1. List</button>
+              <button type="button" onmousedown="event.preventDefault()" onclick="journalRichCommand('formatBlock', 'h3')" aria-label="Heading">Heading</button>
+              <button type="button" onmousedown="event.preventDefault()" onclick="journalRichCommand('formatBlock', 'blockquote')" aria-label="Quote">Quote</button>
+              <button type="button" onmousedown="event.preventDefault()" onclick="journalRichCommand('createLink')" aria-label="Insert link">Link</button>
+              <button type="button" onmousedown="event.preventDefault()" onclick="journalRichCommand('removeFormat')" aria-label="Clear formatting">Clear format</button>
+            </div>
+            <div id="journal-entry-body" class="journal-rich-editor" contenteditable="true" role="textbox" aria-multiline="true" aria-label="Article or activity details" data-placeholder="Write the full story or event information" onfocus="setActiveJournalRichEditor(this)"></div>
           </div>
           <div class="form-row-2" style="margin-bottom:1rem;">
             <div class="form-group">
@@ -1132,20 +1296,33 @@
             </div>
           </div>
           <div class="form-group" style="margin-bottom:1rem;">
-            <label for="journal-entry-location">Location</label>
-            <input type="text" id="journal-entry-location" placeholder="Optional"/>
+            <label for="journal-entry-location">School</label>
+            <input type="text" id="journal-entry-location" placeholder="School name, e.g. Great School"/>
           </div>
           <div class="form-row-2" style="margin-bottom:1rem;">
             <div class="form-group">
-              <label for="journal-entry-image">Story Image / Video Thumbnail (optional replacement)</label>
-              <input type="file" id="journal-entry-image" accept="image/*"/>
+              <label for="journal-entry-image">Story Images (optional, up to 12)</label>
+              <input type="file" id="journal-entry-image" accept="image/*" multiple onchange="previewJournalImages()"/>
             </div>
             <div class="form-group">
               <label for="journal-entry-attachment">Document / Video File (optional replacement)</label>
               <input type="file" id="journal-entry-attachment" onchange="previewJournalMedia()"/>
             </div>
           </div>
-          <p style="color:var(--muted);font-size:0.82rem;margin-top:-0.5rem;">MP4, WebM, and Ogg video uploads are stored as Sanity file assets and play in ARTGALZIM TV. YouTube thumbnails are generated automatically; add a Story Image for a custom thumbnail or for other video providers.</p>
+          <div class="journal-crop-controls" aria-label="Optional image crop settings">
+            <label for="journal-image-ratio">Image crop:</label>
+            <select id="journal-image-ratio" onchange="previewJournalImages()">
+              <option value="original">Original ratio</option><option value="16:9">Wide 16:9</option>
+              <option value="4:3">Landscape 4:3</option><option value="1:1">Square 1:1</option>
+              <option value="4:5">Portrait 4:5</option>
+            </select>
+            <label for="journal-image-focus-x">Horizontal focus</label>
+            <input type="range" id="journal-image-focus-x" min="0" max="100" value="50" oninput="previewJournalImages()"/>
+            <label for="journal-image-focus-y">Vertical focus</label>
+            <input type="range" id="journal-image-focus-y" min="0" max="100" value="50" oninput="previewJournalImages()"/>
+          </div>
+          <div id="journal-image-preview-grid" class="journal-image-preview-grid" aria-live="polite"></div>
+          <p style="color:var(--muted);font-size:0.82rem;margin-top:-0.5rem;">Add images, documents, or embedded media to this News &amp; Gallery entry.</p>
           <div class="form-row-2" style="margin-bottom:1rem;">
             <div class="form-group">
               <label for="journal-entry-media-type">Embedded Media Format</label>
@@ -1161,16 +1338,84 @@
               <input type="url" id="journal-entry-media-url" placeholder="https://youtu.be/… or https://drive.google.com/…" oninput="previewJournalMedia()"/>
             </div>
           </div>
-          <p style="color:var(--muted);font-size:0.82rem;margin-top:-0.5rem;">Supported links play or open in the page: YouTube videos, Instagram posts/reels, Google Drive files, and direct MP4/WebM/PDF URLs. Set Drive files to “Anyone with the link” and use public Instagram posts; provider permissions still apply.</p>
+          <p style="color:var(--muted);font-size:0.82rem;margin-top:-0.5rem;">Supported links: YouTube videos, Instagram posts/reels, Google Drive files, and direct MP4/WebM/PDF URLs.</p>
           <div id="journal-media-preview" aria-live="polite" style="margin-bottom:1rem;"></div>
           <div style="display:flex;gap:1rem;align-items:center;">
             <button class="btn-action-gold" onclick="saveJournalEntry()">Save Entry</button>
-            <button class="btn-action-outline" onclick="clearJournalEntryForm()">Clear</button>
+            <button class="btn-action-outline" onclick="cancelJournalEditor()">Cancel</button>
+          </div>
+        </div>
+      </div>
+      <div class="panel" id="panel-artgalzim-tv">
+        <div class="card">
+          <h4 id="tvEntryFormTitle">Add ARTGALZIM TV Video</h4>
+          <input type="hidden" id="tv-entry-id"/>
+          <input type="hidden" id="tv-entry-author"/>
+          <input type="hidden" id="tv-entry-end-date"/>
+          <div class="form-group" style="margin-bottom:1rem;">
+            <label for="tv-entry-title">Title (required)</label>
+            <input type="text" id="tv-entry-title" placeholder="Video title"/>
+          </div>
+          <div class="form-group" style="margin-bottom:1rem;">
+            <label for="tv-entry-excerpt">Short Description</label>
+            <textarea id="tv-entry-excerpt" rows="3" placeholder="A short introduction for this video"></textarea>
+          </div>
+          <div class="form-group" style="margin-bottom:1rem;">
+            <label for="tv-entry-body">Video Details</label>
+            <textarea id="tv-entry-body" rows="6" placeholder="Optional details about the video"></textarea>
+          </div>
+          <div class="form-row-2" style="margin-bottom:1rem;">
+            <div class="form-group">
+              <label for="tv-entry-event-date">Video Date</label>
+              <input type="date" id="tv-entry-event-date"/>
+            </div>
+            <div class="form-group">
+              <label for="tv-entry-location">Location</label>
+              <input type="text" id="tv-entry-location" placeholder="Optional"/>
+            </div>
+          </div>
+          <div class="form-row-2" style="margin-bottom:1rem;">
+            <div class="form-group">
+              <label for="tv-entry-image">Video Thumbnail (optional replacement)</label>
+              <input type="file" id="tv-entry-image" accept="image/*"/>
+            </div>
+            <div class="form-group">
+              <label for="tv-entry-attachment">Video File (MP4, WebM, or Ogg)</label>
+              <input type="file" id="tv-entry-attachment" accept="video/mp4,video/webm,video/ogg,.mp4,.webm,.ogv" onchange="previewJournalMedia('tv')"/>
+            </div>
+          </div>
+          <p style="color:var(--muted);font-size:0.82rem;margin-top:-0.5rem;">YouTube and Instagram video links are also supported. Uploaded MP4, WebM, and Ogg videos play in the built-in player.</p>
+          <div class="form-row-2" style="margin-bottom:1rem;">
+            <div class="form-group">
+              <label for="tv-entry-media-type">Video Source</label>
+              <select id="tv-entry-media-type" onchange="previewJournalMedia('tv')">
+                <option value="">Choose a source</option>
+                <option value="video">YouTube or direct video link</option>
+                <option value="social">Instagram post / reel</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="tv-entry-media-url">Video URL</label>
+              <input type="url" id="tv-entry-media-url" placeholder="https://youtu.be/…" oninput="previewJournalMedia('tv')"/>
+            </div>
+          </div>
+          <div class="form-group" style="margin-bottom:1rem;">
+            <label for="tv-entry-video-orientation">Video Layout</label>
+            <select id="tv-entry-video-orientation" onchange="previewJournalMedia('tv')">
+              <option value="auto">Auto-detect upload / YouTube Shorts URL</option>
+              <option value="landscape">Landscape video</option>
+              <option value="portrait">Short (portrait)</option>
+            </select>
+          </div>
+          <div id="tv-media-preview" aria-live="polite" style="margin-bottom:1rem;"></div>
+          <div style="display:flex;gap:1rem;align-items:center;">
+            <button class="btn-action-gold" onclick="saveJournalEntry('tv')">Save Video</button>
+            <button class="btn-action-outline" onclick="clearJournalEntryForm('tv')">Clear</button>
           </div>
         </div>
         <div class="card">
-          <h4>Journal Entries</h4>
-          <div id="journalEntryList" style="color:var(--muted);font-size:0.85rem;">Loading...</div>
+          <h4>ARTGALZIM TV Videos</h4>
+          <div id="tvEntryList" style="color:var(--muted);font-size:0.85rem;">Loading...</div>
         </div>
       </div>
       <div class="panel" id="panel-scholarships">
@@ -1179,13 +1424,6 @@
           <p style="color:var(--muted);">This page is reserved for the Scholarships workflow. Its content and actions will be added once the requirements are defined.</p>
         </div>
       </div>
-      <div class="panel" id="panel-testimonials-reviews">
-        <div class="card">
-          <h4>Testimonials &amp; Reviews</h4>
-          <p style="color:var(--muted);">This page is reserved for the Testimonials &amp; Reviews workflow. Its content and actions will be added once the requirements are defined.</p>
-        </div>
-      </div>
-
     </div><!-- #content -->
   </div><!-- #main -->
 </div><!-- #dashboard -->
@@ -1558,6 +1796,7 @@
 
 <!-- Fallback / Static data script for immediate offline display -->
 <script type="module" src="js/page-galleries.js"></script>
+<script type="module" src="/js/exhibition-card.js"></script>
 
 <script>
 /* ==========================================================================
@@ -1577,6 +1816,13 @@ let selectedAlbum = null;
 let currentViewingArtwork = null;
 let isEditMode = false;
 let replaceFileBlob = null;
+let toastTimeoutId = null;
+let isArtworkUploadInProgress = false;
+let isFolderCoverUploadInProgress = false;
+let isLibraryUploadInProgress = false;
+let isExhibitionImageUploadInProgress = false;
+let isJournalFolderCoverUploadInProgress = false;
+let isJournalEntrySaveInProgress = false;
 
 /* ── Helpers ── */
 function lsGet(key, fallback) {
@@ -1584,11 +1830,33 @@ function lsGet(key, fallback) {
 }
 function lsSet(key, val) { localStorage.setItem(key, JSON.stringify(val)); }
 
-function toast(msg, type = 'success') {
+function toast(msg, type = 'success', { duration } = {}) {
   const t = document.getElementById('toast');
+  if (!t) return;
+  if (toastTimeoutId) clearTimeout(toastTimeoutId);
   t.textContent = msg;
   t.className = 'show ' + type;
-  setTimeout(() => { t.className = ''; }, 3600);
+  t.setAttribute('role', 'status');
+  t.setAttribute('aria-live', type === 'error' ? 'assertive' : 'polite');
+  const timeout = duration ?? (type === 'error' ? 7000 : 5000);
+  if (timeout > 0) {
+    toastTimeoutId = setTimeout(() => {
+      t.className = '';
+      toastTimeoutId = null;
+    }, timeout);
+  } else {
+    toastTimeoutId = null;
+  }
+}
+
+function setAdminText(id, value) {
+  const element = document.getElementById(id);
+  if (!element) {
+    console.warn(`Admin UI element #${id} is missing.`);
+    return false;
+  }
+  element.textContent = value;
+  return true;
 }
 
 function showAdminLoading(title = 'Processing Request...', sub = 'Please wait while the system updates files and synchronizes with Neon Database...') {
@@ -1608,6 +1876,170 @@ function hideAdminLoading() {
 /* ══ AUTH & EXIT ═════════════════════════════════ */
 let hasPendingChanges = false;
 let currentActivePanel = 'gallery-explorer';
+const ADMIN_HISTORY_KEY = 'artgalzimAdminNavigation';
+let adminHistoryReady = false;
+let restoringAdminNavigation = false;
+
+function getAdminRouteSnapshot() {
+  return {
+    panel: currentActivePanel,
+    level: currentLevel,
+    artist: selectedArtist ? selectedArtist.name : null,
+    album: selectedAlbum ? selectedAlbum.name : null,
+    tier: activeTierFilter,
+    journalFolderId: _selectedJournalFolderId || null,
+    journalEditor: _journalAdminEditor || ''
+  };
+}
+
+function getAdminHistoryEntry() {
+  return window.history.state?.[ADMIN_HISTORY_KEY] || null;
+}
+
+function updateAdminBackButton() {
+  const button = document.getElementById('adminBackButton');
+  if (!button) return;
+  const entry = getAdminHistoryEntry();
+  const modalOpen = Boolean(document.querySelector('.dialog-overlay.open:not(#globalAdminLoader), #artworkDetailModal.open'));
+  const showButton = currentActivePanel !== 'gallery-explorer'
+    || (entry && entry.depth > 0 && currentLevel === 'artists') || modalOpen;
+  button.style.display = showButton ? 'inline-flex' : 'none';
+}
+
+function pushAdminHistory({ overlay = null, artworkSrc = null } = {}) {
+  if (!adminHistoryReady || restoringAdminNavigation) return;
+  const current = getAdminHistoryEntry();
+  const route = getAdminRouteSnapshot();
+  if (current && JSON.stringify(current.route) === JSON.stringify(route)
+      && current.overlay === overlay && current.artworkSrc === artworkSrc) {
+    updateAdminBackButton();
+    return;
+  }
+
+  const state = {
+    ...(window.history.state || {}),
+    [ADMIN_HISTORY_KEY]: {
+      depth: (current?.depth || 0) + 1,
+      route,
+      overlay,
+      artworkSrc
+    }
+  };
+  window.history.pushState(state, '', window.location.href);
+  updateAdminBackButton();
+}
+
+function replaceAdminHistoryOverlay(overlay, artworkSrc = null) {
+  if (!adminHistoryReady || restoringAdminNavigation) return;
+  const current = getAdminHistoryEntry();
+  const state = {
+    ...(window.history.state || {}),
+    [ADMIN_HISTORY_KEY]: {
+      depth: current?.depth || 0,
+      route: current?.route || getAdminRouteSnapshot(),
+      overlay,
+      artworkSrc
+    }
+  };
+  window.history.replaceState(state, '', window.location.href);
+  updateAdminBackButton();
+}
+
+function replaceAdminHistoryRoute() {
+  if (!adminHistoryReady || restoringAdminNavigation) return;
+  const current = getAdminHistoryEntry();
+  if (!current) return;
+  const state = {
+    ...(window.history.state || {}),
+    [ADMIN_HISTORY_KEY]: {
+      ...current,
+      route: getAdminRouteSnapshot()
+    }
+  };
+  window.history.replaceState(state, '', window.location.href);
+  updateAdminBackButton();
+}
+
+function initializeAdminHistory() {
+  const state = {
+    ...(window.history.state || {}),
+    [ADMIN_HISTORY_KEY]: {
+      depth: 0,
+      route: getAdminRouteSnapshot(),
+      overlay: null,
+      artworkSrc: null
+    }
+  };
+  window.history.replaceState(state, '', window.location.href);
+  adminHistoryReady = true;
+  updateAdminBackButton();
+}
+
+function findArtworkBySource(src) {
+  if (!src) return null;
+  for (const artist of allArtistsData) {
+    for (const album of artist.categories || []) {
+      const artwork = (album.artworks || []).find(item => item.src === src);
+      if (artwork) return artwork;
+    }
+  }
+  return null;
+}
+
+function restoreAdminHistoryEntry(entry) {
+  const route = entry?.route;
+  if (!route || !document.getElementById(`panel-${route.panel}`)) return;
+
+  restoringAdminNavigation = true;
+  try {
+    const openOverlays = document.querySelectorAll('.dialog-overlay.open:not(#globalAdminLoader), #artworkDetailModal.open');
+    openOverlays.forEach(overlay => overlay.classList.remove('open'));
+    currentViewingArtwork = null;
+    replaceFileBlob = null;
+
+    currentLevel = route.level || 'artists';
+    selectedArtist = route.artist ? allArtistsData.find(artist => artist.name === route.artist) || null : null;
+    selectedAlbum = selectedArtist && route.album
+      ? selectedArtist.categories.find(album => album.name === route.album) || null
+      : null;
+    if (selectedArtist && currentLevel === 'artworks' && !selectedAlbum
+        && !(selectedArtist.tier === 'Student Artists' || selectedArtist.isStudent)) {
+      currentLevel = 'albums';
+    }
+    if (!selectedArtist) {
+      selectedAlbum = null;
+      currentLevel = 'artists';
+    }
+    if (route.journalFolderId && route.journalFolderId !== JOURNAL_UNFILED_ID
+        && !_journalFolders.some(folder => folder._id === route.journalFolderId)) {
+      _selectedJournalFolderId = route.journalFolderId;
+    } else {
+      _selectedJournalFolderId = route.journalFolderId || null;
+    }
+    _journalAdminEditor = route.journalEditor || '';
+    if (route.tier) activeTierFilter = route.tier;
+
+    showPanel(route.panel, false);
+    if (route.panel === 'gallery-explorer') renderExplorer();
+    saveNavState();
+
+    if (entry.overlay === 'artworkDetailModal') {
+      const artwork = findArtworkBySource(entry.artworkSrc);
+      if (artwork) openArtworkModal(artwork, false);
+    } else if (entry.overlay) {
+      document.getElementById(entry.overlay)?.classList.add('open');
+    }
+  } finally {
+    restoringAdminNavigation = false;
+    updateAdminBackButton();
+  }
+}
+
+window.addEventListener('popstate', event => {
+  if (!document.documentElement.classList.contains('admin-authenticated')) return;
+  const entry = event.state?.[ADMIN_HISTORY_KEY];
+  if (entry) restoreAdminHistoryEntry(entry);
+});
 
 function setPendingSync(status = true) {
   hasPendingChanges = status;
@@ -1697,7 +2129,8 @@ function logout(force = false) {
   const eyeOff = document.getElementById('eyeOffIcon');
   if (eyeOpen) eyeOpen.style.display = 'none';
   if (eyeOff) eyeOff.style.display = 'block';
-  closeDialog('modalExitConfirm');
+  closeDialog('modalExitConfirm', false);
+  adminHistoryReady = false;
 }
 
 async function logoutToHome() {
@@ -1760,7 +2193,8 @@ function saveNavState() {
       level: currentLevel,
       artist: selectedArtist ? selectedArtist.name : null,
       album: selectedAlbum ? selectedAlbum.name : null,
-      tier: activeTierFilter
+      tier: activeTierFilter,
+      journalFolderId: _selectedJournalFolderId || null
     };
     sessionStorage.setItem('ag_admin_nav_state', JSON.stringify(state));
     localStorage.setItem('ag_admin_nav_state', JSON.stringify(state));
@@ -1773,6 +2207,7 @@ function restoreNavState() {
     if (!raw) return;
     const state = JSON.parse(raw);
     if (state.tier) activeTierFilter = state.tier;
+    _selectedJournalFolderId = state.journalFolderId || null;
     if (state.panel && state.panel !== 'gallery-explorer') {
       showPanel(state.panel, false);
     }
@@ -1798,6 +2233,7 @@ function restoreNavState() {
 
 /* ══ PANEL NAVIGATION ══════════════════════════ */
 function showPanel(id, persist = true) {
+  const panelChanged = currentActivePanel !== id;
   currentActivePanel = id;
   document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
   document.querySelectorAll('.sb-nav a').forEach(a => a.classList.remove('active'));
@@ -1810,17 +2246,21 @@ function showPanel(id, persist = true) {
     'gallery-explorer': 'Artists & Albums',
     'overview': 'Statistics & Overview',
     'exhibitions': 'Exhibitions & Events',
-    'journal-media': 'Journal & Media',
-    'scholarships': 'Scholarships',
-    'testimonials-reviews': 'Testimonials & Reviews'
+    'journal-media': 'News & Gallery',
+    'artgalzim-tv': 'ARTGALZIM TV',
+    'scholarships': 'Scholarships'
   };
-  document.getElementById('panelTitle').textContent = titles[id] || 'Dashboard';
+  setAdminText('panelTitle', titles[id] || 'Dashboard');
   
   if (id === 'overview') updateOverviewStats();
   if (id === 'exhibitions') loadExhibitions();
-  if (id === 'journal-media') loadJournalAdmin();
+  if (id === 'journal-media' || id === 'artgalzim-tv') loadJournalAdmin();
   if (id === 'content-library') loadContentLibrary();
-  if (persist) saveNavState();
+  if (persist) {
+    saveNavState();
+    if (panelChanged) pushAdminHistory();
+  }
+  updateAdminBackButton();
 }
 
 /* ══ INITIALIZATION ═════════════════════════════ */
@@ -1831,6 +2271,7 @@ async function initDashboard() {
   renderExplorer();
   updateOverviewStats();
   loadExhibitions();
+  initializeAdminHistory();
 }
 
 async function checkServerHealth() {
@@ -1853,6 +2294,7 @@ async function checkServerHealth() {
 /* ══ DATA LOADING ══════════════════════════════ */
 async function loadAllData() {
   let sanityArtists = [];
+  let sanityReadSucceeded = false;
   try {
     const [artRes, metaRes] = await Promise.all([
       fetch(`${API_BASE}/api/artists`),
@@ -1860,14 +2302,17 @@ async function loadAllData() {
     ]);
     if (!artRes.ok) throw new Error(`Sanity gallery request failed (${artRes.status}).`);
     sanityArtists = await artRes.json();
+    if (!Array.isArray(sanityArtists)) throw new Error('Sanity returned an invalid artist list.');
     allMetadata = metaRes.ok ? await metaRes.json() : {};
+    sanityReadSucceeded = true;
     if (!metaRes.ok) console.warn(`Sanity artwork metadata request failed (${metaRes.status}); using available artwork details.`);
   } catch (error) {
     allMetadata = {};
-    console.warn('Could not load Sanity gallery data; restoring the website gallery folders and artworks.', error);
+    console.warn('Could not load the Sanity gallery. Local snapshots are not used as editable dashboard data.', error);
   }
 
-  mergeSanityGalleryWithFrontend(sanityArtists);
+  if (sanityReadSucceeded) mergeSanityGalleryWithFrontend(sanityArtists);
+  else allArtistsData = [];
 
   // Populate datalist
   const datalist = document.getElementById('artistDatalist');
@@ -1876,50 +2321,6 @@ async function loadAllData() {
     const opt = document.createElement('option');
     opt.value = a.name;
     datalist.appendChild(opt);
-  });
-}
-
-function fallbackToLocalData() {
-  const collections = (window.PageGalleries && window.PageGalleries.artistsCollections)
-    ? window.PageGalleries.artistsCollections : {};
-
-  const artistMap = {};
-  Object.entries(collections).forEach(([key, val]) => {
-    const [artist, cat] = key.split('/');
-    if (!artistMap[artist]) artistMap[artist] = [];
-    
-    const artworks = (val.images || []).map(src => {
-      const f = src.split('/').pop();
-      const baseName = f.replace(/\.[^/.]+$/, "").replace(/[-_]/g, " ");
-      return {
-        filename: f,
-        src: src,
-        artist: artist,
-        category: cat,
-        title: baseName.charAt(0).toUpperCase() + baseName.slice(1),
-        medium: 'Contemporary Work',
-        size: 'Inquire for Size',
-        year: '2026',
-        description: 'Recently added to our collection.'
-      };
-    });
-
-    artistMap[artist].push({
-      name: cat,
-      imageCount: val.images ? val.images.length : 0,
-      cover: val.cover || (val.images && val.images[0]) || null,
-      images: val.images || [],
-      artworks: artworks
-    });
-  });
-
-  allArtistsData = Object.entries(artistMap).map(([name, categories]) => {
-    let artistCover = null;
-    for (const c of categories) {
-      if (c.cover) { artistCover = c.cover; break; }
-    }
-    const tier = name.toUpperCase().includes('KEITH ZENDA') ? 'Keith Zenda' : 'Emerging Artists';
-    return { name, tier, cover: artistCover, categories };
   });
 }
 
@@ -1963,15 +2364,6 @@ function mergeSanityGalleryWithFrontend(sanityArtists) {
     return existing;
   };
 
-  fallbackToLocalData();
-  for (const artist of allArtistsData) {
-    const mergedArtist = addArtist(artist);
-    for (const album of artist.categories || []) {
-      const mergedAlbum = ensureAlbum(mergedArtist, album);
-      for (const artwork of album.artworks || []) addArtwork(mergedAlbum, artwork);
-    }
-  }
-
   for (const artist of sanityArtists || []) {
     const mergedArtist = addArtist(artist);
     for (const album of artist.categories || []) {
@@ -2000,7 +2392,7 @@ function mergeSanityGalleryWithFrontend(sanityArtists) {
 /* ══ EXPLORER NAVIGATION & RENDERING (3-TIER HIERARCHY) ══════ */
 function navStepBack() {
   // 1. Close any open dialog/modal first
-  const openModal = document.querySelector('.dialog-overlay.open, #artworkDetailModal.open');
+  const openModal = document.querySelector('.dialog-overlay.open:not(#globalAdminLoader), #artworkDetailModal.open');
   if (openModal) {
     if (openModal.id === 'artworkDetailModal') {
       closeArtworkModal();
@@ -2010,8 +2402,18 @@ function navStepBack() {
     return;
   }
 
-  // 2. Step back one level at a time
-  if (currentLevel === 'artworks' && selectedArtist) {
+  const historyEntry = getAdminHistoryEntry();
+  if (historyEntry && historyEntry.depth > 0) {
+    window.history.back();
+    return;
+  }
+
+  // Fall back to the current dashboard path when it was restored directly.
+  if (currentActivePanel === 'journal-media' && _journalAdminEditor) {
+    cancelJournalEditor();
+  } else if (currentActivePanel === 'journal-media' && _selectedJournalFolderId) {
+    leaveJournalFolder();
+  } else if (currentLevel === 'artworks' && selectedArtist) {
     if (selectedArtist.tier === 'Student Artists' || selectedArtist.isStudent) {
       navToArtists();
     } else {
@@ -2019,14 +2421,16 @@ function navStepBack() {
     }
   } else if (currentLevel === 'albums') {
     navToArtists();
-  } else {
+  } else if (currentActivePanel !== 'gallery-explorer') {
     showPanel('gallery-explorer');
+  } else {
+    toast('You are at the start of the dashboard. Use Logout when you are ready to end your session.', 'info');
   }
 }
 
 document.addEventListener('keydown', (e) => {
   if (e.key === 'Escape') {
-    const openModal = document.querySelector('.dialog-overlay.open, #artworkDetailModal.open');
+    const openModal = document.querySelector('.dialog-overlay.open:not(#globalAdminLoader), #artworkDetailModal.open');
     if (openModal) {
       navStepBack();
     }
@@ -2089,6 +2493,7 @@ function navToArtists() {
   currentLevel = 'artists';
   selectedArtist = null;
   selectedAlbum = null;
+  pushAdminHistory();
   saveNavState();
   renderExplorer();
 }
@@ -2099,6 +2504,7 @@ function navToAlbums(artistName) {
   selectedArtist = artist;
   selectedAlbum = null;
   currentLevel = 'albums';
+  pushAdminHistory();
   saveNavState();
   renderExplorer();
 }
@@ -2109,6 +2515,7 @@ function navToStudentArtworks(artistName) {
   selectedArtist = artist;
   selectedAlbum = (artist.categories && artist.categories.length > 0) ? artist.categories[0] : { name: 'Artworks', artworks: [] };
   currentLevel = 'artworks';
+  pushAdminHistory();
   saveNavState();
   renderExplorer();
 }
@@ -2119,8 +2526,51 @@ function navToArtworks(albumName) {
   if (!album) return;
   selectedAlbum = album;
   currentLevel = 'artworks';
+  pushAdminHistory();
   saveNavState();
   renderExplorer();
+}
+
+async function deleteArtistAlbum(artistName, categoryName) {
+  const artist = allArtistsData.find(item => item.name === artistName);
+  const album = artist?.categories.find(item => item.name === categoryName);
+  if (!artist || !album) return toast('This Sanity folder is no longer available.', 'error');
+
+  const artworkCount = (album.artworks || []).length;
+  const contentSummary = artworkCount === 1 ? '1 artwork' : `${artworkCount} artworks`;
+  const confirmed = confirm(`Delete "${artistName} / ${categoryName}" and stage its ${contentSummary} for removal in Sanity? The public site changes after Push & Sync Changes.`);
+  if (!confirmed) return;
+  if (!serverConnected && !await checkServerHealth()) {
+    toast('Sanity admin connection is unavailable. Sign in again and retry.', 'error');
+    return;
+  }
+
+  showAdminLoading('Deleting Folder...', `Staging ${contentSummary} for removal from ${artistName} / ${categoryName} in Sanity...`);
+  try {
+    const response = await fetch(`${API_BASE}/api/delete-artist-folder`, {
+      method: 'DELETE',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ artist: artistName, category: categoryName })
+    });
+    const result = await response.json();
+    if (!response.ok || !result.ok) throw new Error(result.error || 'Unable to delete this folder.');
+
+    setPendingSync(true);
+    const selectedArtistName = selectedArtist?.name;
+    const selectedAlbumName = selectedAlbum?.name;
+    await loadAllData();
+    selectedArtist = allArtistsData.find(item => item.name === selectedArtistName) || artist;
+    if (selectedAlbumName === categoryName) {
+      selectedAlbum = null;
+      currentLevel = 'albums';
+    }
+    renderExplorer();
+    toast(`Folder and ${contentSummary} staged in Sanity. Push & Sync Changes to publish.`);
+  } catch (error) {
+    toast(error.message || 'Folder deletion failed.', 'error');
+  } finally {
+    hideAdminLoading();
+  }
 }
 
 /* ── LEVEL 1: ALL ARTISTS VIEW WITH CATEGORY DEMARCATION ── */
@@ -2352,7 +2802,10 @@ function renderAlbumsView(container) {
             </div>
             <div class="album-card-footer">
               <span style="font-size:0.75rem; color:var(--muted);">Folder: /ARTISTS/${selectedArtist.name}/${album.name}</span>
-              <button class="btn-action-gold" style="padding:0.35rem 0.75rem; font-size:0.72rem;" onclick="event.stopPropagation(); navToArtworks('${album.name.replace(/'/g,"\\'")}')">Open Collection &rarr;</button>
+              <div style="display:flex; align-items:center; gap:0.45rem; flex-wrap:wrap;">
+                <button class="btn-action-gold" type="button" style="padding:0.35rem 0.75rem; font-size:0.72rem;" onclick="event.stopPropagation(); navToArtworks('${album.name.replace(/'/g,"\\'")}')">Open Collection &rarr;</button>
+                <button class="btn-modal-del" type="button" style="padding:0.35rem 0.6rem; font-size:0.72rem;" data-delete-artist="${escapeAdminHtml(selectedArtist.name)}" data-delete-category="${escapeAdminHtml(album.name)}" aria-label="Delete ${escapeAdminHtml(album.name)} folder" title="Stage folder and contained artwork for deletion">Delete Folder</button>
+              </div>
             </div>
           </div>
         </div>`;
@@ -2360,6 +2813,13 @@ function renderAlbumsView(container) {
   }
   html += `</div>`;
   container.innerHTML = html;
+  container.querySelectorAll('[data-delete-category]').forEach(button => {
+    button.addEventListener('click', event => {
+      event.preventDefault();
+      event.stopPropagation();
+      deleteArtistAlbum(button.dataset.deleteArtist, button.dataset.deleteCategory);
+    });
+  });
 }
 
 /* ── LEVEL 3: ALBUM ARTWORKS GRID VIEW (INSIDE DEDICATED ALBUM) ── */
@@ -2385,7 +2845,10 @@ function renderArtworksView(container) {
     html += `
       <div style="grid-column:1/-1; text-align:center; padding:4rem 2rem; color:var(--muted);">
         <p style="font-size:1.1rem; margin-bottom:1rem;">No artwork images in this album.</p>
-        <button class="btn-action-gold" onclick="openUploadForAlbum('${selectedArtist.name.replace(/'/g,"\\'")}', '${selectedAlbum.name.replace(/'/g,"\\'")}')">+ Upload Artwork Image</button>
+        <div style="display:flex; justify-content:center; gap:0.75rem; flex-wrap:wrap;">
+          <button class="btn-action-gold" onclick="openUploadForAlbum('${selectedArtist.name.replace(/'/g,"\\'")}', '${selectedAlbum.name.replace(/'/g,"\\'")}')">+ Upload Artwork Image</button>
+          <button class="btn-action-outline" onclick="openEmptyAlbumCoverPicker()">★ Set Folder Cover</button>
+        </div>
       </div>`;
   } else {
     artworks.forEach((art) => {
@@ -2572,13 +3035,14 @@ function navPrevArtwork() {
 }
 
 function openArtworkModal(artwork) {
+  const wasOpen = document.getElementById('artworkDetailModal').classList.contains('open');
   currentViewingArtwork = artwork;
   isEditMode = false;
   replaceFileBlob = null;
 
   // Set Picture
   document.getElementById('modalArtImg').src = artwork.src;
-  document.getElementById('modalBadgeCat').textContent = artwork.category || 'Artworks';
+  setAdminText('modalBadgeCat', artwork.category || 'Artworks');
 
   // Check if current artwork is the cover for this album
   updateCoverButtonState(artwork.src);
@@ -2587,27 +3051,27 @@ function openArtworkModal(artwork) {
   updateArtworkNavButtons();
 
   // Populate View Mode
-  document.getElementById('modalViewArtist').textContent = artwork.artist || 'ARTIST';
-  document.getElementById('modalViewTitle').textContent = artwork.title || 'Untitled';
-  document.getElementById('artsyGridArtist').textContent = artwork.artist || 'ARTIST';
-  document.getElementById('artsyGridTitle').textContent = artwork.title || 'Untitled';
-  document.getElementById('artsyGridMedium').textContent = artwork.medium || 'Contemporary Work';
-  document.getElementById('artsyGridSize').textContent = artwork.size || 'Inquire for Size';
-  document.getElementById('artsyGridYear').textContent = artwork.year || '2026';
-  document.getElementById('artsyGridCategory').textContent = artwork.category || 'Artworks';
-  document.getElementById('artsyGridPrice').textContent = artwork.price || 'Price on Request';
+  setAdminText('modalViewArtist', artwork.artist || 'ARTIST');
+  setAdminText('modalViewTitle', artwork.title || 'Untitled');
+  setAdminText('artsyGridArtist', artwork.artist || 'ARTIST');
+  setAdminText('artsyGridTitle', artwork.title || 'Untitled');
+  setAdminText('artsyGridMedium', artwork.medium || 'Contemporary Work');
+  setAdminText('artsyGridSize', artwork.size || 'Inquire for Size');
+  setAdminText('artsyGridYear', artwork.year || '2026');
+  setAdminText('artsyGridCategory', artwork.category || 'Artworks');
+  setAdminText('artsyGridPrice', artwork.price || 'Price on Request');
   
   const isDirect = (artwork.purchaseType === 'direct' || Boolean(artwork.paymentLink));
-  document.getElementById('artsyGridPurchaseType').textContent = isDirect ? 'Direct Purchase (Buy Button)' : 'Inquire to Purchase';
+  setAdminText('artsyGridPurchaseType', isDirect ? 'Direct Purchase (Buy Button)' : 'Inquire to Purchase');
   
   const linkEl = document.getElementById('artsyGridPaymentLink');
   if (artwork.paymentLink) {
     linkEl.innerHTML = `<a href="${artwork.paymentLink}" target="_blank" style="color:var(--gold);text-decoration:underline;word-break:break-all;">${artwork.paymentLink} ↗</a>`;
   } else {
-    linkEl.textContent = 'None (Inquiry Mode)';
+    if (linkEl) linkEl.textContent = 'None (Inquiry Mode)';
   }
   
-  document.getElementById('modalViewDesc').textContent = artwork.description || 'Recently added to our collection.';
+  setAdminText('modalViewDesc', artwork.description || 'Recently added to our collection.');
 
   // Populate Edit Mode fields
   document.getElementById('editOriginalSrc').value = artwork.src;
@@ -2631,6 +3095,8 @@ function openArtworkModal(artwork) {
 
   // Show modal
   document.getElementById('artworkDetailModal').classList.add('open');
+  if (wasOpen) replaceAdminHistoryOverlay('artworkDetailModal', artwork.src);
+  else pushAdminHistory({ overlay: 'artworkDetailModal', artworkSrc: artwork.src });
 }
 
 function updateCoverButtonState(src) {
@@ -2714,10 +3180,16 @@ async function setArtworkAsAlbumCoverDirect(src, artist, category) {
   }
 }
 
-function closeArtworkModal() {
+function closeArtworkModal(syncHistory = true) {
   document.getElementById('artworkDetailModal').classList.remove('open');
   currentViewingArtwork = null;
   replaceFileBlob = null;
+  if (syncHistory && !restoringAdminNavigation
+      && getAdminHistoryEntry()?.overlay === 'artworkDetailModal') {
+    window.history.back();
+  } else {
+    updateAdminBackButton();
+  }
 }
 
 function closeArtworkModalOnOverlay(e) {
@@ -2965,7 +3437,7 @@ function openNewArtistModal(presetTier = null) {
     }
     handleCreateArtistTierChange(tierSelect.value);
   }
-  document.getElementById('modalNewArtist').classList.add('open');
+  openDialog('modalNewArtist');
 }
 
 async function submitCreateArtist() {
@@ -3014,7 +3486,7 @@ function openEditArtistTierModal(artistName, currentTier) {
   if (select) {
     select.value = currentTier || 'Emerging Artists';
   }
-  document.getElementById('modalEditArtistTier').classList.add('open');
+  openDialog('modalEditArtistTier');
 }
 
 async function submitUpdateArtistTier() {
@@ -3057,7 +3529,7 @@ async function submitUpdateArtistTier() {
 function openNewAlbumForArtist(artistName) {
   document.getElementById('newAlbumArtistNameInput').value = artistName;
   document.getElementById('newAlbumCategoryName').value = '';
-  document.getElementById('modalNewAlbum').classList.add('open');
+  openDialog('modalNewAlbum');
 }
 
 async function submitCreateAlbum() {
@@ -3183,11 +3655,50 @@ function removeStagedUploadFile(idx) {
   updateStagedUploadUI();
 }
 
+async function openEmptyAlbumCoverPicker() {
+  if (!selectedArtist || !selectedAlbum) return;
+  const picker = document.createElement('input');
+  picker.type = 'file';
+  picker.accept = 'image/*';
+  picker.style.display = 'none';
+  picker.onchange = async () => {
+    const file = picker.files && picker.files[0];
+    if (!file || isFolderCoverUploadInProgress) return;
+    isFolderCoverUploadInProgress = true;
+    const formData = new FormData();
+    formData.append('artist', selectedArtist.name);
+    formData.append('category', selectedAlbum.name);
+    formData.append('cover', file);
+    toast('Uploading content...', 'info', { duration: 0 });
+    showAdminLoading('Uploading content...', 'Uploading the selected folder cover. Duplicate submissions are blocked until this finishes.');
+    try {
+      if (!serverConnected) await checkServerHealth();
+      const res = await fetch(`${API_BASE}/api/set-folder-cover`, { method: 'POST', body: formData });
+      const data = await res.json();
+      if (!res.ok || !data.ok) throw new Error(data.error || 'Unable to save folder cover');
+      setPendingSync(true);
+      await loadAllData();
+      selectedArtist = allArtistsData.find(artist => artist.name === selectedArtist?.name) || selectedArtist;
+      selectedAlbum = selectedArtist?.categories.find(album => album.name === selectedAlbum?.name) || selectedAlbum;
+      renderExplorer();
+      toast('Folder cover saved as a draft. Push & Sync Changes to publish.');
+    } catch (error) {
+      toast(error.message || 'Failed to set folder cover', 'error');
+    } finally {
+      hideAdminLoading();
+      isFolderCoverUploadInProgress = false;
+    }
+  };
+  document.body.appendChild(picker);
+  picker.click();
+  picker.remove();
+}
+
 function openUploadForAlbum(artistName, albumName) {
   stagedUploadFiles = [];
   document.getElementById('uploadArtistHidden').value = artistName;
   document.getElementById('uploadCategoryHidden').value = albumName;
-  document.getElementById('uploadTargetFolderLabel').textContent = `ARTISTS / ${artistName} / ${albumName}`;
+  setAdminText('uploadTargetFolderLabel', `ARTISTS / ${artistName} / ${albumName}`);
 
   document.getElementById('upTitle').value = '';
   document.getElementById('upMedium').value = 'Oil on Canvas';
@@ -3200,7 +3711,7 @@ function openUploadForAlbum(artistName, albumName) {
   document.getElementById('uploadFileInput').value = '';
   updateStagedUploadUI();
   checkUploadPaymentLink();
-  document.getElementById('modalUploadArtwork').classList.add('open');
+  openDialog('modalUploadArtwork');
 }
 
 function checkUploadPaymentLink() {
@@ -3358,6 +3869,7 @@ if (dz) {
 }
 
 async function submitArtworkUpload() {
+  if (isArtworkUploadInProgress) return;
   const artist = document.getElementById('uploadArtistHidden').value;
   const category = document.getElementById('uploadCategoryHidden').value;
   const title = document.getElementById('upTitle').value.trim();
@@ -3381,10 +3893,14 @@ async function submitArtworkUpload() {
     return;
   }
 
+  isArtworkUploadInProgress = true;
+  const uploadButton = document.querySelector('#modalUploadArtwork .btn-action-gold');
+  if (uploadButton) uploadButton.disabled = true;
   if (!serverConnected) await checkServerHealth();
 
   closeDialog('modalUploadArtwork');
-  showAdminLoading('Optimizing & Uploading...', `Auto-compressing and uploading ${stagedUploadFiles.length} file(s) with lossless quality...`);
+  toast('Uploading content...', 'info', { duration: 0 });
+  showAdminLoading('Uploading content...', `Compressing and uploading ${stagedUploadFiles.length} selected file(s). Duplicate submissions are blocked until this finishes.`);
 
   try {
     const formData = new FormData();
@@ -3413,8 +3929,7 @@ async function submitArtworkUpload() {
     if (res.ok && data.ok) {
       setPendingSync(true);
       await loadAllData();
-      hideAdminLoading();
-      toast('✓ Artwork uploaded & auto-compressed successfully!');
+      toast('Artwork saved as a draft. Push & Sync Changes to publish.');
       stagedUploadFiles = [];
       const isStudent = selectedArtist && (selectedArtist.tier === 'Student Artists' || selectedArtist.isStudent);
       if (isStudent) {
@@ -3424,17 +3939,34 @@ async function submitArtworkUpload() {
       }
       return;
     } else {
-      hideAdminLoading();
       toast('Upload failed: ' + (data.error || 'Server error'), 'error');
     }
   } catch (e) {
-    hideAdminLoading();
     toast('Upload failed: ' + e.message, 'error');
+  } finally {
+    hideAdminLoading();
+    isArtworkUploadInProgress = false;
+    if (uploadButton) uploadButton.disabled = false;
   }
 }
 
-function closeDialog(id) {
-  document.getElementById(id).classList.remove('open');
+function openDialog(id) {
+  const dialog = document.getElementById(id);
+  if (!dialog) throw new Error(`Admin dialog "${id}" was not found.`);
+  const wasOpen = dialog.classList.contains('open');
+  dialog.classList.add('open');
+  if (!wasOpen) pushAdminHistory({ overlay: id });
+}
+
+function closeDialog(id, syncHistory = true) {
+  const dialog = document.getElementById(id);
+  if (!dialog) return;
+  dialog.classList.remove('open');
+  if (syncHistory && !restoringAdminNavigation && getAdminHistoryEntry()?.overlay === id) {
+    window.history.back();
+  } else {
+    updateAdminBackButton();
+  }
 }
 
 /* ══ OVERVIEW STATS ════════════════════════════ */
@@ -3474,6 +4006,74 @@ function updateOverviewStats() {
 
 /* ══ EXHIBITIONS MANAGEMENT ════════════════════ */
 let _exhibitions = [];
+let exhibitionPreviewObjectUrl = '';
+
+function exhibitionPreviewData() {
+  const value = id => document.getElementById(id)?.value || '';
+  const existing = _exhibitions.find(item => item.id === value('ex-id'));
+  const file = document.getElementById('ex-image')?.files?.[0];
+  const preview = {
+    id: value('ex-id') || 'draft-preview',
+    title: value('ex-title').trim() || 'Untitled Exhibition',
+    artist: value('ex-artist').trim() || 'Various Artists',
+    category: value('ex-category').trim() || 'Exhibition',
+    description: value('ex-desc').trim(),
+    image: exhibitionPreviewObjectUrl
+      || existing?.imageUrl || existing?.image || '/images/MAIN IMAGES/exhibitions/artwork_2.webp',
+    startDate: value('ex-start'),
+    endDate: value('ex-end'),
+    startTime: value('ex-start-time'),
+    endTime: value('ex-end-time'),
+    status: value('ex-status') || 'upcoming',
+    location: value('ex-location').trim(),
+    theme: value('ex-theme').trim(),
+    registrationLink: value('ex-registration-link').trim(),
+    contactLink: value('ex-contact-link').trim(),
+    ctaText: value('ex-cta-text').trim(),
+    conditions: value('ex-conditions').trim(),
+    registrationFee: value('ex-registration-fee').trim(),
+    timeRange: value('ex-time-range').trim(),
+    isPlaceholder: Boolean(document.getElementById('ex-is-placeholder')?.checked),
+    displayDateOverride: value('ex-display-date-override').trim(),
+    imagePosition: {
+      x: Number(value('ex-image-focus-x') || 50),
+      y: Number(value('ex-image-focus-y') || 50)
+    },
+    allowBlobImage: true
+  };
+  preview.status = window.ExhibitionCardRenderer.statusFor(preview);
+  return preview;
+}
+
+function renderExhibitionPreview() {
+  const preview = document.getElementById('exhibitionLivePreview');
+  if (!preview || !window.ExhibitionCardRenderer) return;
+  const hasReplacementImage = Boolean(document.getElementById('ex-image')?.files?.length);
+  ['ex-image-focus-x', 'ex-image-focus-y'].forEach(id => {
+    const control = document.getElementById(id);
+    if (control) control.disabled = !hasReplacementImage;
+  });
+  const focusX = document.getElementById('ex-image-focus-x')?.value || '50';
+  const focusY = document.getElementById('ex-image-focus-y')?.value || '50';
+  const focusXValue = document.getElementById('ex-image-focus-x-value');
+  const focusYValue = document.getElementById('ex-image-focus-y-value');
+  if (focusXValue) focusXValue.value = `${focusX}%`;
+  if (focusYValue) focusYValue.value = `${focusY}%`;
+  preview.innerHTML = window.ExhibitionCardRenderer.render(exhibitionPreviewData());
+}
+
+document.querySelectorAll('#panel-exhibitions input, #panel-exhibitions textarea, #panel-exhibitions select')
+  .forEach(control => {
+    control.addEventListener('input', renderExhibitionPreview);
+    control.addEventListener('change', () => {
+      if (control.id === 'ex-image') {
+        if (exhibitionPreviewObjectUrl) URL.revokeObjectURL(exhibitionPreviewObjectUrl);
+        exhibitionPreviewObjectUrl = control.files?.[0] ? URL.createObjectURL(control.files[0]) : '';
+      }
+      renderExhibitionPreview();
+    });
+  });
+
 async function loadExhibitions() {
   try {
     const response = await fetch('/api/exhibitions');
@@ -3488,33 +4088,39 @@ async function loadExhibitions() {
 
 function renderExhibitions() {
   const el = document.getElementById('exhibitionList');
+  if (!el) return;
+  if (!window.ExhibitionCardRenderer) {
+    el.textContent = 'The exhibition preview is still loading. Refresh the dashboard to try again.';
+    return;
+  }
   if (!_exhibitions.length) {
     el.innerHTML = '<p style="color:var(--muted)">No exhibitions yet. Add one above.</p>';
+    renderExhibitionPreview();
     return;
   }
   el.innerHTML = _exhibitions.map(ex => {
-    const dateRange = [ex.startDate, ex.endDate].filter(Boolean).join(' → ');
-    const timeRange = [ex.startTime, ex.endTime].filter(Boolean).join(' – ');
-    return `
-    <div style="background:var(--bg3);border:1px solid var(--border);border-radius:4px;padding:1rem;margin-bottom:0.75rem;display:flex;justify-content:space-between;align-items:flex-start;gap:1rem;">
-      <div>
-        <h5 style="font-size:0.95rem;color:var(--text);font-weight:600;">${escapeAdminHtml(ex.title || 'Untitled')}</h5>
-        <p style="font-size:0.78rem;color:var(--muted);margin-top:0.2rem;">${escapeAdminHtml(ex.artist || '')}${ex.location ? ' &bull; ' + escapeAdminHtml(ex.location) : ''}</p>
-        ${dateRange ? `<p style="font-size:0.78rem;color:var(--muted);">${escapeAdminHtml(dateRange)}</p>` : ''}
-        ${timeRange ? `<p style="font-size:0.78rem;color:var(--muted);">Time: ${escapeAdminHtml(timeRange)}</p>` : ''}
-        ${ex.timeRange && ex.timeRange !== timeRange ? `<p style="font-size:0.78rem;color:var(--muted);">Display time: ${escapeAdminHtml(ex.timeRange)}</p>` : ''}
-        ${ex.theme ? `<p style="font-size:0.78rem;color:var(--muted);">Theme: ${escapeAdminHtml(ex.theme)}</p>` : ''}
-        ${ex.registrationFee ? `<p style="font-size:0.78rem;color:var(--muted);">Registration fee: ${escapeAdminHtml(ex.registrationFee)}</p>` : ''}
-        ${ex.isPlaceholder && ex.displayDateOverride ? `<p style="font-size:0.78rem;color:var(--muted);">${escapeAdminHtml(ex.displayDateOverride)}</p>` : ''}
-        ${ex.registrationLink ? `<p style="font-size:0.78rem;color:var(--muted);">Registration: ${escapeAdminHtml(ex.ctaText || 'Register')} · ${escapeAdminHtml(ex.registrationLink)}</p>` : ''}
-        <span style="font-size:0.68rem;padding:0.2rem 0.6rem;border-radius:20px;text-transform:uppercase;letter-spacing:0.08em;margin-top:0.35rem;display:inline-block;background:var(--gold-d);color:var(--gold);">${escapeAdminHtml(ex.status || 'upcoming')}</span>
+    const exhibition = { ...ex, image: ex.imageUrl || ex.image || '' };
+    const publishedState = ex._draft
+      ? '<span class="exhibition-admin-status">Draft · not public</span>'
+      : '<span class="exhibition-admin-status is-published">Published</span>';
+    return `<article class="exhibition-admin-item">
+      <div class="exhibition-admin-item-head">
+        ${publishedState}
+        <div class="exhibition-admin-actions">
+          <button class="btn-action-outline" type="button" data-exhibition-action="edit" data-id="${escapeAdminHtml(ex.id)}">Edit</button>
+          <button class="btn-modal-del" type="button" data-exhibition-action="delete" data-id="${escapeAdminHtml(ex.id)}">Delete</button>
+        </div>
       </div>
-      <div style="display:flex;gap:0.5rem;flex-shrink:0;">
-        <button class="btn-action-outline" style="font-size:0.75rem;padding:0.35rem 0.75rem;" onclick="editExhibition('${escapeAdminHtml(ex.id)}')">Edit</button>
-        <button class="btn-modal-del" style="font-size:0.75rem;padding:0.35rem 0.75rem;" onclick="deleteExhibition('${escapeAdminHtml(ex.id)}')">Delete</button>
-      </div>
-    </div>`;
+      <div class="exhibition-admin-preview">${window.ExhibitionCardRenderer.render(exhibition)}</div>
+    </article>`;
   }).join('');
+  el.querySelectorAll('[data-exhibition-action]').forEach(button => {
+    button.addEventListener('click', () => {
+      if (button.dataset.exhibitionAction === 'edit') editExhibition(button.dataset.id);
+      else deleteExhibition(button.dataset.id);
+    });
+  });
+  renderExhibitionPreview();
 }
 
 function clearExForm() {
@@ -3524,6 +4130,9 @@ function clearExForm() {
   document.getElementById('ex-status').value = 'upcoming';
   document.getElementById('ex-is-placeholder').checked = false;
   document.getElementById('exFormTitle').textContent = 'Add New Exhibition / Event';
+  if (exhibitionPreviewObjectUrl) URL.revokeObjectURL(exhibitionPreviewObjectUrl);
+  exhibitionPreviewObjectUrl = '';
+  renderExhibitionPreview();
 }
 
 function editExhibition(id) {
@@ -3551,6 +4160,9 @@ function editExhibition(id) {
   document.getElementById('ex-image').value     = '';
   document.getElementById('exFormTitle').textContent = 'Edit Exhibition';
   document.getElementById('panel-exhibitions').scrollTop = 0;
+  if (exhibitionPreviewObjectUrl) URL.revokeObjectURL(exhibitionPreviewObjectUrl);
+  exhibitionPreviewObjectUrl = '';
+  renderExhibitionPreview();
 }
 
 async function saveExhibition() {
@@ -3587,22 +4199,36 @@ async function saveExhibition() {
       return;
     }
   }
+  const image = document.getElementById('ex-image').files[0];
+  if (isExhibitionImageUploadInProgress) return;
+  isExhibitionImageUploadInProgress = true;
+  if (image) {
+    toast('Uploading content...', 'info', { duration: 0 });
+    showAdminLoading('Uploading content...', 'Preparing the 4:3 exhibition image and uploading it. Duplicate submissions are blocked until this finishes.');
+  }
   try {
     const form = new FormData();
     Object.entries(payload).forEach(([key, value]) => form.append(key, value));
-    const image = document.getElementById('ex-image').files[0];
-    if (image) form.append('image', image);
+    if (image) {
+      const focusX = Number(document.getElementById('ex-image-focus-x').value) / 100;
+      const focusY = Number(document.getElementById('ex-image-focus-y').value) / 100;
+      const croppedImage = await cropImageToRatio(image, 4 / 3, focusX, focusY);
+      form.append('image', croppedImage, image.name);
+    }
     const response = await fetch('/api/exhibitions', {
       method: 'POST', body: form
     });
     const result = await response.json();
     if (!response.ok) throw new Error(result.error || 'Unable to save exhibition.');
     setPendingSync(true);
-    toast('Exhibition draft saved in Sanity. Publish to make it public.');
+    toast('Exhibition saved as a draft. Push & Sync Changes to publish.');
     clearExForm();
     await loadExhibitions();
   } catch (error) {
     toast(error.message, 'error');
+  } finally {
+    if (image) hideAdminLoading();
+    isExhibitionImageUploadInProgress = false;
   }
 }
 
@@ -3747,6 +4373,15 @@ async function saveLibraryItem() {
   const title = document.getElementById('library-title').value.trim();
   const description = document.getElementById('library-description').value.trim();
   const file = document.getElementById('library-file').files[0];
+  const isUploading = !id;
+  if (isUploading && isLibraryUploadInProgress) return;
+  if (isUploading && !file) return toast('Choose a file to upload.', 'error');
+  if (isUploading) {
+    isLibraryUploadInProgress = true;
+    toast('Uploading content...', 'info', { duration: 0 });
+    showAdminLoading('Uploading content...', 'Uploading the selected file. Duplicate submissions are blocked until this finishes.');
+  }
+
   try {
     let response;
     if (id) {
@@ -3754,7 +4389,6 @@ async function saveLibraryItem() {
         method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ id, title, description })
       });
     } else {
-      if (!file) return toast('Choose a file to upload.', 'error');
       const form = new FormData();
       form.append('title', title || file.name);
       form.append('description', description);
@@ -3767,9 +4401,14 @@ async function saveLibraryItem() {
     setPendingSync(true);
     clearLibraryForm();
     await loadContentLibrary();
-    toast(id ? 'Media details updated in Sanity.' : 'File uploaded to Sanity. Publish to make it public.');
+    toast(id ? 'Media details updated.' : 'File saved as a draft. Push & Sync Changes to publish.');
   } catch (error) {
     toast(error.message, 'error');
+  } finally {
+    if (isUploading) {
+      hideAdminLoading();
+      isLibraryUploadInProgress = false;
+    }
   }
 }
 
@@ -3789,16 +4428,25 @@ async function deleteLibraryItem(id) {
 
 let _journalFolders = [];
 let _journalEntries = [];
+let _selectedJournalFolderId = null;
+let _journalAdminEditor = '';
+const JOURNAL_UNFILED_ID = '__unfiled__';
 
 async function loadJournalAdmin() {
   try {
     const [foldersResponse, entriesResponse] = await Promise.all([
       fetch('/api/journal/folders'), fetch('/api/journal/entries')
     ]);
-    if (!foldersResponse.ok || !entriesResponse.ok) throw new Error('Unable to load Journal & Media content.');
+    if (!foldersResponse.ok || !entriesResponse.ok) throw new Error('Unable to load Gallery & Media content.');
     [_journalFolders, _journalEntries] = await Promise.all([foldersResponse.json(), entriesResponse.json()]);
+    if (_selectedJournalFolderId && _selectedJournalFolderId !== JOURNAL_UNFILED_ID &&
+        !_journalFolders.some(folder => folder._id === _selectedJournalFolderId)) {
+      _selectedJournalFolderId = null;
+    }
     renderJournalFolders();
     renderJournalEntries();
+    renderTvEntries();
+    refreshJournalParentOptions();
     refreshJournalFolderOptions();
   } catch (error) {
     toast(error.message, 'error');
@@ -3807,61 +4455,278 @@ async function loadJournalAdmin() {
 
 function renderJournalFolders() {
   const list = document.getElementById('journalFolderList');
-  if (!_journalFolders.length) {
-    list.textContent = 'No journal folders yet.';
-    return;
-  }
-  list.innerHTML = _journalFolders.map(folder => {
+  const visibleFolders = _journalFolders.filter(folder =>
+    (folder.parentFolderId || null) === (_selectedJournalFolderId || null)
+  );
+  const unfiledEntries = _journalEntries.filter(entry =>
+    !entry.folderId && entry.destination !== 'tv' && entry.entryType !== 'ARTGALZIM TV'
+  );
+  const cards = visibleFolders.map(folder => {
     const id = escapeAdminHtml(folder._id);
-    const count = _journalEntries.filter(entry => entry.folderId === folder._id).length;
-    return `<div style="display:flex;justify-content:space-between;gap:1rem;align-items:center;border-top:1px solid var(--border);padding:0.8rem 0;">
-      <div><strong>${escapeAdminHtml(folder.title)}</strong><div style="color:var(--muted);font-size:0.78rem;">${escapeAdminHtml(folder.category || 'Other')}${folder.organization ? ` · ${escapeAdminHtml(folder.organization)}` : ''} · ${count} entr${count === 1 ? 'y' : 'ies'} · ${folder._draft ? 'Draft' : 'Published'}</div></div>
-      <div style="display:flex;gap:0.5rem;"><button class="btn-action-outline" data-id="${id}" onclick="editJournalFolder(this.dataset.id)">Edit</button><button class="btn-modal-del" data-id="${id}" onclick="deleteJournalFolder(this.dataset.id)">Delete</button></div>
-    </div>`;
-  }).join('');
+    const entries = _journalEntries.filter(entry => entry.folderId === folder._id &&
+      entry.destination !== 'tv' && entry.entryType !== 'ARTGALZIM TV');
+    const childCount = _journalFolders.filter(child => child.parentFolderId === folder._id).length;
+    const cover = folder.coverUrl
+      ? `<div class="album-card-cover"><img src="${escapeAdminHtml(folder.coverUrl)}" alt="${escapeAdminHtml(folder.title || 'Folder')} cover" loading="lazy"></div>`
+      : '<div class="album-card-cover" aria-hidden="true"></div>';
+    return `<article class="album-card-item">
+      ${cover}
+      <div class="album-card-body">
+        <div class="journal-admin-folder-preview-category">${escapeAdminHtml(folder.category || 'Other')}</div>
+        <h4 class="album-card-title">${escapeAdminHtml(folder.title || 'Untitled folder')}</h4>
+        ${folder.organization ? `<p class="journal-admin-folder-preview-description">${escapeAdminHtml(folder.organization)}</p>` : ''}
+        ${folder.description ? `<p class="journal-admin-folder-preview-description">${escapeAdminHtml(folder.description)}</p>` : ''}
+        <div class="album-card-footer">
+          <span class="album-card-count">${childCount} subfolder${childCount === 1 ? '' : 's'} · ${entries.length} entr${entries.length === 1 ? 'y' : 'ies'}</span>
+          <button class="btn-action-outline" type="button" data-id="${id}" onclick="openJournalFolder(this.dataset.id)">Open folder</button>
+        </div>
+      </div>
+    </article>`;
+  });
+  if (!_selectedJournalFolderId && unfiledEntries.length) {
+    cards.push(`<article class="album-card-item">
+      <div class="album-card-cover" aria-hidden="true"></div>
+      <div class="album-card-body">
+        <div class="journal-admin-folder-preview-category">Existing content</div>
+        <h4 class="album-card-title">Unfiled content</h4>
+        <p class="journal-admin-folder-preview-description">Entries not assigned to a News &amp; Gallery folder.</p>
+        <div class="album-card-footer">
+          <span class="album-card-count">${unfiledEntries.length} entr${unfiledEntries.length === 1 ? 'y' : 'ies'}</span>
+          <button class="btn-action-outline" type="button" onclick="openJournalFolder('${JOURNAL_UNFILED_ID}')">Open content</button>
+        </div>
+      </div>
+    </article>`);
+  }
+  list.innerHTML = cards.length
+    ? cards.join('')
+    : '<div class="journal-admin-empty">No folders here yet. Use the folder action above to add one.</div>';
+}
+
+function journalFolderPath(folder, folders = _journalFolders) {
+  const path = [];
+  const seen = new Set();
+  let current = folder;
+  while (current && !seen.has(current._id)) {
+    seen.add(current._id);
+    path.unshift(current.title || 'Untitled folder');
+    current = folders.find(item => item._id === current.parentFolderId);
+  }
+  return path.join(' / ');
+}
+
+function journalFolderDescendantIds(folderId) {
+  const descendants = new Set([folderId]);
+  let changed = true;
+  while (changed) {
+    changed = false;
+    _journalFolders.forEach(folder => {
+      if (folder.parentFolderId && descendants.has(folder.parentFolderId) && !descendants.has(folder._id)) {
+        descendants.add(folder._id);
+        changed = true;
+      }
+    });
+  }
+  return descendants;
+}
+
+function refreshJournalParentOptions(selectedId = document.getElementById('journal-folder-parent').value) {
+  const select = document.getElementById('journal-folder-parent');
+  const editingId = document.getElementById('journal-folder-id').value;
+  const excluded = editingId ? journalFolderDescendantIds(editingId) : new Set();
+  select.innerHTML = '<option value="">Top level (no parent)</option>' + _journalFolders
+    .filter(folder => !excluded.has(folder._id))
+    .sort((a, b) => journalFolderPath(a).localeCompare(journalFolderPath(b)))
+    .map(folder => `<option value="${escapeAdminHtml(folder._id)}">${escapeAdminHtml(journalFolderPath(folder))}</option>`)
+    .join('');
+  if (_journalFolders.some(folder => folder._id === selectedId) && !excluded.has(selectedId)) {
+    select.value = selectedId;
+  } else {
+    select.value = '';
+  }
 }
 
 function renderJournalEntries() {
   const list = document.getElementById('journalEntryList');
-  if (!_journalEntries.length) {
-    list.textContent = 'No journal entries yet.';
+  const entries = _journalEntries.filter(entry =>
+    entry.destination !== 'tv' && entry.entryType !== 'ARTGALZIM TV' &&
+    (_selectedJournalFolderId === JOURNAL_UNFILED_ID
+      ? !entry.folderId
+      : entry.folderId === _selectedJournalFolderId)
+  );
+  if (!entries.length) {
+    list.innerHTML = '<div class="journal-admin-empty">No content in this folder yet. Add an entry or create a subfolder.</div>';
+  } else {
+    list.innerHTML = entries.map(entry => {
+      const id = escapeAdminHtml(entry._id);
+      const image = entry.imageUrl
+        ? `<img src="${escapeAdminHtml(entry.imageUrl)}" alt="${escapeAdminHtml(entry.title || 'Entry')}" loading="lazy">`
+        : '<div class="album-card-cover" aria-hidden="true"></div>';
+      return `<article class="journal-admin-entry-card">
+        ${image}
+        <div class="journal-admin-entry-body">
+          <div class="journal-admin-folder-preview-category">${escapeAdminHtml(entry.entryType || 'Story')}</div>
+          <h5>${escapeAdminHtml(entry.title || 'Untitled entry')}</h5>
+          ${entry.location ? `<p><strong>School / Location:</strong> ${escapeAdminHtml(entry.location)}</p>` : ''}
+          ${entry.excerpt ? `<p><strong>Description:</strong> ${escapeAdminHtml(entry.excerpt)}</p>` : ''}
+          <p>${entry._draft ? 'Draft' : 'Published'}${entry.author ? ` · ${escapeAdminHtml(entry.author)}` : ''}</p>
+          <div class="journal-admin-entry-actions">
+            <button class="btn-action-outline" type="button" data-id="${id}" onclick="editJournalEntry(this.dataset.id)">Edit</button>
+            <button class="btn-modal-del" type="button" data-id="${id}" onclick="deleteJournalEntry(this.dataset.id)">Delete</button>
+          </div>
+        </div>
+      </article>`;
+    }).join('');
+  }
+  renderJournalAdminView();
+}
+
+function renderJournalAdminView() {
+  const title = document.getElementById('journalAdminTitle');
+  const subtitle = document.getElementById('journalAdminSubtitle');
+  const actions = document.getElementById('journalAdminActions');
+  const folderBrowser = document.getElementById('journalFolderBrowser');
+  const entryBrowser = document.getElementById('journalEntryBrowser');
+  const folderEditor = document.getElementById('journalFolderEditor');
+  const entryEditor = document.getElementById('journalEntryEditor');
+  const selectedFolder = _journalFolders.find(folder => folder._id === _selectedJournalFolderId);
+  const isUnfiled = _selectedJournalFolderId === JOURNAL_UNFILED_ID;
+
+  if (_journalAdminEditor) {
+    folderBrowser.hidden = true;
+    entryBrowser.hidden = true;
+    folderEditor.hidden = _journalAdminEditor !== 'folder';
+    entryEditor.hidden = _journalAdminEditor !== 'entry';
+    actions.innerHTML = '';
     return;
   }
-  list.innerHTML = _journalEntries.map(entry => {
+
+  folderEditor.hidden = true;
+  entryEditor.hidden = true;
+  folderBrowser.hidden = isUnfiled;
+  entryBrowser.hidden = !_selectedJournalFolderId;
+
+  const path = selectedFolder ? journalFolderPath(selectedFolder) : isUnfiled ? 'Unfiled content' : 'All folders';
+  if (title) title.textContent = isUnfiled ? 'Unfiled content' : selectedFolder ? selectedFolder.title : 'Folders';
+  if (subtitle) subtitle.textContent = path;
+  setAdminText('journalFolderListTitle', selectedFolder ? 'Subfolders' : 'News & Gallery Folders');
+  setAdminText('journalEntryListTitle', isUnfiled ? 'Unfiled Entries' : 'Folder Content');
+
+  const buttons = [];
+  if (!_selectedJournalFolderId) {
+    buttons.push('<button class="btn-action-gold" type="button" onclick="openJournalFolderForm()">+ Create Folder</button>');
+  } else {
+    buttons.push('<button class="btn-action-outline" type="button" onclick="leaveJournalFolder()">← Back to folders</button>');
+    if (!isUnfiled) {
+      buttons.push('<button class="btn-action-gold" type="button" onclick="openJournalFolderForm()">+ Create Subfolder</button>');
+      buttons.push('<button class="btn-action-gold" type="button" onclick="openJournalEntryForm()">+ Add Content</button>');
+      buttons.push('<button class="btn-action-outline" type="button" onclick="editJournalFolder(_selectedJournalFolderId)">Edit Folder</button>');
+      buttons.push('<button class="btn-modal-del" type="button" onclick="deleteJournalFolder(_selectedJournalFolderId)">Delete Folder</button>');
+    }
+  }
+  actions.innerHTML = buttons.join('');
+}
+
+function openJournalFolder(id) {
+  _selectedJournalFolderId = id;
+  pushAdminHistory();
+  saveNavState();
+  renderJournalFolders();
+  renderJournalEntries();
+}
+
+function leaveJournalFolder() {
+  const current = getAdminHistoryEntry();
+  if (current?.depth > 0 && current.route?.panel === 'journal-media'
+      && current.route.journalFolderId === _selectedJournalFolderId) {
+    window.history.back();
+    return;
+  }
+  const selectedFolder = _journalFolders.find(folder => folder._id === _selectedJournalFolderId);
+  _selectedJournalFolderId = selectedFolder?.parentFolderId || null;
+  saveNavState();
+  renderJournalFolders();
+  renderJournalEntries();
+}
+
+function renderTvEntries() {
+  const list = document.getElementById('tvEntryList');
+  const entries = _journalEntries.filter(entry => entry.destination === 'tv' || entry.entryType === 'ARTGALZIM TV');
+  if (!entries.length) {
+    list.textContent = 'No ARTGALZIM TV videos yet.';
+    return;
+  }
+  list.innerHTML = entries.map(entry => {
     const id = escapeAdminHtml(entry._id);
-    const folder = _journalFolders.find(item => item._id === entry.folderId);
+    const layout = entry.videoOrientation === 'portrait' ? 'Short' : 'Landscape';
     return `<div style="display:flex;justify-content:space-between;gap:1rem;align-items:center;border-top:1px solid var(--border);padding:0.8rem 0;">
-      <div><strong>${escapeAdminHtml(entry.title)}</strong><div style="color:var(--muted);font-size:0.78rem;">${escapeAdminHtml(entry.destination === 'tv' || entry.entryType === 'ARTGALZIM TV' ? 'ARTGALZIM TV' : 'Journal and Gallery')}${folder ? ` · ${escapeAdminHtml(folder.title)}` : ''} · ${escapeAdminHtml(entry.entryType === 'ARTGALZIM TV' ? 'Video' : entry.entryType || 'Story')} · ${entry._draft ? 'Draft' : 'Published'}</div></div>
+      <div><strong>${escapeAdminHtml(entry.title)}</strong><div style="color:var(--muted);font-size:0.78rem;">${escapeAdminHtml(layout)} · ${escapeAdminHtml(entry.mediaType || 'Video')} · ${entry._draft ? 'Draft' : 'Published'}</div></div>
       <div style="display:flex;gap:0.5rem;"><button class="btn-action-outline" data-id="${id}" onclick="editJournalEntry(this.dataset.id)">Edit</button><button class="btn-modal-del" data-id="${id}" onclick="deleteJournalEntry(this.dataset.id)">Delete</button></div>
     </div>`;
   }).join('');
 }
 
 function refreshJournalFolderOptions(selectedId = document.getElementById('journal-entry-folder').value) {
-  const select = document.getElementById('journal-entry-folder');
-  select.innerHTML = '<option value="">Select a folder</option>' + _journalFolders.map(folder =>
-    `<option value="${escapeAdminHtml(folder._id)}">${escapeAdminHtml(folder.title)}</option>`
-  ).join('');
-  if (_journalFolders.some(folder => folder._id === selectedId)) select.value = selectedId;
+  const input = document.getElementById('journal-entry-folder');
+  input.value = _journalFolders.some(folder => folder._id === selectedId) ? selectedId : '';
+}
+
+function openJournalFolderForm() {
+  clearJournalFolderForm();
+  refreshJournalParentOptions(_selectedJournalFolderId && _selectedJournalFolderId !== JOURNAL_UNFILED_ID
+    ? _selectedJournalFolderId
+    : '');
+  _journalAdminEditor = 'folder';
+  pushAdminHistory();
+  document.getElementById('journalFolderFormTitle').textContent = 'Create News & Gallery Folder';
+  renderJournalAdminView();
+  document.getElementById('journal-folder-title').focus();
+}
+
+function openJournalEntryForm() {
+  if (!_selectedJournalFolderId || _selectedJournalFolderId === JOURNAL_UNFILED_ID) return;
+  clearJournalEntryForm();
+  document.getElementById('journal-entry-folder').value = _selectedJournalFolderId;
+  refreshJournalFolderOptions(_selectedJournalFolderId);
+  _journalAdminEditor = 'entry';
+  pushAdminHistory();
+  renderJournalAdminView();
+  document.getElementById('journal-entry-title').focus();
+}
+
+function cancelJournalEditor() {
+  const current = getAdminHistoryEntry();
+  if (current?.depth > 0 && current.route?.journalEditor === _journalAdminEditor) {
+    window.history.back();
+    return;
+  }
+  clearJournalFolderForm();
+  clearJournalEntryForm();
+  _journalAdminEditor = '';
+  renderJournalFolders();
+  renderJournalEntries();
 }
 
 function clearJournalFolderForm() {
-  ['journal-folder-id', 'journal-folder-title', 'journal-folder-organization', 'journal-folder-description', 'journal-folder-cover']
+  ['journal-folder-id', 'journal-folder-title', 'journal-folder-description', 'journal-folder-cover']
     .forEach(id => { document.getElementById(id).value = ''; });
+  refreshJournalParentOptions('');
   document.getElementById('journal-folder-category').value = 'School';
-  document.getElementById('journalFolderFormTitle').textContent = 'Create Journal Folder';
+  document.getElementById('journalFolderFormTitle').textContent = 'Create News & Gallery Folder';
 }
 
 function editJournalFolder(id) {
   const folder = _journalFolders.find(item => item._id === id);
   if (!folder) return;
   document.getElementById('journal-folder-id').value = id;
+  refreshJournalParentOptions(folder.parentFolderId || '');
   document.getElementById('journal-folder-title').value = folder.title || '';
   document.getElementById('journal-folder-category').value = folder.category || 'Other';
-  document.getElementById('journal-folder-organization').value = folder.organization || '';
   document.getElementById('journal-folder-description').value = folder.description || '';
   document.getElementById('journal-folder-cover').value = '';
-  document.getElementById('journalFolderFormTitle').textContent = 'Edit Journal Folder';
+  document.getElementById('journalFolderFormTitle').textContent = 'Edit News & Gallery Folder';
+  _journalAdminEditor = 'folder';
+  pushAdminHistory();
+  renderJournalAdminView();
   document.getElementById('journal-folder-title').focus();
 }
 
@@ -3871,9 +4736,15 @@ async function saveJournalFolder() {
   form.set('id', id);
   form.set('title', document.getElementById('journal-folder-title').value.trim());
   form.set('category', document.getElementById('journal-folder-category').value);
-  form.set('organization', document.getElementById('journal-folder-organization').value.trim());
+  form.set('parentFolderId', document.getElementById('journal-folder-parent').value);
   form.set('description', document.getElementById('journal-folder-description').value.trim());
   const cover = document.getElementById('journal-folder-cover').files[0];
+  if (isJournalFolderCoverUploadInProgress) return;
+  isJournalFolderCoverUploadInProgress = true;
+  if (cover) {
+    toast('Uploading content...', 'info', { duration: 0 });
+    showAdminLoading('Uploading content...', 'Uploading the selected folder cover. Duplicate submissions are blocked until this finishes.');
+  }
   if (cover) form.set('cover', cover);
   try {
     const response = await fetch('/api/journal/folders', { method: 'POST', body: form });
@@ -3881,20 +4752,27 @@ async function saveJournalFolder() {
     if (!response.ok) throw new Error(result.error || 'Unable to save journal folder.');
     setPendingSync(true);
     clearJournalFolderForm();
+    _journalAdminEditor = '';
+    replaceAdminHistoryRoute();
     await loadJournalAdmin();
-    toast(id ? 'Journal folder updated in Sanity.' : 'Journal folder saved in Sanity. Publish to make it public.');
+    toast(id ? 'Journal folder updated.' : 'Journal folder saved as a draft. Push & Sync Changes to publish.');
   } catch (error) {
     toast(error.message, 'error');
+  } finally {
+    if (cover) hideAdminLoading();
+    isJournalFolderCoverUploadInProgress = false;
   }
 }
 
 async function deleteJournalFolder(id) {
-  if (!confirm('Delete this journal folder? Folders with entries must be emptied first.')) return;
+  if (!confirm('Delete this journal folder? Move or delete its entries and subfolders first.')) return;
+  const deletedFolder = _journalFolders.find(folder => folder._id === id);
   try {
     const response = await fetch(`/api/journal/folders/${encodeURIComponent(id)}`, { method: 'DELETE' });
     const result = await response.json();
     if (!response.ok) throw new Error(result.error || 'Unable to delete journal folder.');
     setPendingSync(true);
+    if (_selectedJournalFolderId === id) _selectedJournalFolderId = deletedFolder?.parentFolderId || null;
     await loadJournalAdmin();
     toast('Journal folder removal staged in Sanity.');
   } catch (error) {
@@ -3902,31 +4780,44 @@ async function deleteJournalFolder(id) {
   }
 }
 
-function clearJournalEntryForm() {
+function clearJournalEntryForm(destination = 'journal') {
+  const prefix = destination === 'tv' ? 'tv-entry' : 'journal-entry';
   [
-    'journal-entry-id', 'journal-entry-title', 'journal-entry-author', 'journal-entry-excerpt',
-    'journal-entry-body', 'journal-entry-event-date', 'journal-entry-end-date',
-    'journal-entry-location', 'journal-entry-image', 'journal-entry-attachment',
-    'journal-entry-media-url'
-  ].forEach(id => { document.getElementById(id).value = ''; });
-  document.getElementById('journal-entry-folder').value = '';
-  document.getElementById('journal-entry-destination').value = 'journal';
-  document.getElementById('journal-entry-type').value = 'News';
-  document.getElementById('journal-entry-media-type').value = '';
-  if (journalMediaPreviewUrl) URL.revokeObjectURL(journalMediaPreviewUrl);
-  journalMediaPreviewUrl = '';
-  document.getElementById('journal-media-preview').replaceChildren();
-  toggleJournalDestination();
-  document.getElementById('journalEntryFormTitle').textContent = 'Add Journal Entry';
-}
-
-function toggleJournalDestination() {
-  const isTv = document.getElementById('journal-entry-destination').value === 'tv';
-  const folderField = document.getElementById('journal-folder-field');
-  const folderSelect = document.getElementById('journal-entry-folder');
-  folderField.hidden = isTv;
-  folderSelect.required = !isTv;
-  if (isTv) folderSelect.value = '';
+    `${prefix}-id`, `${prefix}-title`, `${prefix}-author`, `${prefix}-excerpt`,
+    `${prefix}-body`, `${prefix}-event-date`, `${prefix}-end-date`,
+    `${prefix}-location`, `${prefix}-image`, `${prefix}-attachment`,
+    `${prefix}-media-url`
+  ].forEach(id => {
+    const input = document.getElementById(id);
+    if (input?.isContentEditable) input.replaceChildren();
+    else if (input) input.value = '';
+  });
+  if (destination !== 'tv') {
+    document.getElementById('journal-entry-folder').value = '';
+    document.getElementById('journal-entry-type').value = 'News';
+    document.getElementById('journal-entry-artist-curator').value = '';
+    document.getElementById('journal-entry-category').value = '';
+  } else {
+    document.getElementById('tv-entry-media-type').value = '';
+    document.getElementById('tv-entry-video-orientation').value = 'auto';
+  }
+  const mediaType = document.getElementById(`${prefix}-media-type`);
+  if (destination !== 'tv' && mediaType) mediaType.value = '';
+  const previewUrl = journalMediaPreviewUrls[destination];
+  if (previewUrl) URL.revokeObjectURL(previewUrl);
+  journalMediaPreviewUrls[destination] = '';
+  document.getElementById(destination === 'tv' ? 'tv-media-preview' : 'journal-media-preview').replaceChildren();
+  if (destination !== 'tv') {
+    document.getElementById('journalEntryEditor').dataset.existingImageUrls = '';
+    document.getElementById('journal-image-ratio').value = 'original';
+    document.getElementById('journal-image-focus-x').value = '50';
+    document.getElementById('journal-image-focus-y').value = '50';
+    releaseJournalImagePreviews();
+    document.getElementById('journal-image-preview-grid').replaceChildren();
+    journalImagePreviewToken++;
+  }
+  document.getElementById(destination === 'tv' ? 'tvEntryFormTitle' : 'journalEntryFormTitle').textContent =
+    destination === 'tv' ? 'Add ARTGALZIM TV Video' : 'Add News & Gallery Entry';
 }
 
 function journalMediaEmbed(mediaUrl, mediaType) {
@@ -3968,27 +4859,405 @@ function journalMediaEmbed(mediaUrl, mediaType) {
   return null;
 }
 
-let journalMediaPreviewUrl = '';
+const journalMediaPreviewUrls = { journal: '', tv: '' };
+let activeJournalRichEditor = null;
+let adminPreviewReturnFocus = null;
+let journalImagePreviewUrls = [];
+let journalImagePreviewToken = 0;
+let adminContentPreviewObjectUrls = [];
 
-function previewJournalMedia() {
-  const preview = document.getElementById('journal-media-preview');
-  if (journalMediaPreviewUrl) URL.revokeObjectURL(journalMediaPreviewUrl);
-  journalMediaPreviewUrl = '';
-  preview.replaceChildren();
+function setActiveJournalRichEditor(editor) {
+  activeJournalRichEditor = editor;
+}
+
+function safeMediaUrl(value) {
+  if (typeof value !== 'string' || !value.trim()) return '';
+  try {
+    const url = new URL(value, location.href);
+    return url.protocol === 'https:' ? url.href : '';
+  } catch {
+    return '';
+  }
+}
+
+function journalRichCommand(command, value = '') {
+  const editor = activeJournalRichEditor;
+  if (!editor || !editor.isConnected) {
+    toast('Click the News & Gallery description or article first, then choose a formatting tool.', 'info');
+    return;
+  }
+  editor.focus();
+  let commandValue = value;
+  if (command === 'createLink') {
+    const href = prompt('Enter a link (https://, http://, or mailto:):');
+    if (!href) return;
+    let parsed;
+    try { parsed = new URL(href); } catch { parsed = null; }
+    if (!parsed || !['https:', 'http:', 'mailto:'].includes(parsed.protocol)) {
+      toast('Use a valid HTTPS, HTTP, or email link.', 'error');
+      return;
+    }
+    commandValue = parsed.href;
+  }
+  if (command === 'hiliteColor') {
+    const selection = window.getSelection();
+    if (!selection?.rangeCount || selection.isCollapsed) {
+      toast('Select some text before highlighting it.', 'info');
+      return;
+    }
+    const range = selection.getRangeAt(0);
+    const highlight = document.createElement('mark');
+    highlight.appendChild(range.extractContents());
+    range.insertNode(highlight);
+    selection.removeAllRanges();
+    const nextRange = document.createRange();
+    nextRange.selectNodeContents(highlight);
+    selection.addRange(nextRange);
+    return;
+  }
+  document.execCommand(command, false, commandValue);
+}
+
+function renderSafeJournalMarkup(value, target) {
+  const parsed = new DOMParser().parseFromString(String(value || ''), 'text/html');
+  const allowed = new Set(['A', 'B', 'BLOCKQUOTE', 'BR', 'EM', 'H2', 'H3', 'H4', 'HR', 'I', 'LI', 'MARK', 'OL', 'P', 'STRONG', 'U', 'UL']);
+  const blocked = new Set(['SCRIPT', 'STYLE', 'IFRAME', 'OBJECT', 'SVG', 'MATH']);
+  const appendSafe = (node, parent) => {
+    if (node.nodeType === Node.TEXT_NODE) {
+      parent.appendChild(document.createTextNode(node.textContent || ''));
+      return;
+    }
+    if (node.nodeType !== Node.ELEMENT_NODE || blocked.has(node.tagName)) return;
+    if (!allowed.has(node.tagName)) {
+      node.childNodes.forEach(child => appendSafe(child, parent));
+      return;
+    }
+    const element = document.createElement(node.tagName.toLowerCase());
+    if (node.tagName === 'A') {
+      let href;
+      try { href = new URL(node.getAttribute('href') || '', location.href); } catch { href = null; }
+      if (href && ['https:', 'http:', 'mailto:'].includes(href.protocol)) {
+        element.href = href.href;
+        element.target = '_blank';
+        element.rel = 'noopener noreferrer';
+      }
+    }
+    node.childNodes.forEach(child => appendSafe(child, element));
+    parent.appendChild(element);
+  };
+  target.replaceChildren();
+  parsed.body.childNodes.forEach(node => appendSafe(node, target));
+}
+
+function journalEditorValue(id) {
+  const editor = document.getElementById(id);
+  return editor?.isContentEditable ? editor.innerHTML : (editor?.value || '');
+}
+
+function setJournalEditorValue(id, value) {
+  const editor = document.getElementById(id);
+  if (!editor) return;
+  if (editor.isContentEditable) renderSafeJournalMarkup(value, editor);
+  else editor.value = value || '';
+}
+
+function journalImageRatioValue() {
+  const [width, height] = (document.getElementById('journal-image-ratio')?.value || 'original').split(':').map(Number);
+  return width && height ? width / height : 0;
+}
+
+async function cropJournalImage(file) {
+  const ratio = journalImageRatioValue();
+  return cropImageToRatio(
+    file,
+    ratio,
+    Number(document.getElementById('journal-image-focus-x')?.value ?? 50) / 100,
+    Number(document.getElementById('journal-image-focus-y')?.value ?? 50) / 100
+  );
+}
+
+async function cropImageToRatio(file, ratio, focusX = 0.5, focusY = 0.5) {
+  if (!ratio) return file;
+  const bitmap = await createImageBitmap(file);
+  let sx = 0, sy = 0, sw = bitmap.width, sh = bitmap.height;
+  focusX = Math.max(0, Math.min(1, focusX));
+  focusY = Math.max(0, Math.min(1, focusY));
+  if (sw / sh > ratio) {
+    sw = sh * ratio;
+    sx = (bitmap.width - sw) * focusX;
+  } else {
+    sh = sw / ratio;
+    sy = (bitmap.height - sh) * focusY;
+  }
+  const scale = Math.min(1, 1600 / sw, 1600 / sh);
+  const canvas = document.createElement('canvas');
+  canvas.width = Math.max(1, Math.round(sw * scale));
+  canvas.height = Math.max(1, Math.round(sh * scale));
+  const context = canvas.getContext('2d');
+  if (!context) {
+    bitmap.close();
+    throw new Error('Image crop preview is unavailable in this browser.');
+  }
+  context.drawImage(bitmap, sx, sy, sw, sh, 0, 0, canvas.width, canvas.height);
+  bitmap.close();
+  const blob = await new Promise((resolve, reject) => {
+    canvas.toBlob(result => result ? resolve(result) : reject(new Error('Could not create the cropped image.')), file.type || 'image/jpeg', 0.92);
+  });
+  return new File([blob], file.name, { type: blob.type || file.type, lastModified: file.lastModified });
+}
+
+function releaseJournalImagePreviews() {
+  journalImagePreviewUrls.forEach(url => URL.revokeObjectURL(url));
+  journalImagePreviewUrls = [];
+}
+
+async function previewJournalImages() {
+  const preview = document.getElementById('journal-image-preview-grid');
+  if (!preview) return;
+  releaseJournalImagePreviews();
+  const token = ++journalImagePreviewToken;
+  const files = Array.from(document.getElementById('journal-entry-image')?.files || []);
+  if (!files.length) {
+    preview.replaceChildren();
+    const existingUrls = (document.getElementById('journalEntryEditor')?.dataset.existingImageUrls || '')
+      .split('\n').map(safeMediaUrl).filter(Boolean);
+    existingUrls.forEach((url, index) => {
+      const image = document.createElement('img');
+      image.src = url;
+      image.alt = `Current story image ${index + 1}`;
+      preview.appendChild(image);
+    });
+    return;
+  }
+  try {
+    const croppedFiles = await Promise.all(files.map(cropJournalImage));
+    if (token !== journalImagePreviewToken) return;
+    preview.replaceChildren();
+    croppedFiles.forEach((file, index) => {
+      const url = URL.createObjectURL(file);
+      journalImagePreviewUrls.push(url);
+      const image = document.createElement('img');
+      image.src = url;
+      image.alt = `Cropped story image preview ${index + 1}`;
+      const ratio = journalImageRatioValue();
+      if (ratio) image.style.aspectRatio = String(ratio);
+      preview.appendChild(image);
+    });
+  } catch (error) {
+    if (token === journalImagePreviewToken) toast(error.message, 'error');
+  }
+}
+
+async function openAdminContentPreview() {
+  const overlay = document.getElementById('adminContentPreview');
+  const body = document.getElementById('adminContentPreviewBody');
+  const editor = document.getElementById('journalEntryEditor');
+  const title = document.getElementById('adminContentPreviewTitle');
+  adminPreviewReturnFocus = document.activeElement;
+  body.replaceChildren();
+  if (editor && !editor.hidden && document.getElementById('panel-journal-media')?.classList.contains('active')) {
+    title.textContent = 'News & Gallery Draft Preview';
+    if (document.getElementById('journal-entry-image').files.length) await previewJournalImages();
+    renderJournalDraftPreview(body);
+  } else if (document.getElementById('panel-artgalzim-tv')?.classList.contains('active')) {
+    title.textContent = 'Preview';
+    body.textContent = 'The ARTGALZIM TV workspace is unchanged. Open a News & Gallery entry to use this draft preview.';
+  } else {
+    title.textContent = 'Workspace Preview';
+    renderActiveWorkspacePreview(body);
+  }
+  overlay.hidden = false;
+  overlay.querySelector('button')?.focus();
+}
+
+function appendPreviewMediaLink(parent, label, url) {
+  const safeUrl = safeMediaUrl(url);
+  if (!safeUrl) return;
+  const link = document.createElement('a');
+  link.href = safeUrl;
+  link.target = '_blank';
+  link.rel = 'noopener noreferrer';
+  link.textContent = label;
+  parent.appendChild(link);
+}
+
+function renderJournalDraftPreview(parent) {
+  const titleText = document.getElementById('journal-entry-title').value.trim() || 'Untitled story';
+  const layout = document.createElement('div');
+  layout.className = 'admin-content-preview-layout';
+  const media = document.createElement('div');
+  media.className = 'admin-content-preview-media';
+  const files = Array.from(document.getElementById('journal-entry-image').files || []);
+  const existingUrls = (document.getElementById('journalEntryEditor')?.dataset.existingImageUrls || '')
+    .split('\n').map(safeMediaUrl).filter(Boolean);
+  const images = files.length ? journalImagePreviewUrls : existingUrls;
+  images.forEach((url, index) => {
+    const image = document.createElement('img');
+    image.src = url;
+    image.alt = `${titleText} — image ${index + 1}`;
+    media.appendChild(image);
+  });
+  const mediaUrl = document.getElementById('journal-entry-media-url').value.trim();
   const attachment = document.getElementById('journal-entry-attachment').files[0];
+  const actions = document.createElement('div');
+  actions.className = 'admin-content-preview-actions';
+  appendPreviewMediaLink(actions, 'Open external media', mediaUrl);
+  let attachmentUrl = '';
+  if (attachment) {
+    attachmentUrl = URL.createObjectURL(attachment);
+    adminContentPreviewObjectUrls.push(attachmentUrl);
+  }
+  const mediaType = document.getElementById('journal-entry-media-type').value;
+  const embed = journalMediaEmbed(mediaUrl, mediaType);
+  if (embed?.kind === 'video') {
+    const video = document.createElement('video');
+    video.src = embed.src;
+    video.controls = true;
+    video.playsInline = true;
+    video.preload = 'metadata';
+    video.className = 'journal-admin-preview';
+    media.appendChild(video);
+  } else if (embed?.kind === 'frame') {
+    const frame = document.createElement('iframe');
+    frame.src = embed.src;
+    frame.title = 'Embedded media draft preview';
+    frame.loading = 'lazy';
+    frame.referrerPolicy = 'strict-origin-when-cross-origin';
+    frame.allowFullscreen = true;
+    frame.className = 'journal-admin-preview';
+    media.appendChild(frame);
+  }
   if (attachment && /\.(mp4|webm|ogv)$/i.test(attachment.name)) {
-    journalMediaPreviewUrl = URL.createObjectURL(attachment);
+    const video = document.createElement('video');
+    video.src = attachmentUrl;
+    video.controls = true;
+    video.playsInline = true;
+    video.preload = 'metadata';
+    video.className = 'journal-admin-preview';
+    media.appendChild(video);
+  } else if (attachment && /\.pdf$/i.test(attachment.name)) {
+    const frame = document.createElement('iframe');
+    frame.src = attachmentUrl;
+    frame.title = `${attachment.name} document preview`;
+    frame.className = 'journal-admin-preview';
+    frame.style.aspectRatio = '8.5 / 11';
+    media.appendChild(frame);
+  } else if (attachment && /\.(mp3|m4a|wav|ogg)$/i.test(attachment.name)) {
+    const audio = document.createElement('audio');
+    audio.src = attachmentUrl;
+    audio.controls = true;
+    media.appendChild(audio);
+  } else if (attachment) {
+    const link = document.createElement('a');
+    link.href = attachmentUrl;
+    link.target = '_blank';
+    link.rel = 'noopener noreferrer';
+    link.textContent = `Open ${attachment.name}`;
+    actions.appendChild(link);
+  }
+  if (actions.childElementCount) media.appendChild(actions);
+  const copy = document.createElement('div');
+  copy.className = 'admin-content-preview-copy';
+  const heading = document.createElement('h3');
+  heading.textContent = titleText;
+  copy.appendChild(heading);
+  const category = document.createElement('p');
+  category.className = 'journal-meta';
+  category.textContent = [
+    document.getElementById('journal-entry-type').value,
+    document.getElementById('journal-entry-category').value.trim(),
+    document.getElementById('journal-entry-location').value.trim(),
+    document.getElementById('journal-entry-event-date').value
+  ].filter(Boolean).join(' · ');
+  if (category.textContent) copy.appendChild(category);
+  const description = document.createElement('div');
+  description.className = 'journal-detail-excerpt';
+  renderSafeJournalMarkup(journalEditorValue('journal-entry-excerpt'), description);
+  copy.appendChild(description);
+  const story = document.createElement('div');
+  story.className = 'journal-detail-body';
+  renderSafeJournalMarkup(journalEditorValue('journal-entry-body'), story);
+  copy.appendChild(story);
+  layout.append(media, copy);
+  parent.appendChild(layout);
+}
+
+function renderActiveWorkspacePreview(parent) {
+  const panel = document.querySelector('.panel.active');
+  if (!panel) {
+    parent.textContent = 'Open an editable content workspace to preview its current values.';
+    return;
+  }
+  const fields = Array.from(panel.querySelectorAll('input:not([type="hidden"]):not([type="password"]), textarea, select, [contenteditable="true"]'))
+    .filter(field => !field.disabled && field.getClientRects().length);
+  const list = document.createElement('dl');
+  list.className = 'journal-entry-metadata';
+  fields.forEach(field => {
+    const value = field.isContentEditable ? field.innerText.trim() : (field.value || '').trim();
+    if (!value || field.type === 'file') return;
+    const label = panel.querySelector(`label[for="${CSS.escape(field.id)}"]`)?.textContent.trim()
+      || field.getAttribute('aria-label') || field.name || field.id || 'Content';
+    const term = document.createElement('dt');
+    term.textContent = label;
+    const detail = document.createElement('dd');
+    detail.textContent = value;
+    list.append(term, detail);
+  });
+  if (list.childElementCount) parent.appendChild(list);
+  else parent.textContent = 'There are no current values to preview in this workspace.';
+}
+
+function closeAdminContentPreview() {
+  const overlay = document.getElementById('adminContentPreview');
+  if (!overlay) return;
+  overlay.hidden = true;
+  adminContentPreviewObjectUrls.forEach(url => URL.revokeObjectURL(url));
+  adminContentPreviewObjectUrls = [];
+  if (adminPreviewReturnFocus?.isConnected) adminPreviewReturnFocus.focus();
+}
+
+document.addEventListener('keydown', event => {
+  if (event.key === 'Escape' && !document.getElementById('adminContentPreview')?.hidden) closeAdminContentPreview();
+});
+
+function journalPreviewOrientation(orientation, mediaUrl) {
+  if (orientation === 'portrait' || orientation === 'landscape') return orientation;
+  const safeUrl = safeMediaUrl(mediaUrl);
+  if (!safeUrl) return 'landscape';
+  const url = new URL(safeUrl);
+  const host = url.hostname.toLowerCase().replace(/^www\./, '');
+  if (['youtube.com', 'm.youtube.com'].includes(host) && /^\/shorts\//.test(url.pathname)) return 'portrait';
+  return 'landscape';
+}
+
+function previewJournalMedia(destination = 'journal') {
+  const prefix = destination === 'tv' ? 'tv-entry' : 'journal-entry';
+  const preview = document.getElementById(destination === 'tv' ? 'tv-media-preview' : 'journal-media-preview');
+  if (journalMediaPreviewUrls[destination]) URL.revokeObjectURL(journalMediaPreviewUrls[destination]);
+  journalMediaPreviewUrls[destination] = '';
+  preview.replaceChildren();
+  const attachment = document.getElementById(`${prefix}-attachment`).files[0];
+  const orientationControl = destination === 'tv' ? document.getElementById('tv-entry-video-orientation') : null;
+  const orientation = orientationControl?.value || 'landscape';
+  if (attachment && /\.(mp4|webm|ogv)$/i.test(attachment.name)) {
+    journalMediaPreviewUrls[destination] = URL.createObjectURL(attachment);
     const player = document.createElement('video');
-    player.src = journalMediaPreviewUrl;
+    player.src = journalMediaPreviewUrls[destination];
     player.controls = true;
     player.playsInline = true;
     player.preload = 'metadata';
-    player.className = 'journal-admin-preview';
+    player.className = `journal-admin-preview${orientation === 'portrait' ? ' is-short' : ''}`;
+    player.addEventListener('loadedmetadata', () => {
+      if (!orientationControl || orientationControl.value !== 'auto' || !player.videoWidth || !player.videoHeight) return;
+      orientationControl.value = player.videoHeight > player.videoWidth ? 'portrait' : 'landscape';
+      player.classList.toggle('is-short', orientationControl.value === 'portrait');
+    }, { once: true });
     preview.appendChild(player);
     return;
   }
-  const mediaType = document.getElementById('journal-entry-media-type').value;
-  const mediaUrl = document.getElementById('journal-entry-media-url').value.trim();
+  const mediaType = document.getElementById(`${prefix}-media-type`).value;
+  const mediaUrl = document.getElementById(`${prefix}-media-url`).value.trim();
+  const previewOrientation = journalPreviewOrientation(orientation, mediaUrl);
   if (!mediaType && !mediaUrl) return;
   const embed = journalMediaEmbed(mediaUrl, mediaType);
   if (!embed) {
@@ -4002,7 +5271,7 @@ function previewJournalMedia() {
     player.controls = true;
     player.playsInline = true;
     player.preload = 'metadata';
-    player.className = 'journal-admin-preview';
+    player.className = `journal-admin-preview${previewOrientation === 'portrait' ? ' is-short' : ''}`;
     preview.appendChild(player);
     return;
   }
@@ -4012,64 +5281,149 @@ function previewJournalMedia() {
   frame.loading = 'lazy';
   frame.referrerPolicy = 'strict-origin-when-cross-origin';
   frame.allowFullscreen = true;
-  frame.className = 'journal-admin-preview';
+  frame.className = `journal-admin-preview${previewOrientation === 'portrait' ? ' is-short' : ''}`;
   preview.appendChild(frame);
 }
 
 function editJournalEntry(id) {
   const entry = _journalEntries.find(item => item._id === id);
   if (!entry) return;
-  document.getElementById('journal-entry-id').value = id;
-  refreshJournalFolderOptions(entry.folderId);
-  document.getElementById('journal-entry-destination').value = entry.destination || (entry.entryType === 'ARTGALZIM TV' ? 'tv' : 'journal');
-  toggleJournalDestination();
-  document.getElementById('journal-entry-type').value = entry.entryType === 'ARTGALZIM TV' ? 'Story' : entry.entryType || 'Story';
-  document.getElementById('journal-entry-title').value = entry.title || '';
-  document.getElementById('journal-entry-author').value = entry.author || '';
-  document.getElementById('journal-entry-excerpt').value = entry.excerpt || '';
-  document.getElementById('journal-entry-body').value = entry.body || '';
-  document.getElementById('journal-entry-event-date').value = entry.eventDate || '';
-  document.getElementById('journal-entry-end-date').value = entry.endDate || '';
-  document.getElementById('journal-entry-location').value = entry.location || '';
-  document.getElementById('journal-entry-image').value = '';
-  document.getElementById('journal-entry-attachment').value = '';
-  document.getElementById('journal-entry-media-type').value = entry.mediaType || '';
-  document.getElementById('journal-entry-media-url').value = entry.mediaUrl || '';
-  previewJournalMedia();
-  document.getElementById('journalEntryFormTitle').textContent = 'Edit Journal Entry';
-  document.getElementById('journal-entry-title').focus();
+  const destination = entry.destination === 'tv' || entry.entryType === 'ARTGALZIM TV' ? 'tv' : 'journal';
+  const prefix = destination === 'tv' ? 'tv-entry' : 'journal-entry';
+  showPanel(destination === 'tv' ? 'artgalzim-tv' : 'journal-media');
+  document.getElementById(`${prefix}-id`).value = id;
+  if (destination === 'journal') {
+    _selectedJournalFolderId = entry.folderId || JOURNAL_UNFILED_ID;
+    refreshJournalFolderOptions(entry.folderId);
+    document.getElementById('journal-entry-type').value = entry.entryType || 'Story';
+    document.getElementById('journal-entry-artist-curator').value = entry.artistCurator || '';
+    document.getElementById('journal-entry-category').value = entry.category || '';
+  }
+  document.getElementById(`${prefix}-title`).value = entry.title || '';
+  document.getElementById(`${prefix}-author`).value = entry.author || '';
+  setJournalEditorValue(`${prefix}-excerpt`, entry.excerpt || '');
+  setJournalEditorValue(`${prefix}-body`, entry.body || '');
+  document.getElementById(`${prefix}-event-date`).value = entry.eventDate || '';
+  document.getElementById(`${prefix}-end-date`).value = entry.endDate || '';
+  document.getElementById(`${prefix}-location`).value = entry.location || '';
+  document.getElementById(`${prefix}-image`).value = '';
+  document.getElementById(`${prefix}-attachment`).value = '';
+  document.getElementById(`${prefix}-media-type`).value = entry.mediaType || '';
+  document.getElementById(`${prefix}-media-url`).value = entry.mediaUrl || '';
+  if (destination === 'tv') {
+    document.getElementById('tv-entry-video-orientation').value = entry.videoOrientation || 'auto';
+  }
+  previewJournalMedia(destination);
+  if (destination === 'journal') {
+    const existingImageUrls = Array.isArray(entry.imageUrls)
+      ? entry.imageUrls
+      : [entry.imageUrl].filter(Boolean);
+    document.getElementById('journalEntryEditor').dataset.existingImageUrls = existingImageUrls.join('\n');
+    previewJournalImages();
+  }
+  document.getElementById(destination === 'tv' ? 'tvEntryFormTitle' : 'journalEntryFormTitle').textContent =
+    destination === 'tv' ? 'Edit ARTGALZIM TV Video' : 'Edit News & Gallery Entry';
+  if (destination === 'journal') {
+    _journalAdminEditor = 'entry';
+    pushAdminHistory();
+    renderJournalAdminView();
+  }
+  document.getElementById(`${prefix}-title`).focus();
 }
 
-async function saveJournalEntry() {
+async function saveJournalEntry(destination = 'journal') {
+  if (isJournalEntrySaveInProgress) return;
+  const prefix = destination === 'tv' ? 'tv-entry' : 'journal-entry';
   const form = new FormData();
-  const id = document.getElementById('journal-entry-id').value;
+  const id = document.getElementById(`${prefix}-id`).value;
   form.set('id', id);
-  form.set('folderId', document.getElementById('journal-entry-folder').value);
-  form.set('destination', document.getElementById('journal-entry-destination').value);
-  form.set('entryType', document.getElementById('journal-entry-type').value);
-  form.set('mediaType', document.getElementById('journal-entry-media-type').value);
-  form.set('mediaUrl', document.getElementById('journal-entry-media-url').value.trim());
-  form.set('title', document.getElementById('journal-entry-title').value.trim());
-  form.set('author', document.getElementById('journal-entry-author').value.trim());
-  form.set('excerpt', document.getElementById('journal-entry-excerpt').value.trim());
-  form.set('body', document.getElementById('journal-entry-body').value.trim());
-  form.set('eventDate', document.getElementById('journal-entry-event-date').value);
-  form.set('endDate', document.getElementById('journal-entry-end-date').value);
-  form.set('location', document.getElementById('journal-entry-location').value.trim());
-  const image = document.getElementById('journal-entry-image').files[0];
-  const attachment = document.getElementById('journal-entry-attachment').files[0];
-  if (image) form.set('image', image);
+  form.set('folderId', destination === 'tv' ? '' : document.getElementById('journal-entry-folder').value);
+  form.set('destination', destination);
+  form.set('entryType', destination === 'tv' ? 'ARTGALZIM TV' : document.getElementById('journal-entry-type').value);
+  form.set('mediaType', document.getElementById(`${prefix}-media-type`).value);
+  form.set('mediaUrl', document.getElementById(`${prefix}-media-url`).value.trim());
+  const orientationControl = destination === 'tv' ? document.getElementById('tv-entry-video-orientation') : null;
+  let videoOrientation = orientationControl?.value || '';
+  form.set('title', document.getElementById(`${prefix}-title`).value.trim());
+  form.set('author', document.getElementById(`${prefix}-author`).value.trim());
+  if (destination !== 'tv') {
+    form.set('artistCurator', document.getElementById('journal-entry-artist-curator').value.trim());
+    form.set('category', document.getElementById('journal-entry-category').value.trim());
+  }
+  form.set('excerpt', journalEditorValue(`${prefix}-excerpt`).trim());
+  form.set('body', journalEditorValue(`${prefix}-body`).trim());
+  form.set('eventDate', document.getElementById(`${prefix}-event-date`).value);
+  form.set('endDate', document.getElementById(`${prefix}-end-date`).value);
+  form.set('location', document.getElementById(`${prefix}-location`).value.trim());
+  const image = document.getElementById(`${prefix}-image`).files[0];
+  const images = destination === 'tv' ? [] : Array.from(document.getElementById(`${prefix}-image`).files);
+  const attachment = document.getElementById(`${prefix}-attachment`).files[0];
+  if (destination === 'tv' && videoOrientation === 'auto'
+    && attachment && /\.(mp4|webm|ogv)$/i.test(attachment.name)) {
+    try {
+      videoOrientation = await detectJournalVideoOrientation(attachment);
+      orientationControl.value = videoOrientation;
+    } catch (error) {
+      toast(error.message, 'error');
+      return;
+    }
+  }
+  if (destination === 'tv') form.set('videoOrientation', videoOrientation);
+  if (destination === 'tv' && image) form.set('image', image);
   if (attachment) form.set('attachment', attachment);
+  isJournalEntrySaveInProgress = true;
+  const hasLocalFiles = images.length > 0 || Boolean(attachment) || (destination === 'tv' && Boolean(image));
+  if (hasLocalFiles) {
+    toast('Uploading content...', 'info', { duration: 0 });
+    showAdminLoading('Uploading content...', 'Uploading the selected content. Duplicate submissions are blocked until this finishes.');
+  }
   try {
+    for (const file of images) form.append('images', await cropJournalImage(file), file.name);
     const response = await fetch('/api/journal/entries', { method: 'POST', body: form });
     const result = await response.json();
-    if (!response.ok) throw new Error(result.error || 'Unable to save journal entry.');
+    if (!response.ok) throw new Error(result.error || `Unable to save ${destination === 'tv' ? 'ARTGALZIM TV video' : 'News & Gallery entry'}.`);
     setPendingSync(true);
-    clearJournalEntryForm();
+    clearJournalEntryForm(destination);
+    if (destination === 'journal') {
+      _journalAdminEditor = '';
+      replaceAdminHistoryRoute();
+    }
     await loadJournalAdmin();
-    toast(id ? 'Journal entry updated in Sanity.' : 'Journal entry saved in Sanity. Publish to make it public.');
+    toast(id
+      ? `${destination === 'tv' ? 'ARTGALZIM TV video' : 'News & Gallery entry'} updated.`
+      : `${destination === 'tv' ? 'ARTGALZIM TV video' : 'News & Gallery entry'} saved as a draft. Push & Sync Changes to publish.`);
   } catch (error) {
     toast(error.message, 'error');
+  } finally {
+    if (hasLocalFiles) hideAdminLoading();
+    isJournalEntrySaveInProgress = false;
+  }
+
+  function detectJournalVideoOrientation(file) {
+    return new Promise((resolve, reject) => {
+      const objectUrl = URL.createObjectURL(file);
+      const video = document.createElement('video');
+      const cleanup = () => {
+        URL.revokeObjectURL(objectUrl);
+        video.removeAttribute('src');
+        video.load();
+      };
+      video.preload = 'metadata';
+      video.onloadedmetadata = () => {
+        const { videoWidth, videoHeight } = video;
+        cleanup();
+        if (!videoWidth || !videoHeight) {
+          reject(new Error('Could not read the video dimensions. Choose Landscape video or Short (portrait) manually.'));
+          return;
+        }
+        resolve(videoHeight > videoWidth ? 'portrait' : 'landscape');
+      };
+      video.onerror = () => {
+        cleanup();
+        reject(new Error('Could not inspect this video. Choose Landscape video or Short (portrait) manually.'));
+      };
+      video.src = objectUrl;
+    });
   }
 }
 
@@ -4125,5 +5479,14 @@ function closeMobileSidebar() {
 }
 
 </script>
+<div id="adminContentPreview" class="admin-content-preview" hidden role="dialog" aria-modal="true" aria-labelledby="adminContentPreviewTitle" onclick="if(event.target === this) closeAdminContentPreview()">
+  <section class="admin-content-preview-card">
+    <div class="admin-content-preview-header">
+      <h2 id="adminContentPreviewTitle">Content Preview</h2>
+      <button type="button" class="btn-action-outline" onclick="closeAdminContentPreview()">Back to editor</button>
+    </div>
+    <div id="adminContentPreviewBody"></div>
+  </section>
+</div>
 </body>
 </html>

@@ -110,9 +110,11 @@
     }
   };
 
-  // Disable scrolling while preloader is active to prevent background scrolling/glitching
-  document.documentElement.style.overflow = "hidden";
-  document.body.style.overflow = "hidden";
+  // Only lock scrolling on pages that actually show a preloader.
+  if (document.getElementById("preloader")) {
+    document.documentElement.style.overflow = "hidden";
+    document.body.style.overflow = "hidden";
+  }
 
   window.addEventListener("load", () => {
     // We allow a slightly shorter but still premium delay to improve perceived speed on slower networks
@@ -170,11 +172,10 @@
     { href: "about.html", text: "About Us" },
     { href: "services.html", text: "Services" },
     { href: "https://www.ctep.artgalzim.com", text: "CTEP", external: true },
-    { href: "journal.html", text: "Journal & Media" },
+    { href: "journal.html", text: "Gallery & Media" },
     { href: "owa-technologies.html", text: "OWA TECHNOLOGIES" },
     { href: "privacy-policy.html", text: "Privacy Policy" },
     { href: "scholarships.html", text: "Scholarships" },
-    { href: "testimonials.html", text: "Testimonials & Reviews" },
     { href: "visit.html", text: "Plan Your Visit" },
     { href: "contact.html", text: "Contact" },
     { href: "donate.html", text: "Donate & Support" },
@@ -855,17 +856,22 @@
         return;
       }
 
-      const section = collection.tier === 'Student Artists'
-        ? document.querySelectorAll('.ap-artist-section')[2]
+      const studentRow = document.getElementById('studentArtistsRow');
+      const studentCard = [...(studentRow?.querySelectorAll('.ap-artist-card') || [])]
+        .find(item => normalize(item.querySelector('h3')?.textContent || '') === normalize(artist));
+      const isStudentArtist = collection.tier === 'Student Artists' || Boolean(studentCard);
+      const section = isStudentArtist
+        ? studentRow?.closest('.ap-artist-section') || document.querySelectorAll('.ap-artist-section')[2]
         : document.querySelectorAll('.ap-artist-section')[1];
       const row = section?.querySelector('.ap-artist-row');
       if (!row) return;
-      let card = [...row.querySelectorAll('.ap-artist-card')].find(item => normalize(item.querySelector('h3')?.textContent || '') === normalize(artist));
+      let card = studentCard || [...row.querySelectorAll('.ap-artist-card')].find(item => normalize(item.querySelector('h3')?.textContent || '') === normalize(artist));
       if (!card) {
         card = document.createElement('div');
         card.className = 'ap-artist-card';
-        const cover = document.createElement('div');
+        const cover = document.createElement(collection.tier === 'Student Artists' ? 'button' : 'div');
         cover.className = 'ap-artist-cover';
+        if (cover.tagName === 'BUTTON') cover.type = 'button';
         const image = document.createElement('img');
         image.alt = artist;
         image.loading = 'lazy';
@@ -875,12 +881,21 @@
         const title = document.createElement('h3');
         title.textContent = artist;
         const label = document.createElement('p');
-        label.textContent = 'View Collections';
+        label.textContent = isStudentArtist ? 'View Artworks →' : 'View Collections ↓';
         overlay.append(title, label);
         cover.append(image, overlay);
         card.appendChild(cover);
         row.appendChild(card);
       }
+
+      if (isStudentArtist) {
+        const cover = card.querySelector('.ap-artist-cover');
+        if (cover) {
+          cover.onclick = () => window.openAlbumViewer(artist);
+        }
+        return;
+      }
+
       let submenu = card.querySelector('.ap-artist-submenu');
       if (!submenu) {
         submenu = document.createElement('div');
@@ -973,10 +988,9 @@
     document.querySelectorAll('.nav-links, .sidebar-nav-links').forEach(nav => {
       const isSidebar = nav.classList.contains('sidebar-nav-links');
       const items = [
-        { href: 'journal.html', text: 'Journal & Media' },
+        { href: 'journal.html', text: 'Gallery & Media' },
         ...(isSidebar ? [
-          { href: 'scholarships.html', text: 'Scholarships' },
-          { href: 'testimonials.html', text: 'Testimonials & Reviews' }
+          { href: 'scholarships.html', text: 'Scholarships' }
         ] : [])
       ];
       items.forEach(item => {
@@ -985,7 +999,8 @@
         link.href = item.href;
         link.className = isSidebar ? 'sidebar-nav-link' : 'nav-link';
         link.textContent = item.text;
-        nav.appendChild(link);
+        const contactLink = !isSidebar && nav.querySelector('a[href="contact.html"]');
+        nav.insertBefore(link, contactLink || null);
       });
     });
     ensureArtworksMetadata();
@@ -1014,59 +1029,38 @@
       // Create a search-friendly version of the requested title
       const searchTitle = albumTitle.toLowerCase().replace(/[^a-z0-9]/g, '');
       
-      // Look for a key that matches (e.g. "LYKART", "LYKART/Artworks", "FLORAH MAPHOSA/Abstract")
-      matchedKey = Object.keys(window.PageGalleries.artistsCollections).find(key => {
-        const normalizedKey = key.toLowerCase().replace(/[^a-z0-9]/g, '');
-        return normalizedKey === searchTitle || searchTitle.includes(normalizedKey) || normalizedKey.includes(searchTitle);
-      });
+      const collectionKeys = Object.keys(window.PageGalleries.artistsCollections);
+      const normalize = value => value.toLowerCase().replace(/[^a-z0-9]/g, '');
+      const artistKeys = collectionKeys.filter(key => normalize(key.split('/')[0]) === searchTitle);
 
-      if (matchedKey) {
-        albumData = window.PageGalleries.artistsCollections[matchedKey];
-        const [artistPart, ...categoryParts] = matchedKey.split('/');
-        resolvedArtist = artistPart || '';
-        resolvedCategory = categoryParts.join('/') || '';
-      } else {
-        // Find any collections belonging to this artist
-        const artistKeys = Object.keys(window.PageGalleries.artistsCollections).filter(key => {
-          const artName = key.split('/')[0].toLowerCase().replace(/[^a-z0-9]/g, '');
-          return artName === searchTitle || searchTitle.includes(artName);
+      if (artistKeys.length > 0) {
+        const allImages = [];
+        artistKeys.forEach(key => {
+          if (window.PageGalleries.artistsCollections[key].images) {
+            allImages.push(...window.PageGalleries.artistsCollections[key].images);
+          }
         });
-        if (artistKeys.length > 0) {
-          const allImages = [];
-          artistKeys.forEach(k => {
-            if (window.PageGalleries.artistsCollections[k].images) {
-              allImages.push(...window.PageGalleries.artistsCollections[k].images);
-            }
-          });
-          albumData = {
-            images: [...new Set(allImages)],
-            cover: window.PageGalleries.artistsCollections[artistKeys[0]].cover
-          };
-          const [artistPart, ...categoryParts] = artistKeys[0].split('/');
+        albumData = {
+          images: [...new Set(allImages)],
+          cover: window.PageGalleries.artistsCollections[artistKeys[0]].cover
+        };
+        resolvedArtist = artistKeys[0].split('/')[0] || '';
+      } else {
+        matchedKey = collectionKeys.find(key => normalize(key) === searchTitle)
+          || collectionKeys.find(key => normalize(key.split('/').slice(1).join('/')) === searchTitle)
+          || collectionKeys.find(key => normalize(key).includes(searchTitle) || searchTitle.includes(normalize(key)));
+
+        if (matchedKey) {
+          albumData = window.PageGalleries.artistsCollections[matchedKey];
+          const [artistPart, ...categoryParts] = matchedKey.split('/');
           resolvedArtist = artistPart || '';
           resolvedCategory = categoryParts.join('/') || '';
         }
       }
+
     }
 
     let images = albumData ? albumData.images : [];
-    const routeTarget = (() => {
-      const candidate = Array.isArray(images) ? images.find(item => typeof item === 'string' ? item : item?.src) : null;
-      if (!candidate) return null;
-      const src = typeof candidate === 'string' ? candidate : candidate.src;
-      const params = new URLSearchParams();
-      if (resolvedArtist) params.set('artist', resolvedArtist);
-      if (resolvedCategory) params.set('category', resolvedCategory);
-      params.set('img', src);
-      params.set('album', albumTitle);
-      return `artworks.html?${params.toString()}`;
-    })();
-
-    if (routeTarget) {
-      window.location.href = routeTarget;
-      return;
-    }
-    
     // Clear old contents
     grid.innerHTML = '';
     

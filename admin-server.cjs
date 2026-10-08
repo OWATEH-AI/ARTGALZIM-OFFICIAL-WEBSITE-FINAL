@@ -239,13 +239,17 @@ app.get('/api/artists', (req, res) => {
         };
       });
 
-      // Find cover image (custom chosen cover first)
+      // Find cover image (custom chosen cover first, even if it lives outside this folder)
       const folderKey = `${artist}/${cat}`;
       const imagePaths = files.map(f => `/ARTISTS/${artist}/${cat}/${f}`);
+      const customCover = customCovers[folderKey];
+      const customCoverExists = !!customCover && (
+        imagePaths.includes(customCover) || fs.existsSync(path.join(ROOT, customCover.replace(/^\//, '')))
+      );
       let coverPath = null;
 
-      if (customCovers[folderKey] && imagePaths.includes(customCovers[folderKey])) {
-        coverPath = customCovers[folderKey];
+      if (customCoverExists) {
+        coverPath = customCover;
       } else {
         const coverFile = files.find(f => f.toLowerCase().startsWith('cover'));
         coverPath = coverFile ? `/ARTISTS/${artist}/${cat}/${coverFile}` : (files.length > 0 ? `/ARTISTS/${artist}/${cat}/${files[0]}` : null);
@@ -285,7 +289,11 @@ app.get('/api/artists', (req, res) => {
       const folderKey = `${artist}/Artworks`;
       const altKey = artist;
       const imagePaths = directFiles.map(f => `/ARTISTS/${artist}/${f}`);
-      let coverPath = customCovers[folderKey] || customCovers[altKey] || (directFiles.length > 0 ? `/ARTISTS/${artist}/${directFiles[0]}` : null);
+      const customFolderCover = customCovers[folderKey] || customCovers[altKey];
+      const customCoverExists = !!customFolderCover && (
+        imagePaths.includes(customFolderCover) || fs.existsSync(path.join(ROOT, customFolderCover.replace(/^\//, '')))
+      );
+      let coverPath = customCoverExists ? customFolderCover : (directFiles.length > 0 ? `/ARTISTS/${artist}/${directFiles[0]}` : null);
 
       categories.unshift({
         name: 'Artworks',
@@ -331,6 +339,44 @@ app.post('/api/set-album-cover', (req, res) => {
 
   runSync(() => {
     res.json({ ok: true, message: `Cover updated for ${artist}/${category}`, cover: cleanSrc });
+  });
+});
+
+/* ── POST /api/set-folder-cover ─── assign a dedicated cover to an empty / custom album folder ── */
+const folderCoverUpload = multer({
+  storage: multer.diskStorage({
+    destination(req, file, cb) {
+      const artist = (req.body.artist || 'Unknown Artist').trim();
+      const category = (req.body.category || 'Artworks').trim();
+      const dest = path.join(ARTISTS_DIR, artist, category);
+      ensureDir(dest);
+      cb(null, dest);
+    },
+    filename(req, file, cb) {
+      const stamp = Date.now();
+      const ext = path.extname(file.originalname) || '.jpg';
+      const base = (req.body.artist || 'album-cover').trim().replace(/[^a-zA-Z0-9._ -]/g, '_');
+      cb(null, `${base}-folder-cover-${stamp}${ext}`);
+    }
+  })
+});
+
+app.post('/api/set-folder-cover', folderCoverUpload.single('cover'), (req, res) => {
+  const { artist, category } = req.body;
+  if (!artist || !category) return res.status(400).json({ error: 'Missing artist or category' });
+
+  const finalSrc = req.file
+    ? `/ARTISTS/${artist.trim()}/${category.trim()}/${req.file.filename}`
+    : (req.body.src || '').trim();
+
+  if (!finalSrc) return res.status(400).json({ error: 'No cover image provided' });
+
+  const covers = readJSON(ALBUM_COVERS_F, {});
+  covers[`${artist.trim()}/${category.trim()}`] = finalSrc.startsWith('/') ? finalSrc : `/${finalSrc}`;
+  writeJSON(ALBUM_COVERS_F, covers);
+
+  runSync(() => {
+    res.json({ ok: true, cover: covers[`${artist.trim()}/${category.trim()}`], message: 'Folder cover updated.' });
   });
 });
 

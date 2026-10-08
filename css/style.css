@@ -2342,6 +2342,44 @@ h3 {
   resize: vertical;
   min-height: 120px;
 }
+input[type="file"] {
+  display: block;
+  width: 100%;
+  min-width: 0;
+  padding: 0.55rem 0.65rem;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  color: var(--text-muted);
+  font: inherit;
+  font-size: 0.85rem;
+}
+input[type="file"]::file-selector-button {
+  margin-inline-end: 0.85rem;
+  padding: 0.45rem 0.75rem;
+  background: var(--gold);
+  border: 0;
+  border-radius: 3px;
+  color: #0a0a0a;
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s, color 0.2s;
+}
+input[type="file"]:hover::file-selector-button {
+  background: var(--gold-light);
+}
+input[type="file"]:focus-visible {
+  border-color: var(--gold);
+  box-shadow: 0 0 0 2px var(--gold-dim);
+}
+input[type="file"]:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+input[type="file"]:disabled::file-selector-button {
+  cursor: not-allowed;
+}
 .contact-info h3 {
   font-family: "Cormorant Garamond", serif;
   font-size: 1.6rem;
@@ -4510,9 +4548,16 @@ h3 {
 
 .ap-artist-cover {
   position: relative;
+  display: block;
   width: 100%;
   aspect-ratio: 4 / 5; /* Matches Willard and Florah's vertical frame style */
   overflow: hidden;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: inherit;
+  font: inherit;
+  text-align: left;
   cursor: pointer;
 }
 

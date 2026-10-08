@@ -6,6 +6,8 @@
     <title>Exhibitions - ARTGALZIM CENTER | Art Exhibitions in Zimbabwe</title>
     <meta name="description" content="View past, present, and upcoming contemporary African art exhibitions at ARTGALZIM CENTER in Domboshava, Zimbabwe. Experience world-class visual arts."/>
     <meta name="keywords" content="art exhibitions Zimbabwe, African art exhibitions, contemporary art shows, Domboshava exhibitions, ARTGALZIM exhibitions, visual arts events Zimbabwe, gallery exhibitions"/>
+    <meta name="author" content="SAMUEL T SAMOYO (LYKART06)" />
+    <meta name="copyright" content="SAMUEL T SAMOYO (LYKART06)" />
     <meta name="robots" content="index, follow"/>
     <meta property="og:title" content="Exhibitions - ARTGALZIM CENTER | Art Exhibitions in Zimbabwe"/>
     <meta property="og:description" content="View past, present, and upcoming contemporary African art exhibitions at ARTGALZIM CENTER."/>
@@ -49,6 +51,7 @@
       rel="stylesheet"
     />
     <link rel="stylesheet" href="css/style.css" />
+    <link rel="stylesheet" href="css/exhibition-cards.css" />
   </head>
   <body class="page-exhibitions">
     <!-- ===== PRELOADER ===== -->
@@ -465,7 +468,7 @@
                 border-bottom: 2px solid var(--gold);
               "
               >OWA TECHNOLOGIES</a
-            >
+            > - <span style="color: var(--text); font-weight: 700;">[SAMUEL T SAMOYO-(LYKART06)]</span>
           </div>
         </div>
       </div>
@@ -624,7 +627,8 @@
 
     <script type="module" src="/js/page-galleries.js"></script>
     <script type="module" src="/js/main.js"></script>
-    <script>
+    <script type="module">
+      import '/js/exhibition-card.js';
       // ---- Exhibition Data with Dates ----
       const fallbackExhibitionsData = [
         {
@@ -783,55 +787,7 @@
       }
 
       function renderExhibitionCard(exh) {
-        const badgeClass = getBadgeClass(exh.status);
-        const displayDate = formatDisplayDate(exh);
-        const badgeDate = formatBadgeDate(exh);
-
-        if (exh.isPlaceholder) {
-          const finalDisplayDate = exh.displayDateOverride || displayDate;
-          return `
-        <article class="exh-card exh-card--placeholder">
-          <div class="exh-img-frame exh-img-frame--dark" style="position:relative; overflow:hidden;">
-            <img src="${safeExhibitionImage(exh.image)}" alt="${escapeExhibitionHtml(exh.title)}" style="position:absolute; top:0; left:0; width:100%; height:100%; object-fit:cover; z-index:0; filter: brightness(0.35);">
-            <div class="exh-coming-soon" style="position:absolute; inset:0; z-index:1; display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; padding: 1rem;">
-              <span style="font-size:1.6rem; font-family:'Cormorant Garamond', serif; font-weight:700; color:#fff; text-shadow: 0 4px 10px rgba(0,0,0,0.8); letter-spacing:0.05em; line-height:1.2;">More exhibitions</span>
-              <span style="font-size:1rem; font-weight:600; color:var(--gold); text-shadow: 0 2px 6px rgba(0,0,0,0.8); margin-top:0.5rem; letter-spacing:0.15em; text-transform:uppercase;">coming soon</span>
-            </div>
-          </div>
-          <div class="exh-body">
-            <span class="exh-dates">${escapeExhibitionHtml(finalDisplayDate)}</span>
-            <h3 class="exh-title">${escapeExhibitionHtml(exh.title)}</h3>
-            <p class="exh-participants">${escapeExhibitionHtml(exh.category)} &nbsp;·&nbsp; ${escapeExhibitionHtml(exh.artist)}</p>
-            ${exh.theme ? `<p class="exh-participants">Theme: ${escapeExhibitionHtml(exh.theme)}</p>` : ""}
-            <p class="exh-desc">${escapeExhibitionHtml(exh.description)}</p>
-            ${renderExhibitionDetails(exh)}
-            ${renderExhibitionCta(exh)}
-          </div>
-        </article>
-      `;
-        }
-
-        const feeText = exh.registrationFee
-          ? `<br>Registration Fee: ${escapeExhibitionHtml(exh.registrationFee)}`
-          : "";
-
-        return `
-      <article class="exh-card" data-id="${exh.id}">
-        <div class="exh-img-frame">
-          <img src="${safeExhibitionImage(exh.image)}" alt="${escapeExhibitionHtml(exh.title)}" loading="lazy">
-          <div class="exh-badge ${badgeClass}">${escapeExhibitionHtml(badgeDate)}</div>
-        </div>
-        <div class="exh-body">
-          <span class="exh-dates">${escapeExhibitionHtml(displayDate)}</span>
-          <h3 class="exh-title">${escapeExhibitionHtml(exh.title)}</h3>
-          <p class="exh-participants">${escapeExhibitionHtml(exh.category)} &nbsp;·&nbsp; ${escapeExhibitionHtml(exh.artist)}</p>
-          ${exh.theme ? `<p class="exh-participants">Theme: ${escapeExhibitionHtml(exh.theme)}</p>` : ""}
-          <p class="exh-desc">${escapeExhibitionHtml(exh.description)}${feeText}</p>
-          ${renderExhibitionDetails(exh)}
-          ${renderExhibitionCta(exh)}
-        </div>
-      </article>
-    `;
+        return window.ExhibitionCardRenderer.render(exh);
       }
 
       function renderEmptyMessage(message) {

@@ -1,0 +1,130 @@
+/* Shared exhibition-card presentation for the public page and admin preview. */
+.exhibition-list {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 3rem 2rem 4rem;
+}
+.exh-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 2rem;
+}
+.exh-card {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  transition: transform 0.4s var(--ease), box-shadow 0.4s var(--ease);
+}
+.exh-card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 16px 40px rgba(0,0,0,0.4);
+}
+.exh-img-frame {
+  position: relative;
+  aspect-ratio: 4/3;
+  overflow: hidden;
+  background: var(--bg3);
+}
+.exh-img-frame img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  transition: transform 0.6s var(--ease);
+}
+.exh-card:hover .exh-img-frame img { transform: scale(1.06); }
+.exh-img-frame--dark {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--bg3);
+  border-bottom: 1px solid var(--border);
+}
+.exh-coming-soon {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.3rem;
+  color: var(--text-dim);
+  font-size: 0.75rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+}
+.exh-badge {
+  position: absolute;
+  top: 1rem;
+  left: 1rem;
+  font-size: 0.6rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  font-weight: 600;
+  padding: 0.3rem 0.75rem;
+}
+.exh-badge.now { background: var(--gold); color: #0a0a0a; }
+.exh-badge.soon { background: #2a6496; color: #fff; }
+.exh-badge.past { background: rgba(255,255,255,0.08); color: var(--text-muted); border: 1px solid var(--border); }
+.exh-body {
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  gap: 0.5rem;
+}
+.exh-dates {
+  font-size: 0.7rem;
+  letter-spacing: 0.12em;
+  color: var(--text-muted);
+  text-transform: uppercase;
+}
+.exh-title {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 1.35rem;
+  font-weight: 400;
+  color: var(--text);
+  line-height: 1.2;
+  margin-top: 0.15rem;
+}
+.exh-participants {
+  font-size: 0.75rem;
+  letter-spacing: 0.06em;
+  color: var(--gold);
+  text-transform: uppercase;
+  margin-bottom: 0.25rem;
+}
+.exh-desc {
+  font-size: 0.88rem;
+  color: var(--text-muted);
+  line-height: 1.75;
+  flex: 1;
+}
+.exh-details {
+  border-top: 1px solid var(--border);
+  margin-top: 0.5rem;
+  padding-top: 0.75rem;
+  color: var(--text-muted);
+  font-size: 0.82rem;
+  line-height: 1.65;
+}
+.exh-details summary {
+  color: var(--gold);
+  cursor: pointer;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+.exh-details summary:focus-visible { outline: 2px solid var(--gold); outline-offset: 4px; }
+.exh-details-content { display: grid; gap: 0.45rem; padding-top: 0.75rem; }
+.exh-details-content strong { color: var(--text); }
+.exh-cta {
+  display: inline-block;
+  margin-top: 1.25rem;
+  font-size: 0.72rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--gold);
+  border-bottom: 1px solid var(--gold-dim);
+  padding-bottom: 2px;
+  transition: letter-spacing 0.3s, border-color 0.3s;
+  align-self: flex-start;
+}
+.exh-cta:hover { letter-spacing: 0.18em; border-color: var(--gold); }
