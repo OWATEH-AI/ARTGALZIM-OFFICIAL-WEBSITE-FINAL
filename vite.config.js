@@ -73,6 +73,11 @@ export default defineConfig({
           allowEmpty: true
         },
         {
+          src: 'js/artworks-metadata.json',
+          dest: 'js',
+          allowEmpty: true
+        },
+        {
           src: 'robots.txt',
           dest: '.',
           allowEmpty: true
