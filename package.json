@@ -8,7 +8,13 @@
     "sync": "node sync-gallery.cjs",
     "admin": "node admin-server.cjs",
     "build": "node sync-gallery.cjs && vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "deploy": "npm run build && wrangler deploy",
+    "migrate:sanity": "node scripts/migrate-gallery-to-sanity.js",
+    "test:sanity": "node --test tests/sanity-gateway.test.js",
+    "studio": "npm --prefix sanity-studio run dev",
+    "studio:build": "npm --prefix sanity-studio run build",
+    "studio:deploy": "npm --prefix sanity-studio run deploy"
   },
   "devDependencies": {
     "cors": "^2.8.6",
@@ -16,6 +22,12 @@
     "multer": "^2.1.1",
     "sharp": "^0.34.5",
     "vite": "^5.0.0",
-    "vite-plugin-static-copy": "^1.0.6"
+    "vite-plugin-static-copy": "^1.0.6",
+    "wrangler": "^4.147.0"
+  },
+  "dependencies": {
+    "@neondatabase/serverless": "^1.1.0",
+    "dotenv": "^17.4.2",
+    "sanitize-html": "^2.18.0"
   }
 }

@@ -1,6 +1,27 @@
 import { defineConfig } from 'vite';
-import { exec } from 'child_process';
+import { exec, spawn } from 'child_process';
+import http from 'http';
 import { viteStaticCopy } from 'vite-plugin-static-copy';
+
+const adminServerPlugin = () => {
+  let adminProc = null;
+  return {
+    name: 'admin-server-manager',
+    configureServer() {
+      const checkReq = http.get('http://localhost:3747/api/artists', (res) => {
+        // admin server is already alive
+      });
+      checkReq.on('error', () => {
+        console.log('🚀 Spawning ARTGALZIM Admin Server on port 3747...');
+        adminProc = spawn('node', ['admin-server.cjs'], {
+          cwd: process.cwd(),
+          stdio: 'inherit',
+          shell: true
+        });
+      });
+    }
+  };
+};
 
 const watchGalleryPlugin = () => {
   return {
@@ -8,10 +29,10 @@ const watchGalleryPlugin = () => {
     configureServer(server) {
       server.watcher.on('all', (event, filePath) => {
         if (event === 'add' || event === 'unlink' || event === 'change') {
-          if (filePath.includes('ARTISTS') || filePath.includes('MAIN IMAGES')) {
+          if (filePath.includes('ARTISTS') || filePath.includes('MAIN IMAGES') || filePath.includes('artworks-metadata') || filePath.includes('exhibitions-data')) {
             exec('node sync-gallery.cjs', (err, stdout) => {
-              if (err) console.error('Gallery sync failed:', err);
-              else console.log(stdout);
+              if (err) console.error('Real-time sync failed:', err);
+              else console.log('⚡ Local gallery index refreshed');
             });
           }
         }
@@ -22,6 +43,7 @@ const watchGalleryPlugin = () => {
 
 export default defineConfig({
   plugins: [
+    adminServerPlugin(),
     watchGalleryPlugin(),
     viteStaticCopy({
       targets: [
@@ -68,6 +90,29 @@ export default defineConfig({
     strictPort: true,    // always use 5299 — dedicated ARTGALZIM port
     host: true,          // expose on local network
     open: true,
+    watch: {
+      ignored: [
+        '**/ARTISTS/**',
+        '**/images/**',
+        '**/HERO ANIMATION/**',
+        '**/Background images/**',
+        '**/Customisations/**',
+        '**/js/*.json',
+        '**/tmp_uploads/**',
+        '**/large_files.json',
+        '**/build-error.txt',
+        '**/sitemap.xml',
+        '**/robots.txt',
+        '**/.git/**'
+      ]
+    },
+    proxy: {
+      '/api': {
+        target: 'http://localhost:3747',
+        changeOrigin: true,
+        secure: false
+      }
+    },
     hmr: {
       overlay: true      // show errors as overlay instead of crashing
     },
@@ -88,12 +133,14 @@ export default defineConfig({
         contact: './contact.html',
         donate: './donate.html',
         exhibitions: './exhibitions.html',
+        journal: './journal.html',
+        scholarships: './scholarships.html',
         owa: './owa-technologies.html',
         privacy: './privacy-policy.html',
         services: './services.html',
+        ctep: './ctep.html',
         visit: './visit.html'
       }
     }
   }
 });
-

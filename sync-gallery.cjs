@@ -50,33 +50,74 @@ function getImages() {
         galleryData.hero = [];
     }
 
-    // Artist Collections
+    // Artist Collections & Custom Album Covers
     galleryData.artistsCollections = {};
+    const coversFile = path.join(outputDir, 'album-covers.json');
+    let customCovers = {};
+    if (fs.existsSync(coversFile)) {
+        try { customCovers = JSON.parse(fs.readFileSync(coversFile, 'utf8')); } catch(e) {}
+    }
+
     if (fs.existsSync(artistsDir)) {
         const artistFolders = fs.readdirSync(artistsDir);
         artistFolders.forEach(artist => {
             const artistPath = path.join(artistsDir, artist);
             if (fs.lstatSync(artistPath).isDirectory()) {
-                const categories = fs.readdirSync(artistPath);
+                const entries = fs.readdirSync(artistPath);
+
+                // 1. Direct image files inside artist directory (for student artists)
+                const directFiles = entries.filter(file => {
+                    const fullPath = path.join(artistPath, file);
+                    if (fs.lstatSync(fullPath).isDirectory()) return false;
+                    const ext = path.extname(file).toLowerCase();
+                    return ['.png', '.jpg', '.jpeg', '.webp', '.gif', '.png'].includes(ext);
+                });
+
+                if (directFiles.length > 0) {
+                    const directImages = directFiles.map(file => `/ARTISTS/${artist}/${file}`);
+                    const folderKey = `${artist}/Artworks`;
+                    let coverPath = customCovers[folderKey] || customCovers[artist] || directImages[0];
+                    galleryData.artistsCollections[folderKey] = {
+                        images: directImages,
+                        cover: coverPath
+                    };
+                    galleryData.artistsCollections[artist] = {
+                        images: directImages,
+                        cover: coverPath
+                    };
+                }
+
+                // 2. Subcategory folders (e.g. Abstract, Portraits, etc.)
+                const categories = entries.filter(category => fs.lstatSync(path.join(artistPath, category)).isDirectory());
                 categories.forEach(category => {
                     const categoryPath = path.join(artistPath, category);
-                    if (fs.lstatSync(categoryPath).isDirectory()) {
-                        const files = fs.readdirSync(categoryPath);
-                        const images = files.filter(file => {
-                            const ext = path.extname(file).toLowerCase();
-                            return ['.png', '.jpg', '.jpeg', '.webp', '.gif'].includes(ext);
-                        }).map(file => `/ARTISTS/${artist}/${category}/${file}`);
-                        
-                        // Find a cover image (e.g. cover.png, cover.jpg, or anything starting with "cover")
-                        const coverFile = files.find(file => file.toLowerCase().startsWith('cover'));
-                        const coverPath = coverFile ? `/ARTISTS/${artist}/${category}/${coverFile}` : (images.length > 0 ? images[0] : null);
+                    const files = fs.readdirSync(categoryPath);
+                    const images = files.filter(file => {
+                        const ext = path.extname(file).toLowerCase();
+                        return ['.png', '.jpg', '.jpeg', '.webp', '.gif'].includes(ext);
+                    }).map(file => `/ARTISTS/${artist}/${category}/${file}`);
+                    
+                    const folderKey = `${artist}/${category}`;
+                    const customCover = customCovers[folderKey];
+                    const customCoverIsValid = !!customCover && (
+                        images.includes(customCover) || fs.existsSync(path.join(__dirname, customCover.replace(/^\//, '')))
+                    );
+                    let coverPath = null;
 
-                        // Storage Key: e.g. "FLORAH MAPHOSA/Abstracts"
-                        galleryData.artistsCollections[`${artist}/${category}`] = {
-                            images: images,
-                            cover: coverPath
-                        };
+                    // 1. Check custom user-selected cover from admin (even when it is not in the folder image list)
+                    if (customCoverIsValid) {
+                        coverPath = customCover;
+                    } else {
+                        // 2. Fallback to cover file starting with "cover" or first image
+                        const coverFile = files.find(file => file.toLowerCase().startsWith('cover'));
+                        coverPath = coverFile ? `/ARTISTS/${artist}/${category}/${coverFile}` : (images.length > 0 ? images[0] : null);
                     }
+
+                    // Storage Key: e.g. "FLORAH MAPHOSA/Artworks"
+                    galleryData.artistsCollections[folderKey] = {
+                        images: images,
+                        cover: coverPath
+                    };
                 });
             }
         });

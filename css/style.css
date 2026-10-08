@@ -563,6 +563,15 @@ h3 {
 }
 .sidebar-nav-link:hover { color: var(--text); padding-left: 0.5rem; }
 .sidebar-nav-link.active { color: var(--gold); font-weight: 600; }
+.sidebar-nav-link[href="visit.html"] {
+  margin-top: 0.75rem;
+  border-top: 1px solid var(--border-g);
+}
+.panel-toggle:focus-visible,
+.sidebar-close-btn:focus-visible {
+  outline: 2px solid var(--gold);
+  outline-offset: 3px;
+}
 .sidebar-info-section {
   display: flex;
   flex-direction: column;
@@ -1368,6 +1377,32 @@ h3 {
   color: var(--text-muted);
   line-height: 1.75;
   flex: 1;
+}
+.exh-details {
+  border-top: 1px solid var(--border);
+  margin-top: 0.5rem;
+  padding-top: 0.75rem;
+  color: var(--text-muted);
+  font-size: 0.82rem;
+  line-height: 1.65;
+}
+.exh-details summary {
+  color: var(--gold);
+  cursor: pointer;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+.exh-details summary:focus-visible {
+  outline: 2px solid var(--gold);
+  outline-offset: 4px;
+}
+.exh-details-content {
+  display: grid;
+  gap: 0.45rem;
+  padding-top: 0.75rem;
+}
+.exh-details-content strong {
+  color: var(--text);
 }
 .exh-cta {
   display: inline-block;
@@ -2306,6 +2341,44 @@ h3 {
 .form-group textarea {
   resize: vertical;
   min-height: 120px;
+}
+input[type="file"] {
+  display: block;
+  width: 100%;
+  min-width: 0;
+  padding: 0.55rem 0.65rem;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  color: var(--text-muted);
+  font: inherit;
+  font-size: 0.85rem;
+}
+input[type="file"]::file-selector-button {
+  margin-inline-end: 0.85rem;
+  padding: 0.45rem 0.75rem;
+  background: var(--gold);
+  border: 0;
+  border-radius: 3px;
+  color: #0a0a0a;
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s, color 0.2s;
+}
+input[type="file"]:hover::file-selector-button {
+  background: var(--gold-light);
+}
+input[type="file"]:focus-visible {
+  border-color: var(--gold);
+  box-shadow: 0 0 0 2px var(--gold-dim);
+}
+input[type="file"]:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+input[type="file"]:disabled::file-selector-button {
+  cursor: not-allowed;
 }
 .contact-info h3 {
   font-family: "Cormorant Garamond", serif;
@@ -4475,9 +4548,16 @@ h3 {
 
 .ap-artist-cover {
   position: relative;
+  display: block;
   width: 100%;
   aspect-ratio: 4 / 5; /* Matches Willard and Florah's vertical frame style */
   overflow: hidden;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: inherit;
+  font: inherit;
+  text-align: left;
   cursor: pointer;
 }
 
@@ -4954,4 +5034,3 @@ h3 {
   box-shadow: 0 0 0 3px var(--gold-dim) !important;
   outline: none !important;
 }
-

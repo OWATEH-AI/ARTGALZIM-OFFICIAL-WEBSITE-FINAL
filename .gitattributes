@@ -1,6 +1,7 @@
-# Git LFS tracking
-*.jpg filter=lfs diff=lfs merge=lfs -text
-*.jpeg filter=lfs diff=lfs merge=lfs -text
-*.png filter=lfs diff=lfs merge=lfs -text
-*.webp filter=lfs diff=lfs merge=lfs -text
-*.mp4 filter=lfs diff=lfs merge=lfs -text
+# Git LFS tracking for files stored as LFS objects.
+ARTISTS/KEITH?ZENDA/Abstract/Chitenge?(Women?Garment).jpeg filter=lfs diff=lfs merge=lfs -text
+ARTISTS/KEITH?ZENDA/Abstract/The?Red?Veil.jpeg filter=lfs diff=lfs merge=lfs -text
+HERO?ANIMATION/648847535_122118621525180817_6612687623118786557_n.jpg filter=lfs diff=lfs merge=lfs -text
+HERO?ANIMATION/Chitenge?(Women?Garment).jpeg filter=lfs diff=lfs merge=lfs -text
+HERO?ANIMATION/The?Red?Veil.jpeg filter=lfs diff=lfs merge=lfs -text
+NEWWW/WhatsApp?Image?2026-04-12?at?09.59.40.jpeg filter=lfs diff=lfs merge=lfs -text

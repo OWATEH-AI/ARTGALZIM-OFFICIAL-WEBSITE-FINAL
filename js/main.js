@@ -100,12 +100,21 @@
       size: "85x75",
       year: "2025",
       desc: "A graceful companion piece exploring the relationship between humans and nature."
+    },
+    // LYKART
+    "art44": {
+      medium: "Oil on Canvas",
+      size: "100x120cm",
+      year: "2026",
+      desc: "HIIIEO"
     }
   };
 
-  // Disable scrolling while preloader is active to prevent background scrolling/glitching
-  document.documentElement.style.overflow = "hidden";
-  document.body.style.overflow = "hidden";
+  // Only lock scrolling on pages that actually show a preloader.
+  if (document.getElementById("preloader")) {
+    document.documentElement.style.overflow = "hidden";
+    document.body.style.overflow = "hidden";
+  }
 
   window.addEventListener("load", () => {
     // We allow a slightly shorter but still premium delay to improve perceived speed on slower networks
@@ -155,10 +164,89 @@
   }
 
   // ---- Sidebar Drawer Toggle ----
+  const sidebarLinks = [
+    { href: "index.html", text: "Home" },
+    { href: "exhibitions.html", text: "Exhibitions" },
+    { href: "artists.html", text: "Artists" },
+    { href: "artworks.html", text: "Artworks" },
+    { href: "about.html", text: "About Us" },
+    { href: "services.html", text: "Services" },
+    { href: "https://www.ctep.artgalzim.com", text: "CTEP", external: true },
+    { href: "journal.html", text: "Gallery & Media" },
+    { href: "owa-technologies.html", text: "OWA TECHNOLOGIES" },
+    { href: "privacy-policy.html", text: "Privacy Policy" },
+    { href: "scholarships.html", text: "Scholarships" },
+    { href: "visit.html", text: "Plan Your Visit" },
+    { href: "contact.html", text: "Contact" },
+    { href: "donate.html", text: "Donate & Support" },
+  ];
+
+  function ensureSiteMenuShell() {
+    let panelToggle = document.getElementById("panelToggle");
+    const navContainer = document.querySelector(".navbar .nav-container");
+    if (!panelToggle && navContainer) {
+      let controls = navContainer.querySelector(".nav-controls");
+      if (!controls) {
+        controls = document.createElement("div");
+        controls.className = "nav-controls";
+        navContainer.append(controls);
+      }
+      panelToggle = document.createElement("button");
+      panelToggle.type = "button";
+      panelToggle.id = "panelToggle";
+      panelToggle.className = "panel-toggle";
+      panelToggle.setAttribute("aria-label", "Open site navigation");
+      panelToggle.setAttribute("aria-controls", "rightSidebar");
+      panelToggle.setAttribute("aria-expanded", "false");
+      panelToggle.innerHTML = "<span></span><span></span><span></span>";
+      controls.append(panelToggle);
+    }
+
+    if (!document.getElementById("rightSidebar")) {
+      const drawer = document.createElement("aside");
+      drawer.className = "sidebar-drawer";
+      drawer.id = "rightSidebar";
+      drawer.setAttribute("aria-label", "Site navigation");
+      drawer.innerHTML = `
+        <div class="sidebar-drawer-header">
+          <div class="sidebar-drawer-logo">ARTGALZIM <span>Center</span></div>
+          <button class="sidebar-close-btn" id="sidebarCloseBtn" type="button" aria-label="Close menu">✕</button>
+        </div>
+        <div class="sidebar-drawer-body">
+          <div class="sidebar-nav-section">
+            <h4>Explore &amp; Services</h4>
+            <div class="sidebar-nav-links"></div>
+          </div>
+          <div class="sidebar-info-section">
+            <h4>Location</h4>
+            <p>ARTGALZIM CENTER<br>Mverechena Business Center<br>Domboshava, Zimbabwe</p>
+          </div>
+          <div class="sidebar-info-section">
+            <h4>Call or Email</h4>
+            <p><a href="tel:+263776330869">+263 77 633 0869</a></p>
+            <p><a href="mailto:info@artgalzim.com">info@artgalzim.com</a></p>
+          </div>
+        </div>`;
+      document.body.append(drawer);
+    }
+
+    if (!document.getElementById("mobileOverlay")) {
+      const overlay = document.createElement("div");
+      overlay.className = "mobile-overlay";
+      overlay.id = "mobileOverlay";
+      document.body.append(overlay);
+    }
+  }
+
+  ensureSiteMenuShell();
   const panelToggle = document.getElementById("panelToggle");
   const rightSidebar = document.getElementById("rightSidebar");
   const sidebarCloseBtn = document.getElementById("sidebarCloseBtn");
   const mobileOverlay = document.getElementById("mobileOverlay");
+  if (panelToggle) {
+    panelToggle.setAttribute("aria-controls", "rightSidebar");
+    panelToggle.setAttribute("aria-expanded", "false");
+  }
 
   function closeDrawer() {
     if (rightSidebar) rightSidebar.classList.remove("open");
@@ -186,6 +274,34 @@
   }
   if (sidebarCloseBtn) sidebarCloseBtn.addEventListener("click", closeDrawer);
   if (mobileOverlay) mobileOverlay.addEventListener("click", closeDrawer);
+
+  const sidebarNav = rightSidebar?.querySelector(".sidebar-nav-links");
+  if (sidebarNav) {
+    const existingLinks = new Map(
+      [...sidebarNav.querySelectorAll("a")].map(link => [link.getAttribute("href"), link])
+    );
+    sidebarLinks.forEach(item => {
+      let link = existingLinks.get(item.href);
+      if (!link) {
+        link = document.createElement("a");
+        link.href = item.href;
+        link.className = "sidebar-nav-link";
+        link.textContent = item.text;
+      } else {
+        link.textContent = item.text;
+      }
+      if (item.external) {
+        link.target = "_blank";
+        link.rel = "noopener noreferrer";
+      }
+      const currentPage = window.location.pathname.split("/").pop() || "index.html";
+      link.classList.toggle("active", item.href === currentPage);
+      sidebarNav.append(link);
+    });
+    const knownHrefs = new Set(sidebarLinks.map(item => item.href));
+    const unmatchedLinks = [...existingLinks.values()].filter(link => !knownHrefs.has(link.getAttribute("href")));
+    unmatchedLinks.forEach(link => sidebarNav.append(link));
+  }
 
   document
     .querySelectorAll(".sidebar-nav-link")
@@ -476,22 +592,41 @@
   // ---- Dynamic Page Galleries (Auto-load from folders) ----
   async function initDynamicGalleries() {
     const galleries = document.querySelectorAll("[data-dynamic-gallery]");
-    if (!galleries.length) return;
+    const escapeGalleryHtml = value => String(value ?? '').replace(/[&<>"']/g, character => ({
+      '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+    })[character]);
 
     // Try to fetch latest data from one of our unified API endpoints
     try {
       const res = await fetch("/api/public-gallery");
+      if (!res.ok) throw new Error(`Gallery request failed (${res.status})`);
       const { data } = await res.json();
       if (data) {
         if (!window.PageGalleries) window.PageGalleries = {};
         if (data.artistsCollections) window.PageGalleries.artistsCollections = data.artistsCollections;
         if (data.artworks) window.PageGalleries.artworks = data.artworks;
+        window.artworksMetadata = {};
+        const metadataScore = artwork => [
+          artwork.title && artwork.title !== 'Untitled Artwork',
+          artwork.medium && artwork.medium !== 'Contemporary Work',
+          artwork.size && artwork.size !== 'Inquire for Size',
+          artwork.description && artwork.description !== 'Recently added to our collection.',
+          artwork.price && artwork.price !== 'Price on Request',
+          artwork.paymentLink
+        ].filter(Boolean).length;
+        (data.artworks || []).forEach(artwork => {
+          const current = window.artworksMetadata[artwork.src];
+          if (!current || metadataScore(artwork) > metadataScore(current)) {
+            window.artworksMetadata[artwork.src] = artwork;
+          }
+        });
         // Keep existing window.PageGalleries.hero if it was loaded from page-galleries.js
       }
     } catch (e) {
       console.warn("Could not fetch latest gallery data from API, falling back to static fallback.", e);
     }
 
+    if (!galleries.length) return;
     if (!window.PageGalleries) return;
 
     galleries.forEach((container) => {
@@ -505,43 +640,30 @@
             const artistName = key.split('/')[0];
             const category = key.split('/')[1]?.toLowerCase() || "";
             
-            // Only render Keith Zenda and Florah Maphosa
-            const allowedArtists = ["KEITH ZENDA", "FLORAH MAPHOSA"];
-            if (!allowedArtists.includes(artistName.toUpperCase())) {
-              return;
-            }
-            // Skip commissions category from the main gallery
-            if (category === "commissions") {
-              return;
-            }
-            
             const collectionImages = window.PageGalleries.artistsCollections[key].images || [];
             collectionImages.forEach(item => {
               const src = typeof item === 'string' ? item : item.src;
+              const artwork = typeof item === 'string' ? {} : item;
               
-              // Exclude whatsapp images from appearing in the main artworks grid
-              if (src.toLowerCase().includes('whatsapp')) {
+              const fileName = artwork.filename || src.split('/').pop();
+              const filenameTitle = fileName.replace(/\.[^/.]+$/, "").replace(/[-_]/g, " ");
+              const title = artwork.title || (/whatsapp|unnamed/i.test(filenameTitle) ? 'Untitled Artwork' : filenameTitle);
+
+              // Avoid showing the same image twice when it is indexed in multiple albums.
+              const duplicateKey = src.trim().toLowerCase();
+              if (addedTitles.has(duplicateKey)) {
                 return;
               }
-              
-              const fileName = src.split('/').pop();
-              const title = fileName.replace(/\.[^/.]+$/, "").replace(/[-_]/g, " ");
-              
-              // Prevent duplicate artworks if they exist in multiple folders
-              const cleanTitle = title.trim().toLowerCase();
-              if (addedTitles.has(cleanTitle)) {
-                return;
-              }
-              addedTitles.add(cleanTitle);
+              addedTitles.add(duplicateKey);
 
               galleryItems.push({ 
                 src, 
-                artist: artistName, 
+                artist: artwork.artist || artistName,
                 title: title,
-                medium: item.medium || "Contemporary Work",
-                size: item.size || "Inquire for Size",
-                year: item.year || "2026",
-                description: item.description || "Recently added to our collection."
+                medium: artwork.medium || "Contemporary Work",
+                size: artwork.size || "Inquire for Size",
+                year: artwork.year || "2026",
+                description: artwork.description || "Recently added to our collection."
               });
             });
           });
@@ -560,6 +682,8 @@
         return;
       }
 
+
+  if (pageKey === "artworks") container.replaceChildren();
       // Clear container (except for possible skeleton/loader)
       container.innerHTML = "";
 
@@ -578,13 +702,13 @@
           
           item.innerHTML = `
             <div class="artwork-img-area">
-              <img src="${src}" alt="${cleanTitle}" loading="lazy">
+              <img src="${escapeGalleryHtml(src)}" alt="${escapeGalleryHtml(cleanTitle)}" loading="lazy">
               <div class="artwork-hover-hint">Expand 🔍</div>
             </div>
             <div class="artwork-meta">
-              <p class="artwork-artist">${artist}</p>
-              <h3 class="artwork-title">${cleanTitle}</h3>
-              <p class="artwork-details">${medium}</p>
+              <p class="artwork-artist">${escapeGalleryHtml(artist)}</p>
+              <h3 class="artwork-title">${escapeGalleryHtml(cleanTitle)}</h3>
+              <p class="artwork-details">${escapeGalleryHtml(medium)}</p>
               <div class="artwork-card-actions" style="margin-top: 1rem;">
                 <button class="btn btn-outline btn-sm view-details-btn">View Details</button>
               </div>
@@ -607,7 +731,7 @@
           item.className = "dynamic-gallery-item reveal";
           item.innerHTML = `
             <div class="dynamic-img-wrap">
-              <img src="${src}" alt="${title}" loading="lazy">
+              <img src="${escapeGalleryHtml(src)}" alt="${escapeGalleryHtml(title)}" loading="lazy">
               <div class="dynamic-img-overlay">
                 <span>View</span>
               </div>
@@ -687,6 +811,112 @@
             }
         }
     });
+
+    const collectionGroups = new Map();
+    Object.entries(window.PageGalleries.artistsCollections).forEach(([key, data]) => {
+      const [artist, category] = key.split('/');
+      if (!artist || !category) return;
+      const firstArtwork = (data.images || []).find(item => typeof item === 'object');
+      const tier = firstArtwork?.artist_tier || (artist.toUpperCase().includes('KEITH ZENDA') ? 'Keith Zenda' : 'Emerging Artists');
+      if (!collectionGroups.has(artist)) collectionGroups.set(artist, { tier, categories: [] });
+      collectionGroups.get(artist).categories.push({ name: category, cover: data.cover });
+    });
+
+    const normalize = value => value.toLowerCase().replace(/[^a-z0-9]/g, '');
+    collectionGroups.forEach((collection, artist) => {
+      if (collection.tier === 'Keith Zenda') {
+        const founderSection = document.querySelector('.ap-artist-section');
+        const row = founderSection?.querySelector('.ap-album-row');
+        if (!row) return;
+        collection.categories.forEach(category => {
+          const exists = [...row.querySelectorAll('.ap-album-label h3')].some(label => normalize(label.textContent) === normalize(category.name));
+          if (exists) return;
+          const card = document.createElement('a');
+          card.href = '#';
+          card.className = 'ap-album-card';
+          const imageFrame = document.createElement('div');
+          imageFrame.className = 'ap-album-img';
+          const image = document.createElement('img');
+          image.src = category.cover || '';
+          image.alt = category.name;
+          image.loading = 'lazy';
+          imageFrame.appendChild(image);
+          const label = document.createElement('div');
+          label.className = 'ap-album-label';
+          const title = document.createElement('h3');
+          title.textContent = category.name;
+          label.appendChild(title);
+          card.append(imageFrame, label);
+          card.addEventListener('click', event => {
+            event.preventDefault();
+            window.openAlbumViewer(`${artist} - ${category.name}`);
+          });
+          row.appendChild(card);
+        });
+        return;
+      }
+
+      const studentRow = document.getElementById('studentArtistsRow');
+      const studentCard = [...(studentRow?.querySelectorAll('.ap-artist-card') || [])]
+        .find(item => normalize(item.querySelector('h3')?.textContent || '') === normalize(artist));
+      const isStudentArtist = collection.tier === 'Student Artists' || Boolean(studentCard);
+      const section = isStudentArtist
+        ? studentRow?.closest('.ap-artist-section') || document.querySelectorAll('.ap-artist-section')[2]
+        : document.querySelectorAll('.ap-artist-section')[1];
+      const row = section?.querySelector('.ap-artist-row');
+      if (!row) return;
+      let card = studentCard || [...row.querySelectorAll('.ap-artist-card')].find(item => normalize(item.querySelector('h3')?.textContent || '') === normalize(artist));
+      if (!card) {
+        card = document.createElement('div');
+        card.className = 'ap-artist-card';
+        const cover = document.createElement(collection.tier === 'Student Artists' ? 'button' : 'div');
+        cover.className = 'ap-artist-cover';
+        if (cover.tagName === 'BUTTON') cover.type = 'button';
+        const image = document.createElement('img');
+        image.alt = artist;
+        image.loading = 'lazy';
+        image.src = collection.categories[0]?.cover || '';
+        const overlay = document.createElement('div');
+        overlay.className = 'ap-artist-overlay';
+        const title = document.createElement('h3');
+        title.textContent = artist;
+        const label = document.createElement('p');
+        label.textContent = isStudentArtist ? 'View Artworks →' : 'View Collections ↓';
+        overlay.append(title, label);
+        cover.append(image, overlay);
+        card.appendChild(cover);
+        row.appendChild(card);
+      }
+
+      if (isStudentArtist) {
+        const cover = card.querySelector('.ap-artist-cover');
+        if (cover) {
+          cover.onclick = () => window.openAlbumViewer(artist);
+        }
+        return;
+      }
+
+      let submenu = card.querySelector('.ap-artist-submenu');
+      if (!submenu) {
+        submenu = document.createElement('div');
+        submenu.className = 'ap-artist-submenu';
+        submenu.id = `ap-submenu-${normalize(artist)}`;
+        card.appendChild(submenu);
+        card.querySelector('.ap-artist-cover').addEventListener('click', () => submenu.classList.toggle('open'));
+      }
+      collection.categories.forEach(category => {
+        const exists = [...submenu.querySelectorAll('a')].some(link => normalize(link.textContent) === normalize(category.name));
+        if (exists) return;
+        const link = document.createElement('a');
+        link.href = '#';
+        link.textContent = `${category.name} →`;
+        link.addEventListener('click', event => {
+          event.preventDefault();
+          window.openAlbumViewer(`${artist} - ${category.name}`);
+        });
+        submenu.appendChild(link);
+      });
+    });
   }
 
   // ---- Artist Page Submenu Toggle ----
@@ -713,40 +943,124 @@
     }
   };
 
+  // Load artworks metadata globally so all pages and album viewers have access to admin-saved artwork metadata
+  let artworksMetaPromise = null;
+  function ensureArtworksMetadata() {
+    if (window.artworksMetadata && Object.keys(window.artworksMetadata).length > 0) {
+      return Promise.resolve(window.artworksMetadata);
+    }
+    if (!artworksMetaPromise) {
+      artworksMetaPromise = fetch('/js/artworks-metadata.json')
+        .then(res => res.ok ? res.json() : {})
+        .then(data => {
+          window.artworksMetadata = data || {};
+          return window.artworksMetadata;
+        })
+        .catch(() => {
+          window.artworksMetadata = window.artworksMetadata || {};
+          return window.artworksMetadata;
+        });
+    }
+    return artworksMetaPromise;
+  }
+  ensureArtworksMetadata();
+
+  function findArtworkJsonMeta(targetSrc) {
+    if (!window.artworksMetadata) return null;
+    const s1 = targetSrc.startsWith('/') ? targetSrc : '/' + targetSrc;
+    if (window.artworksMetadata[s1]) return window.artworksMetadata[s1];
+    if (window.artworksMetadata[targetSrc]) return window.artworksMetadata[targetSrc];
+    try {
+      const dec = decodeURI(s1);
+      if (window.artworksMetadata[dec]) return window.artworksMetadata[dec];
+    } catch(e) {}
+    const fName = targetSrc.split('/').pop();
+    for (const key of Object.keys(window.artworksMetadata)) {
+      if (key.endsWith('/' + fName) || key.endsWith(fName)) {
+        return window.artworksMetadata[key];
+      }
+    }
+    return null;
+  }
+
   // Initialize all galleries on load
-  window.addEventListener("load", () => {
-    initDynamicGalleries();
+  window.addEventListener("load", async () => {
+    document.querySelectorAll('.nav-links, .sidebar-nav-links').forEach(nav => {
+      const isSidebar = nav.classList.contains('sidebar-nav-links');
+      const items = [
+        { href: 'journal.html', text: 'Gallery & Media' },
+        ...(isSidebar ? [
+          { href: 'scholarships.html', text: 'Scholarships' }
+        ] : [])
+      ];
+      items.forEach(item => {
+        if (nav.querySelector(`a[href="${item.href}"]`)) return;
+        const link = document.createElement('a');
+        link.href = item.href;
+        link.className = isSidebar ? 'sidebar-nav-link' : 'nav-link';
+        link.textContent = item.text;
+        const contactLink = !isSidebar && nav.querySelector('a[href="contact.html"]');
+        nav.insertBefore(link, contactLink || null);
+      });
+    });
+    ensureArtworksMetadata();
+    await initDynamicGalleries();
     initArtistAlbums();
   });
-  window.openAlbumViewer = function(albumTitle) {
+  window.openAlbumViewer = async function(albumTitle) {
     const modal = document.getElementById('albumModal');
     const title = document.getElementById('albumModalTitle');
     const grid = document.getElementById('albumModalGrid');
     
     if (!modal || !title || !grid) return;
+
+    await ensureArtworksMetadata();
     
     // Set the Title
     title.textContent = albumTitle;
     
     // 1. Try to find matched images in our dynamic ARTISTS directory
     let albumData = null;
+    let matchedKey = null;
+    let resolvedArtist = '';
+    let resolvedCategory = '';
+
     if (window.PageGalleries && window.PageGalleries.artistsCollections) {
       // Create a search-friendly version of the requested title
       const searchTitle = albumTitle.toLowerCase().replace(/[^a-z0-9]/g, '');
       
-      // Look for a key that matches (e.g. "WILLARD MAGIGA/Abstracts" vs "Willard Magiga - Abstracts")
-      const matchedKey = Object.keys(window.PageGalleries.artistsCollections).find(key => {
-        const normalizedKey = key.toLowerCase().replace(/[^a-z0-9]/g, '');
-        return normalizedKey === searchTitle || searchTitle.includes(normalizedKey) || normalizedKey.includes(searchTitle);
-      });
+      const collectionKeys = Object.keys(window.PageGalleries.artistsCollections);
+      const normalize = value => value.toLowerCase().replace(/[^a-z0-9]/g, '');
+      const artistKeys = collectionKeys.filter(key => normalize(key.split('/')[0]) === searchTitle);
 
-      if (matchedKey) {
-        albumData = window.PageGalleries.artistsCollections[matchedKey];
+      if (artistKeys.length > 0) {
+        const allImages = [];
+        artistKeys.forEach(key => {
+          if (window.PageGalleries.artistsCollections[key].images) {
+            allImages.push(...window.PageGalleries.artistsCollections[key].images);
+          }
+        });
+        albumData = {
+          images: [...new Set(allImages)],
+          cover: window.PageGalleries.artistsCollections[artistKeys[0]].cover
+        };
+        resolvedArtist = artistKeys[0].split('/')[0] || '';
+      } else {
+        matchedKey = collectionKeys.find(key => normalize(key) === searchTitle)
+          || collectionKeys.find(key => normalize(key.split('/').slice(1).join('/')) === searchTitle)
+          || collectionKeys.find(key => normalize(key).includes(searchTitle) || searchTitle.includes(normalize(key)));
+
+        if (matchedKey) {
+          albumData = window.PageGalleries.artistsCollections[matchedKey];
+          const [artistPart, ...categoryParts] = matchedKey.split('/');
+          resolvedArtist = artistPart || '';
+          resolvedCategory = categoryParts.join('/') || '';
+        }
       }
+
     }
 
     let images = albumData ? albumData.images : [];
-    
     // Clear old contents
     grid.innerHTML = '';
     
@@ -792,19 +1106,20 @@
             const lowSrc = src.toLowerCase();
             const artistName = albumTitle.includes('-') ? albumTitle.split('-')[0].trim().toUpperCase() : albumTitle.toUpperCase();
             
-            // Detailed works whitelist
-            
-            const detailedTitles = [
-                "the red veil", "chitenge", "red ascendant", "goho", "harvest", 
-                "malume", "sekuru", "sunset", "musha", "mukadzi", "nyika",
-                "tariro", "hope", "chidochashe", "yevedzai",
-                "spiritual guardian", "heritage unwrapped", "heron", "heroin"
-            ];
+            // Metadata-driven check: if artworks-metadata.json or MASTER_ARTWORK_METADATA
+            // has data for this artwork, it gets "View Details". Otherwise "Inquire to Purchase".
+            const jsonMeta = findArtworkJsonMeta(src);
+            const hasJsonMeta = Boolean(jsonMeta);
             
             const filename = src.split('/').pop().toLowerCase();
-            const isDetailed = detailedTitles.some(dt => filename.includes(dt));
+            const filenameNoExt = filename.replace(/\.[^/.]+$/, "").replace(/[-_]/g, " ").trim().toLowerCase();
+            const hasMasterMeta = Object.keys(MASTER_ARTWORK_METADATA).some(k => filenameNoExt.includes(k));
+            
             const isAnonymous = lowSrc.includes('whatsapp') || lowSrc.includes('unnamed') || /^\d+$/.test(src.split('/').pop().split('.')[0]);
-            if (isAnonymous || !isDetailed) {
+            const hasSanityMetadata = typeof artworkData !== 'string' && Boolean(artworkData.title);
+            const isDetailed = hasJsonMeta || hasSanityMetadata || (!isAnonymous && hasMasterMeta);
+            
+            if (!isDetailed) {
               btn.textContent = 'Inquire to Purchase';
             } else if (lowSrc.includes('cover')) {
               // Usually covers are for navigation
@@ -812,27 +1127,31 @@
 
             btn.addEventListener("click", (e) => {
                e.stopPropagation();
-                const artist = albumTitle.includes('-') ? albumTitle.split('-')[0].trim() : albumTitle;
                 const iMeta = typeof artworkData === 'string' ? { src: artworkData } : artworkData;
+                const artist = (jsonMeta && jsonMeta.artist) || iMeta.artist || (albumTitle.includes('-') ? albumTitle.split('-')[0].trim() : albumTitle);
                 
-                let filename = src.split('/').pop().replace(/\.[^/.]+$/, "").replace(/[-_]/g, " ");
-                filename = filename.charAt(0).toUpperCase() + filename.slice(1);
-                if (isAnonymous || !isDetailed) {
+                let rawFilename = iMeta.title || src.split('/').pop().replace(/\.[^/.]+$/, "").replace(/[-_]/g, " ");
+                rawFilename = rawFilename.charAt(0).toUpperCase() + rawFilename.slice(1);
+                if (!isDetailed) {
                   // Show Global Inquiry Choice Box
-                  showGlobalInquiry(artist, filename);
+                  showGlobalInquiry(artist, rawFilename);
                 } else {
-                  // Try to find matching metadata for this piece
-                  const lowFilename = filename.toLowerCase();
+                  // Pull metadata from artworks-metadata.json first, then MASTER fallback
+                  const lowFilename = rawFilename.toLowerCase();
                   const foundKey = Object.keys(MASTER_ARTWORK_METADATA).find(k => lowFilename.includes(k));
-                  const meta = foundKey ? MASTER_ARTWORK_METADATA[foundKey] : {};
+                  const masterMeta = foundKey ? MASTER_ARTWORK_METADATA[foundKey] : {};
                   
-                  const finalMed = meta.medium || iMeta.medium || 'Contemporary Work';
-                  const finalSize = meta.size || iMeta.size || 'Inquire for Size';
-                  const finalYear = meta.year || iMeta.year || '2026';
-                  const finalDesc = meta.desc || iMeta.description || 'Recently added to our collection.';
+                  const finalTitle = iMeta.title || (jsonMeta && jsonMeta.title) || masterMeta.title || rawFilename;
+                  const finalMed = iMeta.medium || (jsonMeta && jsonMeta.medium) || masterMeta.medium || 'Contemporary Work';
+                  const finalSize = iMeta.size || (jsonMeta && jsonMeta.size) || masterMeta.size || 'Inquire for Size';
+                  const finalYear = iMeta.year || (jsonMeta && jsonMeta.year) || masterMeta.year || '2026';
+                  const finalDesc = iMeta.description || (jsonMeta && jsonMeta.description) || masterMeta.desc || 'Recently added to our collection.';
+                  const finalPrice = iMeta.price || (jsonMeta && jsonMeta.price) || '';
 
                   // Add metadata to URL for artworks.html to pick up
-                  const url = `artworks.html?img=${encodeURIComponent(src)}&artist=${encodeURIComponent(artist)}&title=${encodeURIComponent(filename)}&m=${encodeURIComponent(finalMed)}&s=${encodeURIComponent(finalSize)}&y=${encodeURIComponent(finalYear)}&d=${encodeURIComponent(finalDesc)}`;
+                  const purchaseType = iMeta.purchaseType || (iMeta.paymentLink ? 'direct' : 'inquire');
+                  const paymentLink = iMeta.paymentLink || '';
+                  const url = `artworks.html?img=${encodeURIComponent(src)}&artist=${encodeURIComponent(artist)}&title=${encodeURIComponent(finalTitle)}&m=${encodeURIComponent(finalMed)}&s=${encodeURIComponent(finalSize)}&y=${encodeURIComponent(finalYear)}&d=${encodeURIComponent(finalDesc)}&p=${encodeURIComponent(finalPrice)}&pt=${encodeURIComponent(purchaseType)}&pl=${encodeURIComponent(paymentLink)}`;
                   window.location.href = url;
                 }
             });

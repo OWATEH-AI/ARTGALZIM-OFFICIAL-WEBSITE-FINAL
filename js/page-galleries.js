@@ -43,30 +43,12 @@ const PageGalleries = {
     "/HERO ANIMATION/WhatsApp Image 2026-03-27 at 20.59.56.jpeg"
   ],
   "artistsCollections": {
-    "DIVINE KUMIRAI/Artworks": {
-      "images": [],
-      "cover": null
-    },
-    "DIVINE KUMIRAI/Divine Kumirai Artworks": {
+    "FLORAH MAPHOSA/Abstract": {
       "images": [
-        "/ARTISTS/DIVINE KUMIRAI/Divine Kumirai Artworks/Nyika yezvishoma.jpeg"
+        "/ARTISTS/FLORAH MAPHOSA/Abstract/Heritage Unwrapped.jpeg",
+        "/ARTISTS/FLORAH MAPHOSA/Abstract/Spiritual Guardian.jpeg"
       ],
-      "cover": "/ARTISTS/DIVINE KUMIRAI/Divine Kumirai Artworks/Nyika yezvishoma.jpeg"
-    },
-    "FLORAH MAPHOSA/Abstracts": {
-      "images": [],
-      "cover": null
-    },
-    "FLORAH MAPHOSA/Artworks": {
-      "images": [
-        "/ARTISTS/FLORAH MAPHOSA/Artworks/Heritage Unwrapped.jpeg",
-        "/ARTISTS/FLORAH MAPHOSA/Artworks/Spiritual Guardian.jpeg"
-      ],
-      "cover": "/ARTISTS/FLORAH MAPHOSA/Artworks/Heritage Unwrapped.jpeg"
-    },
-    "FLORAH MAPHOSA/Commissions": {
-      "images": [],
-      "cover": null
+      "cover": "/ARTISTS/FLORAH MAPHOSA/Abstract/Heritage Unwrapped.jpeg"
     },
     "FLORAH MAPHOSA/Portraits": {
       "images": [
@@ -80,15 +62,6 @@ const PageGalleries = {
         "/ARTISTS/FLORAH MAPHOSA/Portraits/WhatsApp Image 2026-03-28 at 13.10.03.jpeg"
       ],
       "cover": "/ARTISTS/FLORAH MAPHOSA/Portraits/Heritage Unwrapped.jpeg"
-    },
-    "JONATHAN CHEZANI/Jonathan Chezani Artworks": {
-      "images": [
-        "/ARTISTS/JONATHAN CHEZANI/Jonathan Chezani Artworks/cover.jpeg",
-        "/ARTISTS/JONATHAN CHEZANI/Jonathan Chezani Artworks/Drawing_2.jpeg",
-        "/ARTISTS/JONATHAN CHEZANI/Jonathan Chezani Artworks/Drawing_3.jpeg",
-        "/ARTISTS/JONATHAN CHEZANI/Jonathan Chezani Artworks/Drawing_4.jpeg"
-      ],
-      "cover": "/ARTISTS/JONATHAN CHEZANI/Jonathan Chezani Artworks/cover.jpeg"
     },
     "KEITH ZENDA/Abstract": {
       "images": [
@@ -127,12 +100,23 @@ const PageGalleries = {
       ],
       "cover": "/ARTISTS/KEITH ZENDA/Portrait/Malume (Sekuru).jpeg"
     },
-    "NOMATTER KUTSAWA/Nomatter Kutsawa Artworks": {
+    "LYKART/Abstract": {
       "images": [
-        "/ARTISTS/NOMATTER KUTSAWA/Nomatter Kutsawa Artworks/cover-tyger.jpeg",
-        "/ARTISTS/NOMATTER KUTSAWA/Nomatter Kutsawa Artworks/Drawing_2.jpeg"
+        "/ARTISTS/LYKART/Abstract/NOiL2CQZvuQ9VsMmyv6TOZKm0lunFIBs8Tk5YnKfRmAwImCi4MlXP21lGLpjpJBpDhULpJ6xjwz31Bs5po7RiYLMlynTGPhj4whpmHH3OshQF8VrrsUoGAkMVhydKGyuf3W_ak87Z0pqbvUceiUdox37tDfFDkT1kQe6RBWzIktAjs0oEPey4N9uLyWpjhKj.jpg"
       ],
-      "cover": "/ARTISTS/NOMATTER KUTSAWA/Nomatter Kutsawa Artworks/cover-tyger.jpeg"
+      "cover": "/ARTISTS/LYKART/Abstract/NOiL2CQZvuQ9VsMmyv6TOZKm0lunFIBs8Tk5YnKfRmAwImCi4MlXP21lGLpjpJBpDhULpJ6xjwz31Bs5po7RiYLMlynTGPhj4whpmHH3OshQF8VrrsUoGAkMVhydKGyuf3W_ak87Z0pqbvUceiUdox37tDfFDkT1kQe6RBWzIktAjs0oEPey4N9uLyWpjhKj.jpg"
+    },
+    "Samuel T Samoyo/Abstract": {
+      "images": [],
+      "cover": "/ARTISTS/Samuel T Samoyo/Abstract/samuel-t-samoyo-abstract-cover.svg"
+    },
+    "Samuel T Samoyo/Commissions": {
+      "images": [],
+      "cover": "/ARTISTS/Samuel T Samoyo/Commissions/samuel-t-samoyo-commissions-cover.svg"
+    },
+    "Samuel T Samoyo/Portraits": {
+      "images": [],
+      "cover": "/ARTISTS/Samuel T Samoyo/Portraits/samuel-t-samoyo-portraits-cover.svg"
     }
   }
 };

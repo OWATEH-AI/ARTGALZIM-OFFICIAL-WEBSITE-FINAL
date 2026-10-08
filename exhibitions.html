@@ -6,6 +6,8 @@
     <title>Exhibitions - ARTGALZIM CENTER | Art Exhibitions in Zimbabwe</title>
     <meta name="description" content="View past, present, and upcoming contemporary African art exhibitions at ARTGALZIM CENTER in Domboshava, Zimbabwe. Experience world-class visual arts."/>
     <meta name="keywords" content="art exhibitions Zimbabwe, African art exhibitions, contemporary art shows, Domboshava exhibitions, ARTGALZIM exhibitions, visual arts events Zimbabwe, gallery exhibitions"/>
+    <meta name="author" content="SAMUEL T SAMOYO (LYKART06)" />
+    <meta name="copyright" content="SAMUEL T SAMOYO (LYKART06)" />
     <meta name="robots" content="index, follow"/>
     <meta property="og:title" content="Exhibitions - ARTGALZIM CENTER | Art Exhibitions in Zimbabwe"/>
     <meta property="og:description" content="View past, present, and upcoming contemporary African art exhibitions at ARTGALZIM CENTER."/>
@@ -49,6 +51,7 @@
       rel="stylesheet"
     />
     <link rel="stylesheet" href="css/style.css" />
+    <link rel="stylesheet" href="css/exhibition-cards.css" />
   </head>
   <body class="page-exhibitions">
     <!-- ===== PRELOADER ===== -->
@@ -196,6 +199,7 @@
             <a href="artworks.html" class="sidebar-nav-link">Artworks</a>
             <a href="about.html" class="sidebar-nav-link">About Us</a>
             <a href="services.html" class="sidebar-nav-link">Services</a>
+          <a href="https://www.ctep.artgalzim.com" class="sidebar-nav-link" target="_blank" rel="noopener noreferrer">CTEP</a>
             <a href="visit.html" class="sidebar-nav-link">Plan Your Visit</a>
             <a href="contact.html" class="sidebar-nav-link">Contact</a>
             <a href="donate.html" class="sidebar-nav-link">Donate & Support</a>
@@ -390,6 +394,7 @@
             <a href="artworks.html">Artworks</a>
             <a href="artists.html">Artists</a>
             <a href="services.html">Services</a>
+          <a href="https://www.ctep.artgalzim.com" target="_blank" rel="noopener noreferrer">CTEP</a>
           </div>
           <div class="footer-col">
             <h4 class="footer-col-title">About</h4>
@@ -463,7 +468,7 @@
                 border-bottom: 2px solid var(--gold);
               "
               >OWA TECHNOLOGIES</a
-            >
+            > - <span style="color: var(--text); font-weight: 700;">[SAMUEL T SAMOYO-(LYKART06)]</span>
           </div>
         </div>
       </div>
@@ -622,9 +627,10 @@
 
     <script type="module" src="/js/page-galleries.js"></script>
     <script type="module" src="/js/main.js"></script>
-    <script>
+    <script type="module">
+      import '/js/exhibition-card.js';
       // ---- Exhibition Data with Dates ----
-      const exhibitionsData = [
+      const fallbackExhibitionsData = [
         {
           id: "easter-sip-paint-2026",
           title: "Easter Sip And Paint",
@@ -657,6 +663,7 @@
           timeRange: "Upcoming",
         },
       ];
+      let exhibitionsData = fallbackExhibitionsData;
 
       // ---- Date-based Auto-Categorization ----
       function categorizeExhibitions() {
@@ -664,18 +671,28 @@
         today.setHours(0, 0, 0, 0);
 
         return exhibitionsData.map((exh) => {
-          const startDate = new Date(exh.startDate);
-          const endDate = new Date(exh.endDate);
-          startDate.setHours(0, 0, 0, 0);
-          endDate.setHours(23, 59, 59, 999);
-
+          const parseDate = (value) => {
+            if (!value || !/^\d{4}-\d{2}-\d{2}$/.test(value)) return null;
+            const date = new Date(`${value}T00:00:00`);
+            return Number.isNaN(date.getTime()) ? null : date;
+          };
+          const startDate = parseDate(exh.startDate);
+          const endDate = parseDate(exh.endDate);
+          const firstDate = startDate || endDate;
+          const lastDate = endDate || startDate;
           let status;
-          if (today < startDate) {
-            status = "upcoming";
-          } else if (today >= startDate && today <= endDate) {
-            status = "current";
+
+          if (!firstDate) {
+            const savedStatus = String(exh.status || "upcoming").toLowerCase();
+            status = savedStatus === "active" || savedStatus === "current"
+              ? "current"
+              : savedStatus === "past" ? "past" : "upcoming";
           } else {
-            status = "past";
+            firstDate.setHours(0, 0, 0, 0);
+            lastDate.setHours(23, 59, 59, 999);
+            if (today < firstDate) status = "upcoming";
+            else if (today > lastDate) status = "past";
+            else status = "current";
           }
 
           return { ...exh, status };
@@ -683,33 +700,34 @@
       }
 
       function formatDisplayDate(exh) {
-        const start = new Date(exh.startDate);
-        const end = new Date(exh.endDate);
-        const startStr = start.toLocaleDateString("en-GB", {
-          day: "numeric",
-          month: "short",
-          year: "numeric",
-        });
-
-        if (exh.startDate === exh.endDate) {
-          // Single day event - date only (no time)
-          return startStr;
-        } else {
-          // Multi-day event
-          const endStr = end.toLocaleDateString("en-GB", {
+        const formatDate = (value) => {
+          if (!value || !/^\d{4}-\d{2}-\d{2}$/.test(value)) return "";
+          const date = new Date(`${value}T00:00:00`);
+          return Number.isNaN(date.getTime()) ? "" : date.toLocaleDateString("en-GB", {
             day: "numeric",
             month: "short",
             year: "numeric",
           });
-          return `${startStr} – ${endStr}`;
-        }
+        };
+        const start = formatDate(exh.startDate);
+        const end = formatDate(exh.endDate);
+        const dateText = start && end
+          ? (exh.startDate === exh.endDate ? start : `${start} – ${end}`)
+          : start || end || "Date TBA";
+        const timeText = [exh.startTime, exh.endTime].filter(Boolean).join(" – ");
+        return timeText ? `${dateText} · ${timeText}` : dateText;
       }
 
       function formatBadgeDate(exh) {
-        const start = new Date(exh.startDate);
         if (exh.isPlaceholder) {
           return exh.timeRange || "TBA";
         }
+        const badgeDate = exh.startDate || exh.endDate;
+        if (!badgeDate || !/^\d{4}-\d{2}-\d{2}$/.test(badgeDate)) {
+          return [exh.startTime, exh.endTime].filter(Boolean).join(" – ") || "Date TBA";
+        }
+        const start = new Date(`${badgeDate}T00:00:00`);
+        if (Number.isNaN(start.getTime())) return "Date TBA";
         return start.toLocaleDateString("en-GB", {
           day: "2-digit",
           month: "long",
@@ -723,56 +741,96 @@
         return "soon";
       }
 
-      function renderExhibitionCard(exh) {
-        const badgeClass = getBadgeClass(exh.status);
-        const displayDate = formatDisplayDate(exh);
-        const badgeDate = formatBadgeDate(exh);
+      function escapeExhibitionHtml(value) {
+        return String(value ?? '').replace(/[&<>"']/g, character => ({
+          '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+        })[character]);
+      }
 
-        if (exh.isPlaceholder) {
-          const finalDisplayDate = exh.displayDateOverride || displayDate;
-          return `
-        <article class="exh-card exh-card--placeholder">
-          <div class="exh-img-frame exh-img-frame--dark" style="position:relative; overflow:hidden;">
-            <img src="${exh.image}" alt="${exh.title}" style="position:absolute; top:0; left:0; width:100%; height:100%; object-fit:cover; z-index:0; filter: brightness(0.35);">
-            <div class="exh-coming-soon" style="position:absolute; inset:0; z-index:1; display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; padding: 1rem;">
-              <span style="font-size:1.6rem; font-family:'Cormorant Garamond', serif; font-weight:700; color:#fff; text-shadow: 0 4px 10px rgba(0,0,0,0.8); letter-spacing:0.05em; line-height:1.2;">More exhibitions</span>
-              <span style="font-size:1rem; font-weight:600; color:var(--gold); text-shadow: 0 2px 6px rgba(0,0,0,0.8); margin-top:0.5rem; letter-spacing:0.15em; text-transform:uppercase;">coming soon</span>
-            </div>
-          </div>
-          <div class="exh-body">
-            <span class="exh-dates">${finalDisplayDate}</span>
-            <h3 class="exh-title">${exh.title}</h3>
-            <p class="exh-participants">${exh.category} &nbsp;·&nbsp; ${exh.artist}</p>
-            <p class="exh-desc">${exh.description}</p>
-            <a href="${exh.contactLink}" class="exh-cta">${exh.ctaText}</a>
-          </div>
-        </article>
-      `;
+      function safeExhibitionLink(value) {
+        if (!value) return '';
+        try {
+          const url = new URL(value, window.location.href);
+          return ['http:', 'https:'].includes(url.protocol) ? escapeExhibitionHtml(url.href) : '';
+        } catch {
+          return '';
         }
+      }
 
-        const feeText = exh.registrationFee
-          ? `<br>Registration Fee: ${exh.registrationFee}`
-          : "";
+      function renderExhibitionDetails(exh) {
+        const fields = [
+          exh.artist && `<p><strong>Artist / Curator:</strong> ${escapeExhibitionHtml(exh.artist)}</p>`,
+          exh.category && `<p><strong>Category:</strong> ${escapeExhibitionHtml(exh.category)}</p>`,
+          exh.location && `<p><strong>Location:</strong> ${escapeExhibitionHtml(exh.location)}</p>`,
+          exh.theme && `<p><strong>Theme:</strong> ${escapeExhibitionHtml(exh.theme)}</p>`,
+          exh.description && `<p><strong>Description:</strong> ${escapeExhibitionHtml(exh.description)}</p>`,
+          exh.conditions && `<p><strong>Conditions / additional details:</strong><br>${escapeExhibitionHtml(exh.conditions).replace(/\n/g, '<br>')}</p>`,
+        ].filter(Boolean);
+        if (!fields.length) return '';
+        return `<details class="exh-details"><summary>View details</summary><div class="exh-details-content">${fields.join('')}</div></details>`;
+      }
 
-        return `
-      <article class="exh-card" data-id="${exh.id}">
-        <div class="exh-img-frame">
-          <img src="${exh.image}" alt="${exh.title}" loading="lazy">
-          <div class="exh-badge ${badgeClass}">${badgeDate}</div>
-        </div>
-        <div class="exh-body">
-          <span class="exh-dates">${displayDate}</span>
-          <h3 class="exh-title">${exh.title}</h3>
-          <p class="exh-participants">${exh.category} &nbsp;·&nbsp; ${exh.artist}</p>
-          <p class="exh-desc">${exh.description}${feeText}</p>
-          <a href="${exh.contactLink}" class="exh-cta">${exh.ctaText}</a>
-        </div>
-      </article>
-    `;
+      function renderExhibitionCta(exh) {
+        const href = safeExhibitionLink(exh.registrationLink || exh.contactLink);
+        if (!href) return '';
+        const targetAttrs = exh.registrationLink ? ' target="_blank" rel="noopener noreferrer"' : '';
+        return `<a href="${href}" class="exh-cta"${targetAttrs}>${escapeExhibitionHtml(exh.ctaText || 'Learn More')}</a>`;
+      }
+
+      function safeExhibitionImage(value) {
+        try {
+          const url = new URL(value || '/images/MAIN IMAGES/exhibitions/artwork_2.webp', window.location.href);
+          return ['http:', 'https:'].includes(url.protocol) ? escapeExhibitionHtml(url.href) : '/images/MAIN IMAGES/exhibitions/artwork_2.webp';
+        } catch {
+          return '/images/MAIN IMAGES/exhibitions/artwork_2.webp';
+        }
+      }
+
+      function renderExhibitionCard(exh) {
+        return window.ExhibitionCardRenderer.render(exh);
       }
 
       function renderEmptyMessage(message) {
         return `<p style="text-align:center; padding:3rem; color:var(--text-muted); font-size:1.1rem;">${message}</p>`;
+      }
+
+      async function loadSanityExhibitions() {
+        try {
+          const response = await fetch('/api/public-content');
+          if (!response.ok) throw new Error('Exhibitions API unavailable');
+          const result = await response.json();
+          const records = (result.data || []).filter(item => item._type === 'exhibition');
+          exhibitionsData = records.map(item => ({
+            id: item.id || item._id,
+            title: item.title || 'Untitled Exhibition',
+            artist: item.artist || 'Various Artists',
+            category: item.category || 'Exhibition',
+            description: item.description || '',
+            image: item.imageUrl || '/images/MAIN IMAGES/exhibitions/artwork_2.webp',
+            startDate: item.startDate || '',
+            endDate: item.endDate || '',
+            startTime: item.startTime || '',
+            endTime: item.endTime || '',
+            theme: item.theme || '',
+            conditions: item.conditions || '',
+            status: item.status || 'upcoming',
+            contactLink: item.contactLink || '',
+            registrationLink: item.registrationLink || '',
+            ctaText: item.ctaText || 'Learn More',
+            location: item.location || '',
+            registrationFee: item.registrationFee || '',
+            timeRange: item.timeRange || '',
+            isPlaceholder: item.isPlaceholder || false,
+            displayDateOverride: item.displayDateOverride || ''
+          }));
+          populateExhibitions();
+          updateTabVisibility();
+        } catch (error) {
+          console.warn('Using static exhibition fallback:', error);
+          exhibitionsData = fallbackExhibitionsData;
+          populateExhibitions();
+          updateTabVisibility();
+        }
       }
 
       function populateExhibitions() {
@@ -856,6 +914,7 @@
 
       // Run visibility update after populating
       updateTabVisibility();
+      loadSanityExhibitions();
 
       // ---- Exhibition Video — instant launch on click ----
       const videoWrap = document.getElementById("exhibitionVideoWrap");
@@ -900,4 +959,3 @@
     </script>
   </body>
 </html>
-

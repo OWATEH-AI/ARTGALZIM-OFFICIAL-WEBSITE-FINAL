@@ -2,15 +2,22 @@ node_modules
 .DS_Store
 dist
 .env
+.env.*
+!.env.example
 .next
 build
 out
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+/build-error.txt
+/hero_files.txt
+/large_files.json
+/vite.config.js.timestamp-*.mjs
 .vercel
 # IDE stuff
 .vscode
 .idea
 .fleet
 .history
+*.pem

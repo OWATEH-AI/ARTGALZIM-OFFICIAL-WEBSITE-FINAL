@@ -5,6 +5,8 @@
   <title>Artworks - ARTGALZIM CENTER | African Art Collection Zimbabwe</title>
   <meta name="description" content="Explore our curated collection of contemporary African artworks at ARTGALZIM CENTER. View paintings, sculptures, and mixed media by leading Zimbabwean artists."/>
   <meta name="keywords" content="African artworks, Zimbabwe art collection, contemporary art for sale, African paintings, Zimbabwean sculptures, Keith Zenda artworks, art gallery collection, buy African art"/>
+  <meta name="author" content="SAMUEL T SAMOYO (LYKART06)"/>
+  <meta name="copyright" content="SAMUEL T SAMOYO (LYKART06)"/>
   <meta name="robots" content="index, follow"/>
   <meta property="og:title" content="Artworks - ARTGALZIM CENTER | African Art Collection"/>
   <meta property="og:description" content="Explore our curated collection of contemporary African artworks at ARTGALZIM CENTER."/>
@@ -99,6 +101,7 @@
           <a href="artworks.html" class="sidebar-nav-link active">Artworks</a>
           <a href="about.html" class="sidebar-nav-link">About Us</a>
           <a href="services.html" class="sidebar-nav-link">Services</a>
+          <a href="https://www.ctep.artgalzim.com" class="sidebar-nav-link" target="_blank" rel="noopener noreferrer">CTEP</a>
           <a href="visit.html" class="sidebar-nav-link">Plan Your Visit</a>
           <a href="contact.html" class="sidebar-nav-link">Contact</a>
           <a href="donate.html" class="sidebar-nav-link">Donate & Support</a>
@@ -144,7 +147,7 @@
         </div>
       </div>
 
-      <div class="artworks-grid reveal-stagger" id="artworksGrid">
+      <div class="artworks-grid reveal-stagger" id="artworksGrid" data-dynamic-gallery="artworks">
         <div class="artwork-card reveal">
             <div class="artwork-img-area" onclick="openModal('ARTISTS/KEITH ZENDA/Abstract/The Red Veil.jpeg', 'The Red Veil', 'KEITH ZENDA', 'Mixed media on canvas', '100x120cm', '2026', 'An intense abstract work dominated by a deep red, textured fabric‑like form that appears torn and dripping, set against a gradient background that shifts from fiery red to warm peach tones fading into darkness. The thick impasto suggests blood‑soaked cloth, evoking themes of violence, suffering, and the raw physicality of pain, while the dripping strokes imply wounds and loss, inviting viewers to contemplate anguish and resilience.', 'static', 'Quote on Request')">
               <img src="ARTISTS/KEITH ZENDA/Abstract/The Red Veil.jpeg" alt="The Red Veil" loading="lazy">
@@ -400,6 +403,7 @@
           <a href="artworks.html">Artworks</a>
           <a href="artists.html">Artists</a>
           <a href="services.html">Services</a>
+          <a href="https://www.ctep.artgalzim.com" target="_blank" rel="noopener noreferrer">CTEP</a>
         </div>
         <div class="footer-col">
           <h4 class="footer-col-title">About</h4>
@@ -430,27 +434,123 @@
       <div style="max-width: 1400px; margin: 0 auto; padding: 0 2rem; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
         <p style="font-size: 0.8rem; color: var(--text-muted); cursor: default; user-select: none;" id="adminSecretTrigger">&copy; 2026 ARTGALZIM CENTER</p>
         <div style="font-weight: 700; letter-spacing: 0.15em; color: var(--gold); font-size: 0.72rem; text-transform: uppercase;">
-          POWERED BY &nbsp;<a href="owa-technologies.html" style="color: inherit; text-decoration: none; border-bottom: 2px solid var(--gold);">OWA TECHNOLOGIES</a>
+          POWERED BY &nbsp;<a href="owa-technologies.html" style="color: inherit; text-decoration: none; border-bottom: 2px solid var(--gold);">OWA TECHNOLOGIES</a> - <span style="color: var(--text); font-weight: 700;">[SAMUEL T SAMOYO-(LYKART06)]</span>
         </div>
       </div>
     </div>
   </footer>
   
-  <!-- Global Choice Box (Popup) for inquiry method -->
-  <div id="inquiryChoiceBox" class="inquiry-choice-overlay" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 30000; align-items: center; justify-content: center;">
-    <div class="inquiry-choice-content" style="background: var(--bg2); padding: 2.5rem; border-radius: 12px; position: relative; max-width: 400px; width: 90%; text-align: center; border: 1px solid var(--border); box-shadow: 0 25px 50px rgba(0,0,0,0.5);">
-      <button class="choice-close" id="closeChoiceBox" style="position: absolute; top: 1rem; right: 1rem; background: none; border: none; font-size: 1.5rem; color: var(--text-muted); cursor: pointer;">✕</button>
-      <h4 style="margin-bottom: 1rem; font-family: 'Cormorant Garamond', serif; font-size: 1.4rem; color: var(--text);">Select Contact Method</h4>
-      <p style="margin-bottom: 2rem; font-size: 0.9rem; color: var(--text-muted);">How would you like to continue with your inquiry?</p>
-      <div class="choice-buttons" style="display: flex; flex-direction: column; gap: 1rem;">
-        <button class="choice-btn wa" id="btnChoiceWA" style="padding: 1rem; border-radius: 8px; border: none; background: #25D366; color: #fff; font-weight: 600; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 0.75rem;">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.335-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"></path></svg>
-          <span>WhatsApp Inquiry</span>
+  <!-- ═══ INQUIRY CHOICE BOX (Inquire to Purchase) ═══ -->
+  <div id="inquiryChoiceBox" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.82); z-index:30000; align-items:center; justify-content:center; padding:1.5rem;">
+    <div style="background:var(--bg2,#111); border:1px solid rgba(201,168,76,0.3); border-radius:14px; position:relative; max-width:440px; width:100%; box-shadow:0 30px 60px rgba(0,0,0,0.7); overflow:hidden;">
+      <!-- Header -->
+      <div style="background:rgba(201,168,76,0.06); border-bottom:1px solid rgba(201,168,76,0.15); padding:1.4rem 1.75rem; display:flex; justify-content:space-between; align-items:center;">
+        <div>
+          <p style="font-size:0.7rem; color:#c9a84c; text-transform:uppercase; letter-spacing:0.12em; margin-bottom:0.2rem;">Purchase Inquiry</p>
+          <h4 style="font-family:'Cormorant Garamond',serif; font-size:1.5rem; color:#fff; font-weight:500; margin:0;" id="choiceBoxArtworkTitle">Artwork</h4>
+        </div>
+        <button id="closeChoiceBox" style="background:none; border:1px solid rgba(255,255,255,0.15); border-radius:50%; width:32px; height:32px; color:#aaa; font-size:1rem; cursor:pointer; display:flex; align-items:center; justify-content:center;" aria-label="Close">✕</button>
+      </div>
+      <!-- Artwork summary -->
+      <div style="padding:1rem 1.75rem 0.5rem; font-size:0.82rem; color:rgba(255,255,255,0.55); line-height:1.6;" id="choiceBoxArtworkMeta"></div>
+      <!-- Buttons -->
+      <div style="padding:1rem 1.75rem 1.75rem; display:flex; flex-direction:column; gap:0.85rem;">
+        <button id="btnChoiceWA" style="padding:1rem 1.25rem; border-radius:8px; border:none; background:#25D366; color:#fff; font-weight:700; font-size:0.95rem; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:0.75rem; transition:opacity 0.2s;" onmouseenter="this.style.opacity='0.9'" onmouseleave="this.style.opacity='1'">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+          Inquire via WhatsApp
         </button>
-        <button class="choice-btn gmail" id="btnChoiceGmail" style="padding: 1rem; border-radius: 8px; border: 1px solid var(--border); background: #EA4335; color: #fff; font-weight: 600; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 0.75rem;">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
-          <span>Gmail Inquiry</span>
+        <button id="btnChoiceGmail" style="padding:1rem 1.25rem; border-radius:8px; border:none; background:#EA4335; color:#fff; font-weight:700; font-size:0.95rem; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:0.75rem; transition:opacity 0.2s;" onmouseenter="this.style.opacity='0.9'" onmouseleave="this.style.opacity='1'">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+          Inquire via Gmail
         </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ DIRECT PURCHASE STEPS MODAL (Step 1 of Direct Purchase) ═══ -->
+  <div id="directPurchaseStepsModal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.85); z-index:35000; align-items:flex-start; justify-content:center; padding:1rem; overflow-y:auto;">
+    <div style="background:var(--bg2,#111); border:1px solid rgba(201,168,76,0.35); border-radius:14px; position:relative; max-width:500px; width:100%; max-height:calc(100vh - 2rem); max-height:calc(100dvh - 2rem); margin:auto 0; box-shadow:0 30px 60px rgba(0,0,0,0.85); overflow-y:auto; overscroll-behavior:contain;">
+      <!-- Header -->
+      <div style="background:rgba(201,168,76,0.08); border-bottom:1px solid rgba(201,168,76,0.2); padding:1.4rem 1.75rem; display:flex; justify-content:space-between; align-items:center;">
+        <div>
+          <p style="font-size:0.7rem; color:#c9a84c; text-transform:uppercase; letter-spacing:0.12em; margin-bottom:0.2rem;">Step 1 — Direct Checkout Instructions</p>
+          <h4 style="font-family:'Cormorant Garamond',serif; font-size:1.5rem; color:#fff; font-weight:500; margin:0;" id="stepsModalArtworkTitle">How to Complete Your Purchase</h4>
+        </div>
+        <button id="closeDirectStepsModal" style="background:none; border:1px solid rgba(255,255,255,0.15); border-radius:50%; width:32px; height:32px; color:#aaa; font-size:1rem; cursor:pointer; display:flex; align-items:center; justify-content:center;" aria-label="Close">✕</button>
+      </div>
+
+      <!-- Artwork Meta Summary -->
+      <div style="padding:1rem 1.75rem 0.5rem; font-size:0.83rem; color:rgba(255,255,255,0.7); line-height:1.6; border-bottom:1px solid rgba(255,255,255,0.06);" id="stepsModalArtworkMeta"></div>
+
+      <!-- Instructions List -->
+      <div style="padding:1.25rem 1.75rem; display:flex; flex-direction:column; gap:1rem;">
+        <div style="display:flex; gap:0.9rem; align-items:flex-start;">
+          <div style="background:rgba(201,168,76,0.15); border:1px solid rgba(201,168,76,0.4); color:#c9a84c; font-weight:700; width:28px; height:28px; border-radius:50%; display:flex; align-items:center; justify-content:center; flex-shrink:0; font-size:0.85rem;">1</div>
+          <div>
+            <h5 style="color:#fff; font-size:0.92rem; margin:0 0 0.25rem 0; font-weight:600;">Secure Checkout</h5>
+            <p style="font-size:0.8rem; color:rgba(255,255,255,0.65); margin:0; line-height:1.5;">Click <strong>Continue to Payment</strong> below. You will be redirected to the secure payment checkout specifically set up for this artwork in a new tab.</p>
+          </div>
+        </div>
+
+        <div style="display:flex; gap:0.9rem; align-items:flex-start;">
+          <div style="background:rgba(201,168,76,0.15); border:1px solid rgba(201,168,76,0.4); color:#c9a84c; font-weight:700; width:28px; height:28px; border-radius:50%; display:flex; align-items:center; justify-content:center; flex-shrink:0; font-size:0.85rem;">2</div>
+          <div>
+            <h5 style="color:#fff; font-size:0.92rem; margin:0 0 0.25rem 0; font-weight:600;">Keep Payment Receipt / Screenshot</h5>
+            <p style="font-size:0.8rem; color:rgba(255,255,255,0.65); margin:0; line-height:1.5;">After completing payment, please <strong>take a screenshot or download your receipt</strong>. Due to varying banking and regional processing times, keeping your receipt ensures your purchase can be verified promptly.</p>
+          </div>
+        </div>
+
+        <div style="display:flex; gap:0.9rem; align-items:flex-start;">
+          <div style="background:rgba(201,168,76,0.15); border:1px solid rgba(201,168,76,0.4); color:#c9a84c; font-weight:700; width:28px; height:28px; border-radius:50%; display:flex; align-items:center; justify-content:center; flex-shrink:0; font-size:0.85rem;">3</div>
+          <div>
+            <h5 style="color:#fff; font-size:0.92rem; margin:0 0 0.25rem 0; font-weight:600;">Notify the Gallery via WhatsApp or Gmail</h5>
+            <p style="font-size:0.8rem; color:rgba(255,255,255,0.65); margin:0; line-height:1.5;">When you return to this website's tab, click <strong>Notify via WhatsApp</strong> or <strong>Gmail</strong>. A prefilled notification with your purchased artwork will open so our team can confirm your receipt and arrange delivery.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Action Button -->
+      <div style="padding:0.75rem 1.75rem 1.5rem; display:flex; flex-direction:column; gap:0.5rem;">
+        <button id="btnContinueToPayment" style="padding:1rem 1.25rem; border-radius:8px; border:none; background:var(--gold,#c9a84c); color:#000; font-weight:700; font-size:0.95rem; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:0.75rem; transition:opacity 0.2s;" onmouseenter="this.style.opacity='0.9'" onmouseleave="this.style.opacity='1'">
+          Continue to Payment &rarr;
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ PURCHASE NOTIFICATION MODAL (Direct Purchase) ═══ -->
+  <div id="paymentProofModal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.88); z-index:35001; align-items:flex-start; justify-content:center; padding:2rem 1rem; overflow-y:auto;">
+    <div style="background:#111; border:1px solid rgba(201,168,76,0.3); border-radius:14px; width:100%; max-width:520px; margin:auto 0; box-shadow:0 30px 60px rgba(0,0,0,0.8); overflow:hidden;">
+      <!-- Header -->
+      <div style="background:rgba(201,168,76,0.06); border-bottom:1px solid rgba(201,168,76,0.2); padding:1.3rem 1.75rem; display:flex; justify-content:space-between; align-items:center;">
+        <div>
+          <p style="font-size:0.68rem; color:#c9a84c; text-transform:uppercase; letter-spacing:0.12em; margin-bottom:0.2rem;">Step 2 — Order Confirmation</p>
+          <h4 style="font-family:'Cormorant Garamond',serif; font-size:1.45rem; color:#fff; font-weight:500; margin:0;">Notify Gallery of Purchase</h4>
+        </div>
+        <button onclick="closePaymentProofModal()" style="background:none; border:1px solid rgba(255,255,255,0.15); border-radius:50%; width:32px; height:32px; color:#aaa; font-size:1rem; cursor:pointer; display:flex; align-items:center; justify-content:center;">✕</button>
+      </div>
+      <!-- Notice -->
+      <div style="margin:1.25rem 1.75rem; padding:1rem 1.2rem; background:rgba(201,168,76,0.07); border:1px solid rgba(201,168,76,0.2); border-radius:8px; font-size:0.83rem; color:rgba(255,255,255,0.75); line-height:1.7;">
+        <strong style="color:#c9a84c; display:block; margin-bottom:0.4rem;">📋 Payment Completed:</strong>
+        Please keep your payment screenshot or downloaded receipt handy, as payments may take time to reflect across different regions and processing networks.
+        Click below to notify the ARTGALZIM team directly on WhatsApp or Gmail. Our team will verify your receipt and finalize delivery arrangements with you in the chat.
+      </div>
+      <!-- Artwork info auto-fill -->
+      <div style="padding:0 1.75rem;">
+        <p style="font-size:0.72rem; text-transform:uppercase; letter-spacing:0.08em; color:#c9a84c; margin-bottom:0.5rem;">Purchased Artwork Reference</p>
+        <div id="proofArtworkSummary" style="background:#1a1a1a; border:1px solid rgba(255,255,255,0.08); border-radius:8px; padding:1rem 1.1rem; font-size:0.83rem; color:rgba(255,255,255,0.7); line-height:1.8; font-family:monospace; white-space:pre-wrap; word-break:break-word;"></div>
+      </div>
+      <!-- Send buttons -->
+      <div style="padding:1.25rem 1.75rem 1.75rem; display:flex; flex-direction:column; gap:0.85rem;">
+        <button id="proofSendWA" style="padding:1rem 1.25rem; border-radius:8px; border:none; background:#25D366; color:#fff; font-weight:700; font-size:0.9rem; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:0.75rem; transition:opacity 0.2s;" onmouseenter="this.style.opacity='0.9'" onmouseleave="this.style.opacity='1'">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+          Notify via WhatsApp
+        </button>
+        <button id="proofSendGmail" style="padding:1rem 1.25rem; border-radius:8px; border:none; background:#EA4335; color:#fff; font-weight:700; font-size:0.9rem; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:0.75rem; transition:opacity 0.2s;" onmouseenter="this.style.opacity='0.9'" onmouseleave="this.style.opacity='1'">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+          Notify via Gmail
+        </button>
+        <p style="text-align:center; font-size:0.75rem; color:rgba(255,255,255,0.45); margin:0;">Our team will receive your artwork reference and verify your receipt in the chat.</p>
       </div>
     </div>
   </div>
@@ -474,22 +574,389 @@
     ^
   </button>
 
+  <script type="module" src="/js/page-galleries.js"></script>
   <script type="module" src="/js/main.js"></script>
   <script>
-    function openModal(imgSrc, title, artist, medium, size, year, desc, artId, price) {
-      document.getElementById('modalImg').src = imgSrc;
-      document.getElementById('modalTitle').textContent = title;
-      document.getElementById('modalArtist').textContent = artist;
-      document.getElementById('modalMedium').textContent = medium;
-      document.getElementById('modalSize').textContent = size;
-      document.getElementById('modalYear').textContent = year;
-      document.getElementById('modalArtistGrid').textContent = artist;
-      document.getElementById('modalTitleGrid').textContent = title;
-      document.getElementById('modalDesc').textContent = desc;
-      
+  /* ══ HIDDEN ZIMBABWE (CAT, UTC+2) CLOCK — Always running in background ══ */
+  (function startCATClock() {
+    function updateCATTime() {
+      window._catTime = new Date().toLocaleString('en-GB', {
+        timeZone: 'Africa/Harare',
+        day: '2-digit', month: 'long', year: 'numeric',
+        hour: '2-digit', minute: '2-digit', second: '2-digit',
+        hour12: false
+      }) + ' (Zimbabwe CAT)';
+    }
+    updateCATTime();
+    setInterval(updateCATTime, 1000);
+  })();
+
+  function getCATTimeString() {
+    return window._catTime || new Date().toLocaleString('en-GB', { timeZone: 'Africa/Harare' }) + ' (Zimbabwe CAT)';
+  }
+
+  /* ══ PROOF OF PAYMENT MODAL ══ */
+  let _proofArtworkData = {};
+
+  function openPaymentProofModal(title, artist, medium, size, year, price) {
+    _proofArtworkData = { title, artist, medium, size, year, price };
+    const catNow = getCATTimeString();
+    const summary = [
+      `ARTGALZIM CENTER — PURCHASE CONFIRMATION`,
+      `━━━━━━━━━━━━━━━━━━━━━━`,
+      `Artwork : ${title || 'N/A'}`,
+      `Artist  : ${artist || 'N/A'}`,
+      `Medium  : ${medium || 'N/A'}`,
+      `Size    : ${size || 'N/A'}`,
+      `Year    : ${year || 'N/A'}`,
+      `Price   : ${price || 'N/A'}`,
+      `━━━━━━━━━━━━━━━━━━━━━━`,
+      `Date & Time (CAT): ${catNow}`,
+    ].join('\n');
+    document.getElementById('proofArtworkSummary').textContent = summary;
+    const modal = document.getElementById('paymentProofModal');
+    modal.style.display = 'flex';
+
+    // Wire notify buttons
+    document.getElementById('proofSendWA').onclick = sendProofViaWhatsApp;
+    document.getElementById('proofSendGmail').onclick = sendProofViaGmail;
+  }
+
+  function closePaymentProofModal() {
+    document.getElementById('paymentProofModal').style.display = 'none';
+  }
+
+  function buildProofMessage() {
+    const d = _proofArtworkData || {};
+    const catNow = getCATTimeString();
+    return [
+      `ARTGALZIM CENTER — ARTWORK PURCHASE NOTIFICATION`,
+      `━━━━━━━━━━━━━━━━━━━━━━`,
+      `Artwork : ${d.title || 'N/A'}`,
+      `Artist  : ${d.artist || 'N/A'}`,
+      `Medium  : ${d.medium || 'N/A'}`,
+      `Size    : ${d.size || 'N/A'}`,
+      `Year    : ${d.year || 'N/A'}`,
+      `Price   : ${d.price || 'N/A'}`,
+      `━━━━━━━━━━━━━━━━━━━━━━`,
+      `I have completed the direct purchase payment for this artwork.`,
+      `I have my payment receipt / screenshot ready for verification.`,
+      `Please confirm receipt and guide me on the delivery arrangements.`,
+      ``,
+      `Submitted: ${catNow}`,
+      `Via: artgalzim.com`
+    ].join('\n');
+  }
+
+  function sendProofViaWhatsApp() {
+    const msg = buildProofMessage();
+    const text = encodeURIComponent(msg);
+    window.open(`https://wa.me/263776330869?text=${text}`, '_blank');
+    closePaymentProofModal();
+  }
+
+  function sendProofViaGmail() {
+    const d = _proofArtworkData || {};
+    const msg = buildProofMessage();
+    const subject = encodeURIComponent(`Purchase Notification — "${d.title || 'Artwork'}" | ARTGALZIM CENTER`);
+    const body = encodeURIComponent(msg);
+    const gmailUrl = `https://mail.google.com/mail/?view=cm&fs=1&to=info@artgalzim.com&su=${subject}&body=${body}`;
+    window.open(gmailUrl, '_blank');
+    closePaymentProofModal();
+  }
+
+  // Close proof modal on overlay click
+  document.getElementById('paymentProofModal').addEventListener('click', function(e) {
+    if (e.target === this) closePaymentProofModal();
+  });
+  // Close inquiry choice box on overlay click
+  document.getElementById('inquiryChoiceBox').addEventListener('click', function(e) {
+    if (e.target === this) this.style.display = 'none';
+  });
+  // Close direct purchase steps modal on overlay click
+  const directStepsOverlay = document.getElementById('directPurchaseStepsModal');
+  if (directStepsOverlay) {
+    directStepsOverlay.addEventListener('click', function(e) {
+      if (e.target === this) this.style.display = 'none';
+    });
+  }
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') {
+      if (directStepsOverlay && directStepsOverlay.style.display === 'flex') {
+        directStepsOverlay.style.display = 'none';
+      }
+    }
+  });
+  </script>
+  <script>
+    let artworksMetadataPromise = null;
+
+    function normaliseArtworkSrc(imgSrc) {
+      if (!imgSrc) return '';
+      try {
+        const url = new URL(imgSrc, window.location.origin);
+        if (url.protocol === 'http:' || url.protocol === 'https:') {
+          return url.origin === window.location.origin ? decodeURI(url.pathname) : url.href;
+        }
+        return decodeURI(url.pathname);
+      } catch (e) {
+        return imgSrc.startsWith('/') ? imgSrc : `/${imgSrc}`;
+      }
+    }
+
+    function inferArtworkTitleFromSrc(imgSrc) {
+      const filename = (imgSrc || '').split('/').pop() || 'Artwork';
+      return decodeURIComponent(filename)
+        .replace(/\.[^/.]+$/, '')
+        .replace(/[-_]/g, ' ')
+        .replace(/\s+/g, ' ')
+        .trim();
+    }
+
+    function inferArtistFromSrc(imgSrc) {
+      const parts = normaliseArtworkSrc(imgSrc).split('/').filter(Boolean);
+      return parts[1] || '';
+    }
+
+    function escapeHTML(value) {
+      return String(value ?? '')
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+    }
+
+    function loadArtworksMetadata() {
+      if (window.artworksMetadata) {
+        return Promise.resolve(window.artworksMetadata);
+      }
+      if (!artworksMetadataPromise) {
+        artworksMetadataPromise = fetch('/js/artworks-metadata.json')
+          .then(res => res.ok ? res.json() : {})
+          .then(data => {
+            window.artworksMetadata = data || {};
+            return window.artworksMetadata;
+          })
+          .catch(() => {
+            window.artworksMetadata = {};
+            return window.artworksMetadata;
+          });
+      }
+      return artworksMetadataPromise;
+    }
+
+    function getArtworkData(imgSrc, fallback = {}, preferFallback = false) {
+      const cleanSrc = normaliseArtworkSrc(imgSrc);
+      const activeMetadata = window.artworksMetadata || {};
+      let meta = activeMetadata[imgSrc] || activeMetadata[cleanSrc] || null;
+      if (!meta) {
+        const fName = (cleanSrc || imgSrc || '').split('/').pop();
+        if (fName) {
+          for (const key of Object.keys(activeMetadata)) {
+            if (key.endsWith('/' + fName) || key.endsWith(fName)) {
+              meta = activeMetadata[key];
+              break;
+            }
+          }
+        }
+      }
+      meta = meta || {};
+      const paymentLink = (preferFallback ? fallback.paymentLink || meta.paymentLink || '' : meta.paymentLink || fallback.paymentLink || '').trim();
+      const hasPaymentLink = Boolean(paymentLink);
+      const rawPurchaseType = (preferFallback ? fallback.purchaseType || meta.purchaseType || '' : meta.purchaseType || fallback.purchaseType || '').trim().toLowerCase();
+      const isDirect = hasPaymentLink || rawPurchaseType === 'direct';
+
+      const value = field => preferFallback && fallback[field]
+        ? fallback[field]
+        : meta[field] || fallback[field];
+
+      return {
+        imgSrc: cleanSrc || imgSrc,
+        artId: fallback.artId || 'dynamic',
+        title: value('title') || inferArtworkTitleFromSrc(cleanSrc),
+        artist: value('artist') || inferArtistFromSrc(cleanSrc) || 'ARTGALZIM',
+        medium: value('medium') || 'Contemporary Work',
+        size: value('size') || 'Inquire for Size',
+        year: String(value('year') || '2026'),
+        desc: (preferFallback ? fallback.desc : meta.description || meta.desc || fallback.desc) || 'Recently added to our collection.',
+        price: value('price') || 'Price on Request',
+        purchaseType: isDirect ? 'direct' : 'inquire',
+        paymentLink
+      };
+    }
+
+    function isDirectPurchaseArtwork(artwork) {
+      if (!artwork) return false;
+      const hasLink = Boolean(artwork.paymentLink && artwork.paymentLink.trim());
+      return hasLink || artwork.purchaseType === 'direct';
+    }
+
+    function getArtworkPrimaryButtonLabel(artwork) {
+      return isDirectPurchaseArtwork(artwork) ? 'Direct Purchase' : 'Inquire to Purchase';
+    }
+
+    function openDirectPurchaseSteps(artwork) {
+      const stepsModal = document.getElementById('directPurchaseStepsModal');
+      const titleEl = document.getElementById('stepsModalArtworkTitle');
+      const metaEl = document.getElementById('stepsModalArtworkMeta');
+      const btnContinue = document.getElementById('btnContinueToPayment');
+      const closeBtn = document.getElementById('closeDirectStepsModal');
+
+      if (!stepsModal) {
+        window.open(artwork.paymentLink, '_blank');
+        return;
+      }
+
+      if (titleEl) {
+        titleEl.textContent = `Purchase: "${artwork.title}"`;
+      }
+      if (metaEl) {
+        metaEl.innerHTML = [
+          artwork.artist ? `<strong style="color:#fff">${escapeHTML(artwork.artist)}</strong>` : '',
+          artwork.medium ? `&nbsp;·&nbsp;${escapeHTML(artwork.medium)}` : '',
+          artwork.size ? `&nbsp;·&nbsp;${escapeHTML(artwork.size)}` : '',
+          artwork.year ? `&nbsp;·&nbsp;${escapeHTML(artwork.year)}` : '',
+          artwork.price ? `<br><span style="color:#c9a84c; font-weight:600; font-size:1.05rem;">${escapeHTML(artwork.price)}</span>` : ''
+        ].filter(Boolean).join('');
+      }
+
+      stepsModal.style.display = 'flex';
+
+      const doClose = () => {
+        stepsModal.style.display = 'none';
+      };
+      if (closeBtn) closeBtn.onclick = doClose;
+      stepsModal.onclick = (e) => {
+        if (e.target === stepsModal) doClose();
+      };
+
+      if (btnContinue) {
+        btnContinue.onclick = () => {
+          doClose();
+
+          // 1. Redirect to the link saved specifically for this artwork
+          window.open(artwork.paymentLink, '_blank');
+
+          // 2. Arm return-to-tab listener so screenshot proof modal pops up when user returns
+          let returnTriggered = false;
+          const onReturn = () => {
+            if (returnTriggered) return;
+            returnTriggered = true;
+            window.removeEventListener('focus', onReturn);
+            document.removeEventListener('visibilitychange', onVisibility);
+            openPaymentProofModal(
+              artwork.title,
+              artwork.artist,
+              artwork.medium,
+              artwork.size,
+              artwork.year,
+              artwork.price
+            );
+          };
+
+          const onVisibility = () => {
+            if (document.visibilityState === 'visible') {
+              onReturn();
+            }
+          };
+
+          // Delay to ensure the new tab gains focus first
+          setTimeout(() => {
+            window.addEventListener('focus', onReturn);
+            document.addEventListener('visibilitychange', onVisibility);
+          }, 400);
+        };
+      }
+    }
+
+    function runArtworkPrimaryAction(artwork) {
+      if (isDirectPurchaseArtwork(artwork)) {
+        openDirectPurchaseSteps(artwork);
+        return;
+      }
+      openModal(artwork.imgSrc, artwork.title, artwork.artist, artwork.medium, artwork.size, artwork.year, artwork.desc, artwork.artId, artwork.price, artwork.artId === 'sanity');
+    }
+
+    function hydrateArtworkCard(card) {
+      const img = card.querySelector('img');
+      const imgArea = card.querySelector('.artwork-img-area');
+      const artistEl = card.querySelector('.artwork-artist');
+      const titleEl = card.querySelector('.artwork-title');
+      const mediumEl = card.querySelector('.artwork-details');
+      const actionBtn = card.querySelector('.view-details-btn');
+      if (!img || !imgArea || !actionBtn) return;
+
+      const sanityArtwork = card.dataset.sanityArtwork ? JSON.parse(card.dataset.sanityArtwork) : null;
+      const artwork = getArtworkData(img.getAttribute('src') || img.src, {
+        title: sanityArtwork?.title || (titleEl ? titleEl.textContent.trim() : ''),
+        artist: sanityArtwork?.artist || (artistEl ? artistEl.textContent.trim() : ''),
+        medium: sanityArtwork?.medium || (mediumEl ? mediumEl.textContent.trim() : ''),
+        size: sanityArtwork?.size,
+        year: sanityArtwork?.year,
+        desc: sanityArtwork?.description,
+        price: sanityArtwork?.price,
+        purchaseType: sanityArtwork?.purchaseType,
+        paymentLink: sanityArtwork?.paymentLink,
+        artId: card.dataset.artId || 'static'
+      }, Boolean(sanityArtwork));
+
+      img.setAttribute('src', artwork.imgSrc);
+      img.setAttribute('alt', artwork.title);
+
+      if (artistEl) artistEl.textContent = artwork.artist.toUpperCase();
+      if (titleEl) titleEl.textContent = artwork.title;
+      if (mediumEl) mediumEl.textContent = artwork.medium;
+
+      const openDetails = () => openModal(
+        artwork.imgSrc,
+        artwork.title,
+        artwork.artist,
+        artwork.medium,
+        artwork.size,
+        artwork.year,
+        artwork.desc,
+        artwork.artId,
+        artwork.price,
+        Boolean(sanityArtwork)
+      );
+
+      imgArea.removeAttribute('onclick');
+      imgArea.onclick = openDetails;
+
+      actionBtn.textContent = getArtworkPrimaryButtonLabel(artwork);
+      actionBtn.title = isDirectPurchaseArtwork(artwork)
+        ? 'Open secure checkout for this artwork'
+        : 'Open artwork details and gallery contact options';
+      actionBtn.removeAttribute('onclick');
+      actionBtn.onclick = (event) => {
+        event.preventDefault();
+        event.stopPropagation();
+        runArtworkPrimaryAction(artwork);
+      };
+    }
+
+    loadArtworksMetadata().then(() => {
+      document.querySelectorAll('#artworksGrid .artwork-card').forEach(hydrateArtworkCard);
+    });
+
+    async function openModal(imgSrc, title, artist, medium, size, year, desc, artId, price, preferFallback = false, purchaseType = '', paymentLink = '') {
+      await loadArtworksMetadata();
+      const artwork = getArtworkData(imgSrc, { title, artist, medium, size, year, desc, artId, price, purchaseType, paymentLink }, preferFallback);
+
+      document.getElementById('modalImg').src = artwork.imgSrc;
+      document.getElementById('modalTitle').textContent = artwork.title;
+      document.getElementById('modalArtist').textContent = artwork.artist;
+      document.getElementById('modalMedium').textContent = artwork.medium;
+      document.getElementById('modalSize').textContent = artwork.size;
+      document.getElementById('modalYear').textContent = artwork.year;
+      document.getElementById('modalArtistGrid').textContent = artwork.artist;
+      document.getElementById('modalTitleGrid').textContent = artwork.title;
+      document.getElementById('modalDesc').textContent = artwork.desc;
+
       const descElement = document.getElementById('modalDesc');
       const readMoreBtn = document.getElementById('readMoreBtn');
-      const fullDescription = desc;
+      const fullDescription = artwork.desc || '';
       const truncatedLength = 150;
       
       if (fullDescription.length > truncatedLength) {
@@ -535,22 +1002,80 @@
       const btnInquirePurchase = document.getElementById('btnInquirePurchase');
       const closeChoiceBox = document.getElementById('closeChoiceBox');
 
-      btnInquirePurchase.onclick = (e) => {
-        e.stopPropagation();
-        inquiryChoiceBox.style.display = 'flex';
-      };
+      // ── Populate inquiry box header with artwork info ──
+      const choiceTitle = document.getElementById('choiceBoxArtworkTitle');
+      const choiceMeta = document.getElementById('choiceBoxArtworkMeta');
+      if (choiceTitle) choiceTitle.textContent = artwork.title || 'Artwork';
+      if (choiceMeta) choiceMeta.innerHTML = [
+        artwork.artist ? `<strong style="color:#fff">${escapeHTML(artwork.artist)}</strong>` : '',
+        artwork.medium ? `&nbsp;·&nbsp;${escapeHTML(artwork.medium)}` : '',
+        artwork.size ? `&nbsp;·&nbsp;${escapeHTML(artwork.size)}` : '',
+        artwork.year ? `&nbsp;·&nbsp;${escapeHTML(artwork.year)}` : '',
+        artwork.price ? `<br><span style="color:#c9a84c; font-weight:600;">${escapeHTML(artwork.price)}</span>` : ''
+      ].filter(Boolean).join('');
+
+      if (isDirectPurchaseArtwork(artwork)) {
+        btnInquirePurchase.textContent = 'Direct Purchase';
+        btnInquirePurchase.title = 'Proceed to the payment link for this artwork';
+        btnInquirePurchase.onclick = (e) => {
+          e.stopPropagation();
+          runArtworkPrimaryAction(artwork);
+        };
+      } else {
+        btnInquirePurchase.textContent = 'Inquire to Purchase';
+        btnInquirePurchase.title = 'Inquire with the gallery';
+        btnInquirePurchase.onclick = (e) => {
+          e.stopPropagation();
+          inquiryChoiceBox.style.display = 'flex';
+        };
+      }
 
       closeChoiceBox.onclick = () => { inquiryChoiceBox.style.display = 'none'; };
 
+      // WhatsApp Inquiry — full artwork details pre-filled
       document.getElementById('btnChoiceWA').onclick = () => {
-        const text = encodeURIComponent(`ARTGALZIM PURCHASE INQUIRY\nPiece: ${title}\nArtist: ${artist}\nI would like to acquire this work.`);
+        const catNow = getCATTimeString();
+        const text = encodeURIComponent(
+`━━━━━━━━━━━━━━━━━━━━━━
+ARTGALZIM CENTER — PURCHASE INQUIRY
+━━━━━━━━━━━━━━━━━━━━━━
+🎨 Artwork: ${artwork.title}
+👤 Artist: ${artwork.artist}
+🖼 Medium: ${artwork.medium || 'N/A'}
+📐 Size: ${artwork.size || 'N/A'}
+📅 Year: ${artwork.year || 'N/A'}
+💰 Price: ${artwork.price}
+━━━━━━━━━━━━━━━━━━━━━━
+I am interested in acquiring this artwork.
+Please provide details on availability and acquisition steps.
+
+Time of Inquiry (CAT): ${catNow}
+━━━━━━━━━━━━━━━━━━━━━━`);
         window.open(`https://wa.me/${phone}?text=${text}`, '_blank');
         inquiryChoiceBox.style.display = 'none';
       };
 
+      // Gmail Inquiry — full artwork details pre-filled
       document.getElementById('btnChoiceGmail').onclick = () => {
-        const subject = encodeURIComponent(`Purchase Inquiry: ${title} by ${artist}`);
-        const body = encodeURIComponent(`To Artgalzim Center,\n\nI am interested in purchasing the following work:\nPiece: ${title}\nArtist: ${artist}\n\nPlease provide more details and acquisition steps.\n\nThank you.`);
+        const catNow = getCATTimeString();
+        const subject = encodeURIComponent(`Purchase Inquiry — "${artwork.title}" by ${artwork.artist} | ARTGALZIM CENTER`);
+        const body = encodeURIComponent(
+`To ARTGALZIM CENTER,
+
+I am interested in purchasing the following artwork:
+
+  Artwork: ${artwork.title}
+  Artist: ${artwork.artist}
+  Medium: ${artwork.medium || 'N/A'}
+  Size: ${artwork.size || 'N/A'}
+  Year: ${artwork.year || 'N/A'}
+  Listed Price: ${artwork.price}
+
+Please provide details on availability, authentication, and the full acquisition process.
+
+Thank you for your time.
+
+— Sent via artgalzim.com | ${catNow}`);
         window.location.href = `mailto:info@artgalzim.com?subject=${subject}&body=${body}`;
         inquiryChoiceBox.style.display = 'none';
       };
@@ -588,16 +1113,26 @@
             
             images.forEach(img => {
               const src = typeof img === 'string' ? img : img.src;
+              const artwork = getArtworkData(src, {
+                artist: artistNameRaw,
+                title: src.split('/').pop().replace(/\.[^/.]+$/, "").replace(/[-_]/g, " "),
+                medium: 'Contemporary Work'
+              });
               
               // Skip if it's already in the grid as a static piece
               const alreadyShown = staticCards.some(sc => sc.querySelector('img').src.includes(src));
               if (alreadyShown) return;
 
-              const lowSrc = src.toLowerCase();
               const filename = src.split('/').pop().replace(/\.[^/.]+$/, "").replace(/[-_]/g, " ").toLowerCase();
+              const searchableText = [
+                artwork.artist,
+                artwork.title,
+                artwork.medium,
+                filename
+              ].join(' ').toLowerCase();
               
-              if (artistName.toLowerCase().includes(query) || filename.includes(query)) {
-                dynamicResults.push({ src, artist: artistNameRaw, title: filename, lowSrc });
+              if (searchableText.includes(query)) {
+                dynamicResults.push({ src, artist: artwork.artist, title: artwork.title.toLowerCase() });
               }
             });
           });
@@ -605,25 +1140,33 @@
 
         // 4. Create and append matching dynamic cards
         dynamicResults.forEach(res => {
+          const artwork = getArtworkData(res.src, {
+            title: res.title.charAt(0).toUpperCase() + res.title.slice(1),
+            artist: res.artist,
+            medium: 'Contemporary Work',
+            size: 'Various Sizes',
+            year: '2026',
+            desc: 'Recently added to our collection.',
+            artId: 'dynamic',
+            price: 'Price on Request'
+          });
           const card = document.createElement('div');
           card.className = "artwork-card reveal dynamic-search-hit visible";
-          const title = res.title.charAt(0).toUpperCase() + res.title.slice(1);
-          
-          // Use "Inquire to Purchase" button for anything dynamic/undocumented
           card.innerHTML = `
-              <div class="artwork-img-area" onclick="openModal('${res.src}', '${title}', '${res.artist}', 'Contemporary Work', 'Various Sizes', '2026', 'Recently added to our collection.', 'dynamic', 'Quote on Request')">
-                <img src="${res.src}" alt="${title}" loading="lazy">
+              <div class="artwork-img-area">
+                <img src="${escapeHTML(artwork.imgSrc)}" alt="${escapeHTML(artwork.title)}" loading="lazy">
                 <div class="artwork-hover-hint">Expand 🔍</div>
               </div>
               <div class="artwork-meta">
-                <p class="artwork-artist">${res.artist.toUpperCase()}</p>
-                <h3 class="artwork-title">${title}</h3>
-                <p class="artwork-details">Contemporary Work</p>
+                <p class="artwork-artist">${escapeHTML(artwork.artist.toUpperCase())}</p>
+                <h3 class="artwork-title">${escapeHTML(artwork.title)}</h3>
+                <p class="artwork-details">${escapeHTML(artwork.medium)}</p>
                 <div class="artwork-card-actions" style="margin-top: 1rem;">
-                  <button class="btn btn-outline btn-sm view-details-btn" onclick="openModal('${res.src}', '${title}', '${res.artist}', 'Contemporary Work', 'Various Sizes', '2026', 'Recently added to our collection.', 'dynamic', 'Quote on Request')">Inquire to Purchase</button>
+                  <button class="btn btn-outline btn-sm view-details-btn">${escapeHTML(getArtworkPrimaryButtonLabel(artwork))}</button>
                 </div>
               </div>
           `;
+          hydrateArtworkCard(card);
           artworksGrid.appendChild(card);
         });
       });
@@ -638,41 +1181,48 @@
       }
     });
 
-    document.addEventListener("DOMContentLoaded", () => {
+    const openArtworkFromQuery = () => {
       const params = new URLSearchParams(window.location.search);
       const imgSrc = params.get('img');
+      const artist = params.get('artist') || "ARTGALZIM Artist";
+      const category = params.get('category') || '';
+      const album = params.get('album') || '';
+
       if (imgSrc) {
-        const artist = params.get('artist') || "ARTGALZIM Artist";
-        let title = params.get('title') || "Artwork";
-        const medium = params.get('m') || "Contemporary Work";
-        const size = params.get('s') || "Inquire for Size";
-        const year = params.get('y') || "2026";
-        const desc = params.get('d') || "Recently added to our collection.";
-
-        title = title.charAt(0).toUpperCase() + title.slice(1);
-        setTimeout(() => { if (typeof openModal === 'function') openModal(imgSrc, title, artist, medium, size, year, desc); }, 300);
+        const grid = document.getElementById('artworksGrid');
+        if (grid) {
+          setTimeout(() => {
+            grid.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          }, 80);
+        }
       }
-    });
-  </script>
 
-  <!-- Choice Box (Popup) for inquiry method -->
-  <div id="inquiryChoiceBox" class="inquiry-choice-overlay" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 2000; align-items: center; justify-content: center;">
-    <div class="inquiry-choice-content" style="background: var(--bg-card); padding: 2.5rem; border-radius: 12px; position: relative; max-width: 400px; width: 90%; text-align: center; border: 1px solid var(--border);">
-      <button class="choice-close" id="closeChoiceBox" style="position: absolute; top: 1rem; right: 1rem; background: none; border: none; font-size: 1.5rem; color: var(--text-muted); cursor: pointer;">✕</button>
-      <h4 style="margin-bottom: 1rem; font-family: 'Playfair Display', serif;">Select Contact Method</h4>
-      <p style="margin-bottom: 2rem; font-size: 0.9rem; color: var(--text-muted);">How would you like to continue with your inquiry?</p>
-      <div class="choice-buttons" style="display: flex; flex-direction: column; gap: 1rem;">
-        <button class="choice-btn wa" id="btnChoiceWA" style="padding: 1rem; border-radius: 8px; border: none; background: #25D366; color: #fff; font-weight: 600; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 0.75rem;">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"></path></svg>
-          <span>WhatsApp Inquiry</span>
-        </button>
-        <button class="choice-btn gmail" id="btnChoiceGmail" style="padding: 1rem; border-radius: 8px; border: 1px solid var(--border); background: #EA4335; color: #fff; font-weight: 600; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 0.75rem;">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
-          <span>Gmail Inquiry</span>
-        </button>
-      </div>
-    </div>
-  </div>
+      if (!imgSrc) {
+        if (artist || category || album) {
+          const grid = document.getElementById('artworksGrid');
+          if (grid) grid.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+        return;
+      }
+
+      let title = params.get('title') || "Artwork";
+      const medium = params.get('m') || "Contemporary Work";
+      const size = params.get('s') || "Inquire for Size";
+      const year = params.get('y') || "2026";
+      const desc = params.get('d') || "Recently added to our collection.";
+      const price = params.get('p') || "";
+      const purchaseType = params.get('pt') || 'inquire';
+      const paymentLink = params.get('pl') || '';
+
+      title = title.charAt(0).toUpperCase() + title.slice(1);
+      openModal(imgSrc, title, artist, medium, size, year, desc, 'dynamic', price, true, purchaseType, paymentLink);
+    };
+
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', openArtworkFromQuery, { once: true });
+    } else {
+      openArtworkFromQuery();
+    }
+  </script>
 </body>
 </html>
-
