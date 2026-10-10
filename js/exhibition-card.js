@@ -86,11 +86,45 @@
       : '';
   }
 
+  function actionHref(exhibition) {
+    const actionType = exhibition.actionType
+      || (exhibition.whatsappNumber ? 'whatsapp' : exhibition.bookingEmail ? 'email' : 'link');
+    if (actionType === 'none') return '';
+    if (actionType === 'whatsapp') {
+      const phone = String(exhibition.whatsappNumber || '').replace(/\D/g, '');
+      if (phone.length < 7 || phone.length > 15) return '';
+      const message = exhibition.actionInstructions
+        || `Hello, I am interested in ${exhibition.title || 'this exhibition'}.`;
+      return `https://wa.me/${phone}?text=${encodeURIComponent(message)}`;
+    }
+    if (actionType === 'email') {
+      const email = String(exhibition.bookingEmail || '').trim();
+      if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return '';
+      const params = new URLSearchParams();
+      params.set('subject', `Enquiry: ${exhibition.title || 'Exhibition'}`);
+      if (exhibition.actionInstructions) params.set('body', exhibition.actionInstructions);
+      return escapeHtml(`mailto:${email}?${params.toString()}`);
+    }
+    return safeLink(exhibition.paymentLink || exhibition.registrationLink || exhibition.contactLink);
+  }
+
+  function renderActionInstructions(exhibition) {
+    if (!exhibition.actionInstructions) return '';
+    return `<div class="exh-action-instructions"><strong>Booking / submission instructions</strong><p>${escapeHtml(exhibition.actionInstructions).replace(/\n/g, '<br>')}</p></div>`;
+  }
+
   function renderCta(exhibition) {
-    const href = safeLink(exhibition.registrationLink || exhibition.contactLink);
+    const href = actionHref(exhibition);
     if (!href) return '';
-    const targetAttrs = exhibition.registrationLink ? ' target="_blank" rel="noopener noreferrer"' : '';
-    return `<a href="${href}" class="exh-cta"${targetAttrs}>${escapeHtml(exhibition.ctaText || 'Learn More')}</a>`;
+    const actionType = exhibition.actionType
+      || (exhibition.whatsappNumber ? 'whatsapp' : exhibition.bookingEmail ? 'email' : 'link');
+    const isExternal = actionType === 'whatsapp'
+      || (actionType === 'link' && Boolean(exhibition.paymentLink || exhibition.registrationLink));
+    const targetAttrs = isExternal ? ' target="_blank" rel="noopener noreferrer"' : '';
+    const defaultLabel = actionType === 'whatsapp' ? 'WhatsApp Us'
+      : actionType === 'email' ? 'Send Portfolio / Email'
+        : exhibition.paymentLink ? 'Pay Now' : (exhibition.registrationLink ? 'Register' : 'Learn More');
+    return `<a href="${href}" class="exh-cta"${targetAttrs}>${escapeHtml(exhibition.ctaText || defaultLabel)}</a>`;
   }
 
   function render(exhibition) {
@@ -122,6 +156,7 @@
             ${exhibition.theme ? `<p class="exh-participants">Theme: ${escapeHtml(exhibition.theme)}</p>` : ''}
             <p class="exh-desc">${escapeHtml(exhibition.description || '')}</p>
             ${renderDetails(exhibition)}
+            ${renderActionInstructions(exhibition)}
             ${renderCta(exhibition)}
           </div>
         </article>`;
@@ -141,6 +176,7 @@
           ${exhibition.theme ? `<p class="exh-participants">Theme: ${escapeHtml(exhibition.theme)}</p>` : ''}
           <p class="exh-desc">${escapeHtml(exhibition.description || '')}${feeText}</p>
           ${renderDetails(exhibition)}
+          ${renderActionInstructions(exhibition)}
           ${renderCta(exhibition)}
         </div>
       </article>`;

@@ -511,6 +511,10 @@ test('dashboard artist, folder, artwork and content actions stay in sync with Sa
     exhibitionForm.set('status', 'upcoming');
     exhibitionForm.set('registrationLink', 'https://forms.example.test/register');
     exhibitionForm.set('ctaText', 'Register');
+    exhibitionForm.set('actionType', 'whatsapp');
+    exhibitionForm.set('whatsappNumber', '+263 77 123 4567');
+    exhibitionForm.set('bookingEmail', '');
+    exhibitionForm.set('actionInstructions', 'Send your portfolio and a short bio.');
     exhibitionForm.set('timeRange', '10:00 – 17:30');
     exhibitionForm.set('conditions', 'Registration required.');
     exhibitionForm.set('registrationFee', '$15');
@@ -533,6 +537,9 @@ test('dashboard artist, folder, artwork and content actions stay in sync with Sa
     assert.equal(exhibition.description, 'A test exhibition.');
     assert.equal(exhibition.status, 'upcoming');
     assert.equal(exhibition.registrationLink, 'https://forms.example.test/register');
+    assert.equal(exhibition.actionType, 'whatsapp');
+    assert.equal(exhibition.whatsappNumber, '+263 77 123 4567');
+    assert.equal(exhibition.actionInstructions, 'Send your portfolio and a short bio.');
     assert.equal(exhibition.contactLink, 'https://artgalzim.com/contact');
     assert.equal(exhibition.ctaText, 'Register');
     assert.equal(exhibition.timeRange, '10:00 – 17:30');
@@ -547,6 +554,34 @@ test('dashboard artist, folder, artwork and content actions stay in sync with Sa
     const listedExhibition = (await adminExhibitions.json()).find(item => item.id === 'event-test');
     assert.equal(listedExhibition.registrationFee, '$15');
     assert.equal(listedExhibition.contactLink, 'https://artgalzim.com/contact');
+    assert.equal(listedExhibition.actionType, 'whatsapp');
+    assert.equal(listedExhibition.whatsappNumber, '+263 77 123 4567');
+    const exhibitionEdit = new FormData();
+    exhibitionEdit.set('id', 'event-test');
+    exhibitionEdit.set('title', 'Studio-managed open call');
+    exhibitionEdit.set('actionType', 'email');
+    exhibitionEdit.set('whatsappNumber', '');
+    exhibitionEdit.set('bookingEmail', 'submissions@example.org');
+    exhibitionEdit.set('actionInstructions', 'Attach up to five images.');
+    const editedExhibition = await authenticatedRequest('/api/exhibitions', {
+      method: 'POST',
+      body: exhibitionEdit
+    });
+    assert.equal(editedExhibition.status, 200);
+    const editedExhibitionRecord = documents.get('drafts.event-test');
+    assert.equal(editedExhibitionRecord.actionType, 'email');
+    assert.equal(editedExhibitionRecord.bookingEmail, 'submissions@example.org');
+    assert.equal(editedExhibitionRecord.actionInstructions, 'Attach up to five images.');
+    assert.equal(editedExhibitionRecord.registrationLink, 'https://forms.example.test/register');
+    const invalidExhibitionAction = new FormData();
+    invalidExhibitionAction.set('title', 'Invalid action');
+    invalidExhibitionAction.set('actionType', 'email');
+    invalidExhibitionAction.set('bookingEmail', 'invalid-email');
+    const rejectedExhibitionAction = await authenticatedRequest('/api/exhibitions', {
+      method: 'POST',
+      body: invalidExhibitionAction
+    });
+    assert.equal(rejectedExhibitionAction.status, 400);
     assert.equal(listedExhibition.displayDateOverride, 'Follow our socials for updates');
     const deletedExhibition = await authenticatedRequest('/api/exhibitions/event-test', { method: 'DELETE' });
     assert.equal(deletedExhibition.status, 200);

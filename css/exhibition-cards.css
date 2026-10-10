@@ -115,6 +115,16 @@
 .exh-details summary:focus-visible { outline: 2px solid var(--gold); outline-offset: 4px; }
 .exh-details-content { display: grid; gap: 0.45rem; padding-top: 0.75rem; }
 .exh-details-content strong { color: var(--text); }
+.exh-action-instructions {
+  border-left: 2px solid var(--gold);
+  background: linear-gradient(110deg, var(--gold-d), transparent 85%);
+  padding: 0.75rem 0.85rem;
+  color: var(--text-muted);
+  font-size: 0.82rem;
+  line-height: 1.6;
+}
+.exh-action-instructions strong { color: var(--gold); font-size: 0.72rem; text-transform: uppercase; }
+.exh-action-instructions p { margin-top: 0.3rem; white-space: normal; overflow-wrap: anywhere; }
 .exh-cta {
   display: inline-block;
   margin-top: 1.25rem;

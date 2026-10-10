@@ -106,8 +106,47 @@ export const schemaTypes = [
         options: { list: ['upcoming', 'active', 'ongoing', 'past'] }
       }),
       defineField({ name: 'registrationLink', title: 'Registration Link', type: 'url' }),
+      defineField({ name: 'paymentLink', title: 'Payment Link', type: 'url' }),
       defineField({ name: 'contactLink', title: 'Contact Link', type: 'string' }),
       defineField({ name: 'ctaText', title: 'Call-to-action Text', type: 'string' }),
+      defineField({
+        name: 'actionType',
+        title: 'Customer Button Action',
+        type: 'string',
+        initialValue: 'link',
+        options: {
+          list: [
+            { title: 'Registration / payment / contact link', value: 'link' },
+            { title: 'WhatsApp', value: 'whatsapp' },
+            { title: 'Email / portfolio submission', value: 'email' },
+            { title: 'No button', value: 'none' }
+          ],
+          layout: 'radio'
+        }
+      }),
+      defineField({
+        name: 'whatsappNumber',
+        title: 'WhatsApp Number',
+        type: 'string',
+        description: 'Include the country code, for example +263 77 123 4567.',
+        hidden: ({ parent }) => parent?.actionType !== 'whatsapp',
+        validation: rule => rule.custom(value => {
+          if (!value) return true;
+          const digits = value.replace(/\D/g, '');
+          return digits.length >= 7 && digits.length <= 15
+            ? true
+            : 'Enter a number with country code (7 to 15 digits).';
+        })
+      }),
+      defineField({
+        name: 'bookingEmail',
+        title: 'Booking / Portfolio Email',
+        type: 'string',
+        hidden: ({ parent }) => parent?.actionType !== 'email',
+        validation: rule => rule.custom(value => !value || /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)
+          || 'Enter a valid email address.')
+      }),
+      defineField({ name: 'actionInstructions', title: 'Booking / Submission Instructions', type: 'text', rows: 4 }),
       defineField({ name: 'registrationFee', title: 'Registration Fee', type: 'string' }),
       defineField({ name: 'timeRange', title: 'Display Time Range', type: 'string' }),
       defineField({ name: 'conditions', title: 'Conditions', type: 'text', rows: 3 }),

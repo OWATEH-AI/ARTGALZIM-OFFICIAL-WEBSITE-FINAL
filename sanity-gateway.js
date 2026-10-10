@@ -633,8 +633,24 @@ export function createSanityGateway(env) {
         item = await body();
       }
       const id = String(item.id || `ex-${Date.now()}`).replace(/^drafts\./, '');
+      const actionType = String(item.actionType || 'link').trim();
+      const whatsappNumber = String(item.whatsappNumber || '').trim();
+      const bookingEmail = String(item.bookingEmail || '').trim();
+      const actionInstructions = String(item.actionInstructions || '').trim();
+      if (!['link', 'whatsapp', 'email', 'none'].includes(actionType)) {
+        return json({ error: 'Choose a valid exhibition button action.' }, 400);
+      }
+      if (actionType === 'whatsapp') {
+        const digits = whatsappNumber.replace(/\D/g, '');
+        if (digits.length < 7 || digits.length > 15) {
+          return json({ error: 'Enter a WhatsApp number with country code (7 to 15 digits).' }, 400);
+        }
+      }
+      if (actionType === 'email' && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(bookingEmail)) {
+        return json({ error: 'Enter a valid booking or portfolio email address.' }, 400);
+      }
       const imageRef = image?._id ? { _type: 'image', asset: { _type: 'reference', _ref: image._id } } : undefined;
-      const normalizedItem = { ...item, id };
+      const normalizedItem = { ...item, id, actionType, whatsappNumber, bookingEmail, actionInstructions };
       if (item.isPlaceholder !== undefined) {
         normalizedItem.isPlaceholder = item.isPlaceholder === true || item.isPlaceholder === 'true';
       }
@@ -800,6 +816,20 @@ export function createSanityGateway(env) {
         const folder = folderId ? await getDocById('journalFolder', folderId) : null;
         if (folderId && (!folder || folder.isDeleted)) return json({ error: 'Journal folder not found.' }, 404);
         if (destination === 'journal' && !folder) return json({ error: 'Choose a journal folder.' }, 400);
+        let tvFolder = null;
+        if (destination === 'tv') {
+          const allDocs = await getAllDocuments();
+          tvFolder = allDocs.find(doc => doc._type === 'journalFolder' && !doc.isDeleted && (doc.title === 'ARTGALZIM TV' || doc.id === 'journal-folder-artgalzim-tv'));
+          if (!tvFolder) {
+            const defaultTvFolderId = 'journal-folder-artgalzim-tv';
+            await saveDraft('journalFolder', defaultTvFolderId, {
+              title: 'ARTGALZIM TV',
+              slug: 'artgalzim-tv',
+              description: 'Default folder for ARTGALZIM TV episodes, documentaries, and shorts.'
+            });
+            tvFolder = { _id: defaultTvFolderId, title: 'ARTGALZIM TV' };
+          }
+        }
         const id = String(form.get('id') || `journal-entry-${slug(title)}-${Date.now()}`).replace(/^drafts\./, '');
         const existing = form.get('id') ? await getDocById('journalEntry', id) : null;
         if (form.get('id') && !existing) return json({ error: 'Journal entry not found.' }, 404);
@@ -808,7 +838,9 @@ export function createSanityGateway(env) {
         if (!allowedTypes.includes(entryType)) return json({ error: 'Choose a valid journal entry type.' }, 400);
         const imageFile = form.get('image');
         const attachmentFile = form.get('attachment');
-        const uploadedVideo = isDirectVideoUpload(attachmentFile);
+        const hasExistingVideoAttachment = Boolean(existing?.attachment?.asset?._ref || existing?.attachmentUrl)
+          && (destination === 'tv' || /\.(mp4|webm|ogv)$/i.test(existing?.attachmentName || existing?.attachmentUrl || ''));
+        const uploadedVideo = isDirectVideoUpload(attachmentFile) || (!attachmentFile?.size && hasExistingVideoAttachment);
         const attachmentLooksLikeVideo = attachmentFile instanceof File
           && attachmentFile.size > 0
           && (attachmentFile.type.startsWith('video/') || /\.(mp4|webm|ogv|mov|m4v)$/i.test(attachmentFile.name));
@@ -819,7 +851,7 @@ export function createSanityGateway(env) {
         if (uploadedVideo && submittedMediaType && submittedMediaType !== 'video') {
           return json({ error: 'A directly uploaded video must use the Video media format.' }, 400);
         }
-        const mediaType = submittedMediaType || (uploadedVideo ? 'video' : '');
+        const mediaType = submittedMediaType || (uploadedVideo ? 'video' : (existing?.mediaType || ''));
         if (mediaType && !['video', 'document', 'social'].includes(mediaType)) {
           return json({ error: 'Choose a valid media format.' }, 400);
         }
@@ -832,6 +864,9 @@ export function createSanityGateway(env) {
           mediaUrl = validateJournalMediaUrl(form.get('mediaUrl'), mediaType);
         } catch (error) {
           return json({ error: error.message }, 400);
+        }
+        if (!mediaUrl && !form.has('mediaUrl') && existing?.mediaUrl) {
+          mediaUrl = existing.mediaUrl;
         }
         if (!mediaUrl && mediaType && !uploadedVideo) return json({ error: 'Enter a URL for the selected media format.' }, 400);
         if (destination === 'tv' && !uploadedVideo && (!mediaUrl || !['video', 'social'].includes(mediaType))) {
@@ -856,20 +891,26 @@ export function createSanityGateway(env) {
         const imageAssets = await Promise.all(imageFiles.map(file => upload(file)));
         if (imageAssets.some(asset => !asset?._id || !asset.url)) throw new Error('Sanity did not return a usable image asset for this gallery upload.');
         const posterAsset = destination === 'tv' && imageFile instanceof File && imageFile.size ? await upload(imageFile) : null;
+        const channelLogoFile = form.get('channelLogo');
+        const channelLogoAsset = destination === 'tv' && channelLogoFile instanceof File && channelLogoFile.size ? await upload(channelLogoFile) : null;
         const attachmentAsset = attachmentFile instanceof File && attachmentFile.size ? await upload(attachmentFile) : null;
         const entrySlug = slug(form.get('slug') || title);
         const excerpt = String(form.get('excerpt') || '').trim();
         const bodyText = String(form.get('body') || '').trim();
+        const dateType = String(form.get('dateType') || existing?.dateType || '');
+        const timerStart = String(form.get('timerStart') || existing?.timerStart || '');
         await saveDraft('journalEntry', id, {
           title,
           slug: entrySlug,
-          folderId: folder ? folderId : '',
+          folderId: folder ? folderId : String(form.get('folderId') || ''),
           folderTitle: folder?.title || '',
           entryType,
           destination,
           mediaType,
           mediaUrl,
           ...(destination === 'tv' ? { videoOrientation } : {}),
+          ...(dateType ? { dateType } : {}),
+          ...(timerStart ? { timerStart } : {}),
           excerpt: destination === 'journal' ? sanitizeHtml(excerpt, JOURNAL_RICH_TEXT_OPTIONS) : excerpt,
           ...(destination === 'journal' && form.has('artistCurator')
             ? { artistCurator: String(form.get('artistCurator') || '').trim() }
@@ -881,9 +922,22 @@ export function createSanityGateway(env) {
           ...(form.get('eventDate') ? { eventDate: String(form.get('eventDate')) } : {}),
           ...(form.get('endDate') ? { endDate: String(form.get('endDate')) } : {}),
           location: String(form.get('location') || '').trim(),
+          ...(destination === 'tv' || form.has('badge')
+            ? { badge: String(form.get('badge') || '').trim() }
+            : {}),
           ...(destination === 'tv' || form.has('author')
             ? { author: String(form.get('author') || '').trim() }
             : {}),
+          ...(form.get('imagePositionX') && form.get('imagePositionY') ? {
+            imagePosition: {
+              x: Number(form.get('imagePositionX') || 50),
+              y: Number(form.get('imagePositionY') || 50)
+            }
+          } : existing?.imagePosition ? { imagePosition: existing.imagePosition } : {}),
+          ...(channelLogoAsset?._id ? {
+            authorAvatar: channelLogoAsset.url,
+            channelLogo: { _type: 'image', asset: { _type: 'reference', _ref: channelLogoAsset._id } }
+          } : form.get('authorAvatar') ? { authorAvatar: String(form.get('authorAvatar')).trim() } : {}),
           publishedAt: existing?.publishedAt || new Date().toISOString(),
           ...(imageAssets.length ? {
             images: imageAssets.map(asset => ({
@@ -897,12 +951,19 @@ export function createSanityGateway(env) {
           ...(posterAsset?._id ? {
             image: { _type: 'image', asset: { _type: 'reference', _ref: posterAsset._id } },
             imageUrl: posterAsset.url
-          } : {}),
+          } : (destination === 'tv' && existing?.imageUrl ? {
+            image: existing.image,
+            imageUrl: existing.imageUrl
+          } : {})),
           ...(attachmentAsset?._id ? {
             attachment: { _type: 'file', asset: { _type: 'reference', _ref: attachmentAsset._id } },
             attachmentUrl: attachmentAsset.url,
             attachmentName: attachmentFile.name
-          } : {})
+          } : (existing?.attachmentUrl ? {
+            attachment: existing.attachment,
+            attachmentUrl: existing.attachmentUrl,
+            attachmentName: existing.attachmentName || 'video.mp4'
+          } : {}))
         });
         return json({ ok: true, id, slug: entrySlug });
       }
@@ -989,7 +1050,7 @@ export function createSanityGateway(env) {
       }
       if (url.pathname === '/api/public-gallery' && request.method === 'GET') return json({ data: await publicGallery() });
       if (url.pathname === '/api/public-content' && request.method === 'GET') {
-        const docs = await query('*[_type in ["post", "libraryItem", "exhibition", "journalFolder", "journalEntry"] && (!defined(isDeleted) || isDeleted == false)]{_id, _type, id, title, slug, excerpt, body, description, eyebrow, coverHeading, coverSubheading, updateText, updateUrl, conditions, publishedAt, kind, assetUrl, artist, artistCurator, category, organization, parentFolderId, folderId, folderTitle, entryType, destination, mediaType, mediaUrl, videoOrientation, eventDate, endDate, author, attachmentName, location, startDate, startTime, endTime, theme, status, contactLink, registrationLink, ctaText, registrationFee, timeRange, isPlaceholder, displayDateOverride, "fileUrl": coalesce(file.asset->url, attachment.asset->url, attachmentUrl), "imageUrl": coalesce(image.asset->url, poster.asset->url, imageUrl), "imageUrls": coalesce(images[].asset->url, imagesUrl), "coverUrl": coalesce(cover.asset->url, coverUrl)} | order(publishedAt desc)');
+        const docs = await query('*[_type in ["post", "libraryItem", "exhibition", "journalFolder", "journalEntry"] && (!defined(isDeleted) || isDeleted == false)]{_id, _type, id, title, slug, excerpt, body, description, eyebrow, coverHeading, coverSubheading, updateText, updateUrl, conditions, publishedAt, kind, assetUrl, artist, artistCurator, category, organization, parentFolderId, folderId, folderTitle, entryType, destination, mediaType, mediaUrl, videoOrientation, dateType, timerStart, eventDate, endDate, author, attachmentName, location, startDate, startTime, endTime, theme, status, contactLink, registrationLink, paymentLink, ctaText, registrationFee, timeRange, isPlaceholder, displayDateOverride, imagePosition, "authorAvatar": coalesce(authorAvatar.asset->url, authorAvatar), "fileUrl": coalesce(file.asset->url, attachment.asset->url, attachmentUrl), "imageUrl": coalesce(image.asset->url, poster.asset->url, imageUrl), "imageUrls": coalesce(images[].asset->url, imagesUrl), "coverUrl": coalesce(cover.asset->url, coverUrl)} | order(publishedAt desc)');
         return json({ data: docs });
       }
       if (url.pathname === '/api/login' && request.method === 'POST') {
