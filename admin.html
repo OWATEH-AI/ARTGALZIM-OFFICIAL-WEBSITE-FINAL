@@ -40,6 +40,8 @@
       line-height: 1.6; 
       display: flex; 
       height: 100vh; 
+      height: 100dvh;
+      min-height: 100vh;
       overflow: hidden; 
       -webkit-font-smoothing: antialiased;
     }
@@ -120,12 +122,25 @@
     
     .topbar-actions { display: flex; align-items: center; gap: 0.75rem; }
     .btn-sync {
-      background: var(--gold-d); border: 1px solid var(--gold); color: var(--gold);
-      padding: 0.45rem 1.1rem; border-radius: 4px; font-family: inherit; font-size: 0.78rem;
+      background: linear-gradient(135deg, rgba(201,168,76,0.18) 0%, rgba(201,168,76,0.06) 100%);
+      border: 1px solid var(--gold); color: var(--gold-light);
+      padding: 0.45rem 1.15rem; border-radius: 6px; font-family: inherit; font-size: 0.78rem;
       cursor: pointer; letter-spacing: 0.08em; text-transform: uppercase; font-weight: 600;
-      transition: all 0.2s; display: inline-flex; align-items: center; gap: 0.4rem;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(201, 168, 76, 0.25);
+      transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.2s ease, background 0.2s ease, color 0.2s ease;
+      display: inline-flex; align-items: center; gap: 0.45rem;
+      touch-action: manipulation;
     }
-    .btn-sync:hover { background: var(--gold); color: #000; }
+    .btn-sync:hover {
+      background: linear-gradient(135deg, #c9a84c 0%, #e2c56b 100%);
+      color: #0a0a0a;
+      box-shadow: 0 4px 16px rgba(201, 168, 76, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.4);
+      transform: translateY(-1px);
+    }
+    .btn-sync:active {
+      transform: translateY(1px) scale(0.98);
+      box-shadow: 0 1px 4px rgba(0, 0, 0, 0.4);
+    }
 
     #content { flex: 1; overflow-y: auto; padding: 2rem; }
 
@@ -166,19 +181,82 @@
       display: flex; align-items: center; gap: 0.6rem; flex-wrap: wrap;
     }
     .btn-action-gold {
-      background: var(--gold); color: #000; border: 1px solid var(--gold);
-      padding: 0.55rem 1.2rem; border-radius: 4px; font-weight: 600; font-size: 0.8rem;
-      letter-spacing: 0.05em; text-transform: uppercase; cursor: pointer; transition: opacity 0.2s;
-      display: inline-flex; align-items: center; gap: 0.4rem;
+      background: linear-gradient(135deg, #c9a84c 0%, #e2c56b 50%, #b89438 100%);
+      color: #0a0a0a; border: 1px solid rgba(255, 235, 175, 0.4);
+      padding: 0.55rem 1.25rem; border-radius: 6px; font-weight: 600; font-size: 0.8rem;
+      letter-spacing: 0.06em; text-transform: uppercase; cursor: pointer;
+      display: inline-flex; align-items: center; gap: 0.45rem;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.35);
+      transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.2s ease, opacity 0.2s ease;
+      touch-action: manipulation;
     }
-    .btn-action-gold:hover { opacity: 0.88; }
+    .btn-action-gold:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 4px 18px rgba(201, 168, 76, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.5);
+      opacity: 0.95;
+    }
+    .btn-action-gold:active {
+      transform: translateY(1px) scale(0.98);
+      box-shadow: 0 1px 4px rgba(0, 0, 0, 0.4);
+    }
     .btn-action-outline {
-      background: var(--bg3); border: 1px solid var(--border); color: var(--text);
-      padding: 0.55rem 1.1rem; border-radius: 4px; font-weight: 500; font-size: 0.8rem;
-      letter-spacing: 0.04em; cursor: pointer; transition: all 0.2s;
-      display: inline-flex; align-items: center; gap: 0.4rem;
+      background: linear-gradient(180deg, rgba(32, 32, 32, 0.85) 0%, rgba(20, 20, 20, 0.95) 100%);
+      border: 1px solid rgba(255, 255, 255, 0.14); color: var(--text);
+      padding: 0.55rem 1.15rem; border-radius: 6px; font-weight: 500; font-size: 0.8rem;
+      letter-spacing: 0.04em; cursor: pointer;
+      display: inline-flex; align-items: center; gap: 0.45rem;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+      transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.2s ease, color 0.2s ease, background 0.2s ease, box-shadow 0.2s ease;
+      touch-action: manipulation;
     }
-    .btn-action-outline:hover { border-color: var(--gold); color: var(--gold); background: var(--gold-d); }
+    .btn-action-outline:hover {
+      border-color: var(--gold); color: var(--gold-light);
+      background: linear-gradient(180deg, rgba(42, 36, 24, 0.9) 0%, rgba(24, 20, 12, 0.95) 100%);
+      box-shadow: 0 4px 14px rgba(201, 168, 76, 0.2), inset 0 1px 0 rgba(201, 168, 76, 0.2);
+      transform: translateY(-1px);
+    }
+    .btn-action-outline:active {
+      transform: translateY(1px) scale(0.98);
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+    }
+
+    button { font-family: inherit; touch-action: manipulation; }
+    button:focus-visible { outline: 2px solid var(--gold-light); outline-offset: 2px; }
+    .btn-set-cover, .btn-edit-toggle, .artwork-view-btn, .artwork-cover-btn,
+    .artwork-quick-del-btn, .tv-badge-pill, .tv-preview-window-btn {
+      border-radius: 7px;
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.12), 0 2px 7px rgba(0, 0, 0, 0.25);
+      touch-action: manipulation;
+    }
+    .btn-set-cover, .btn-edit-toggle, .artwork-view-btn, .artwork-cover-btn,
+    .artwork-quick-del-btn, .tv-preview-window-btn { min-height: 42px; }
+    .tv-badge-pill { min-height: 40px; }
+
+    /* ── TV Preview Window Selector Pills ── */
+    .tv-preview-window-selector {
+      display: flex; gap: 0.5rem; align-items: center; flex-wrap: wrap; margin-bottom: 1.25rem;
+      padding: 0.75rem 1rem; background: linear-gradient(180deg, rgba(26, 26, 26, 0.8) 0%, rgba(17, 17, 17, 0.9) 100%);
+      border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 8px;
+    }
+    .tv-preview-window-selector > span {
+      font-size: 0.74rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.08em;
+      color: var(--gold); margin-right: 0.3rem; display: flex; align-items: center; gap: 0.35rem;
+    }
+    .tv-preview-window-btn {
+      background: var(--bg3); border: 1px solid var(--border); color: var(--muted);
+      font-size: 0.75rem; font-weight: 600; padding: 0.4rem 0.9rem; border-radius: 6px;
+      cursor: pointer; display: inline-flex; align-items: center; gap: 0.4rem;
+      transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .tv-preview-window-btn:hover {
+      border-color: var(--border-g); color: var(--text); background: rgba(255, 255, 255, 0.04);
+    }
+    .tv-preview-window-btn.active {
+      background: linear-gradient(135deg, rgba(201, 168, 76, 0.22) 0%, rgba(201, 168, 76, 0.08) 100%);
+      border-color: var(--gold); color: #fff;
+      box-shadow: 0 0 12px rgba(201, 168, 76, 0.25), inset 0 1px 0 rgba(201, 168, 76, 0.35);
+    }
+    .tv-preview-window-btn { flex: 1 1 140px; justify-content: center; }
 
     /* ── Cards / Grids (No Subpixel Glitch / Hardware Accelerated Framing) ── */
     .card {
@@ -666,6 +744,94 @@
     .exhibition-admin-actions button { min-height: 2.5rem; }
     .exhibition-admin-preview { min-width: 0; }
     .exhibition-admin-preview .exh-card { height: 100%; }
+
+    /* ── ARTGALZIM TV Preview Styles ── */
+    .ag-tv-card {
+      display: flex; flex-direction: column; background: transparent;
+      border: none; padding: 0; text-align: left; color: inherit; font-family: inherit;
+      position: relative; border-radius: 12px; width: 100%;
+    }
+    .ag-tv-thumb-wrap {
+      position: relative; width: 100%; aspect-ratio: 16 / 9; border-radius: 12px;
+      overflow: hidden; background: #111; box-shadow: 0 4px 14px rgba(0,0,0,0.4);
+    }
+    .ag-tv-thumb-wrap img, .ag-tv-thumb-wrap video {
+      width: 100%; height: 100%; object-fit: cover; display: block;
+    }
+    .ag-tv-duration-badge {
+      position: absolute; bottom: 8px; right: 8px; background: rgba(0, 0, 0, 0.85);
+      color: #fff; font-size: 0.75rem; font-weight: 600; padding: 2px 6px;
+      border-radius: 4px; letter-spacing: 0.04em; pointer-events: none; z-index: 2;
+    }
+    .ag-tv-meta-row {
+      display: flex; align-items: flex-start; gap: 12px; margin-top: 11px; width: 100%;
+    }
+    .ag-tv-avatar {
+      width: 36px; height: 36px; border-radius: 50%; object-fit: cover; flex-shrink: 0;
+      border: 1px solid rgba(255, 255, 255, 0.12); background: #1a1a1a;
+    }
+    .ag-tv-info { flex: 1; min-width: 0; }
+    .ag-tv-title {
+      font-size: 0.94rem; font-weight: 600; line-height: 1.35; color: #f4eee4;
+      margin: 0 0 4px; display: -webkit-box; line-clamp: 2; -webkit-line-clamp: 2; -webkit-box-orient: vertical;
+      overflow: hidden; text-overflow: ellipsis;
+    }
+    .ag-tv-channel-line {
+      display: flex; align-items: center; gap: 4px; font-size: 0.82rem; color: var(--muted);
+      margin-bottom: 2px;
+    }
+    .ag-tv-verified-badge { width: 14px; height: 14px; fill: var(--gold); }
+    .ag-tv-stats-line { font-size: 0.8rem; color: var(--muted); }
+    .ag-tv-short-card {
+      position: relative; width: 100%; max-width: 250px; margin-inline: auto; aspect-ratio: 9 / 16;
+      border-radius: 12px; overflow: hidden; background: #111; box-shadow: 0 4px 18px rgba(0,0,0,0.5);
+    }
+    .ag-tv-short-card img, .ag-tv-short-card video {
+      width: 100%; height: 100%; object-fit: cover; display: block;
+    }
+    .ag-tv-card-badge,
+    .ag-tv-short-badge {
+      position: absolute; top: 10px; left: 10px; background: rgba(0,0,0,0.85);
+      backdrop-filter: blur(4px); color: #fff; font-size: 0.72rem; font-weight: 700;
+      padding: 3px 8px; border-radius: 4px; text-transform: uppercase; letter-spacing: 0.05em;
+      border: 1px solid rgba(255, 255, 255, 0.2); z-index: 3; pointer-events: none;
+      display: inline-block; line-height: 1.2; box-shadow: 0 2px 8px rgba(0,0,0,0.6);
+    }
+    .tv-badge-pill {
+      background: var(--bg3); border: 1px solid var(--border); color: var(--text);
+      font-size: 0.72rem; font-weight: 700; letter-spacing: 0.05em; text-transform: uppercase;
+      padding: 0.28rem 0.7rem; border-radius: 4px; cursor: pointer; transition: all 0.2s;
+    }
+    .tv-badge-pill:hover { border-color: var(--gold); color: var(--gold); }
+    .tv-badge-pill.active {
+      background: var(--gold); color: #000; border-color: var(--gold);
+      box-shadow: 0 0 8px rgba(201, 168, 76, 0.4);
+    }
+    .tier-pill-btn {
+      min-height: 42px;
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.1), 0 2px 7px rgba(0, 0, 0, 0.22);
+    }
+    .btn-modal-del {
+      border-radius: 7px;
+      background-image: linear-gradient(140deg, rgba(224, 82, 82, 0.16), rgba(224, 82, 82, 0.03));
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.1), 0 2px 7px rgba(0, 0, 0, 0.25);
+    }
+    .sb-server-status button {
+      border-radius: 7px;
+      background: linear-gradient(145deg, rgba(201, 168, 76, 0.07), transparent 65%), var(--bg2);
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08), 0 2px 7px rgba(0, 0, 0, 0.22);
+    }
+    .ag-tv-short-gradient {
+      position: absolute; inset: 0; background: linear-gradient(to top, rgba(0,0,0,0.92) 0%, rgba(0,0,0,0.4) 40%, transparent 70%);
+      display: flex; flex-direction: column; justify-content: flex-end; padding: 14px; z-index: 2;
+    }
+    .ag-tv-short-title {
+      font-size: 0.94rem; font-weight: 600; color: #fff; margin: 0 0 4px; line-height: 1.3;
+      display: -webkit-box; line-clamp: 2; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; text-overflow: ellipsis;
+    }
+    .ag-tv-short-views { font-size: 0.78rem; color: rgba(255,255,255,0.7); }
+    #tv-logo-avatar-wrap:hover .tv-avatar-hover-overlay { opacity: 1 !important; }
+
     @media (max-width: 1050px) {
       .exhibition-editor-layout { grid-template-columns: minmax(0, 1fr); }
       .exhibition-preview-pane { position: static; }
@@ -673,6 +839,13 @@
     @media (max-width: 600px) {
       .exhibition-admin-list { grid-template-columns: minmax(0, 1fr); }
       .exhibition-admin-item-head { align-items: flex-start; flex-direction: column; }
+      .tv-preview-window-selector { padding: 0.7rem; gap: 0.45rem; }
+      .tv-preview-window-selector > span { flex-basis: 100%; }
+      .tv-preview-window-btn { flex-basis: calc(50% - 0.25rem); padding-inline: 0.55rem; }
+      .exhibition-preview-pane { padding: 0.75rem; }
+      .exhibition-preview-stage { width: 100%; }
+      .tv-entry-actions { flex-wrap: wrap; gap: 0.55rem !important; }
+      .tv-entry-actions button { flex: 1 1 120px; justify-content: center; min-height: 44px; }
     }
 
     /* ── Toast ── */
@@ -758,23 +931,152 @@
       #dashboard { flex-direction: column !important; }
       #main { width: 100%; }
 
-      /* ── Topbar ── */
-      #topbar { padding: 0.75rem 1rem; gap: 0.5rem; }
-      #topbar h3 { font-size: 1.15rem; }
-      .btn-sync { font-size: 0.7rem; padding: 0.4rem 0.8rem; }
+      /* ── Topbar: clean 2-row mobile layout ── */
+      #topbar {
+        padding: 0.55rem 0.85rem 0;
+        gap: 0;
+        flex-direction: column;
+        align-items: stretch;
+      }
+      /* Row 1: hamburger + back + title */
+      #topbar > div:first-child {
+        display: flex;
+        align-items: center;
+        gap: 0.45rem;
+        min-width: 0;
+        width: 100%;
+        padding-bottom: 0.5rem;
+      }
+      #topbar h3 {
+        font-size: 1rem;
+        letter-spacing: 0.01em;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        flex: 1;
+        min-width: 0;
+      }
+      .hamburger-btn {
+        width: 36px;
+        height: 36px;
+        padding: 0;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+        border-radius: 6px;
+        background: rgba(255,255,255,0.05);
+        border: 1px solid rgba(255,255,255,0.1);
+      }
+      .hamburger-btn svg {
+        width: 18px;
+        height: 18px;
+      }
+      #adminBackButton {
+        padding: 0.32rem 0.65rem !important;
+        font-size: 0.75rem !important;
+        flex-shrink: 0;
+        gap: 0.25rem !important;
+        min-height: 34px !important;
+        border-radius: 5px !important;
+      }
+      #adminBackButton svg {
+        width: 13px !important;
+        height: 13px !important;
+      }
+      /* Row 2: action buttons — full width, sync stretches */
+      .topbar-actions {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        width: 100%;
+        padding: 0.45rem 0 0.55rem;
+        border-top: 1px solid rgba(255,255,255,0.07);
+      }
+      .topbar-actions .btn-action-outline {
+        flex: 0 0 auto;
+        padding: 0.45rem 0.9rem;
+        font-size: 0.75rem;
+        min-height: 36px;
+        border-radius: 5px;
+        line-height: 1.2;
+        white-space: nowrap;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+      }
+      .btn-sync {
+        flex: 1 1 auto;
+        font-size: 0.75rem;
+        padding: 0.45rem 0.75rem;
+        min-height: 36px;
+        border-radius: 5px;
+        line-height: 1.2;
+        letter-spacing: 0.05em;
+        white-space: nowrap;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.35rem;
+      }
 
       /* ── Content area ── */
-      #content { padding: 1rem; }
+      #content { width: 100%; min-width: 0; padding: 1rem; }
+      .panel, .card { min-width: 0; }
 
       /* ── Action Header Bar ── */
       .action-header-bar {
-        flex-direction: column; align-items: flex-start; gap: 0.75rem;
-        padding-bottom: 0.75rem; margin-bottom: 1rem;
+        flex-direction: column;
+        align-items: stretch;
+        gap: 0.65rem;
+        padding-bottom: 0.75rem;
+        margin-bottom: 1rem;
       }
-      .breadcrumbs { font-size: 0.78rem; flex-wrap: wrap; }
-      .search-filter-box { width: 100%; }
-      .top-action-buttons { width: 100%; }
-      .top-action-buttons .btn-action-gold { width: 100%; justify-content: center; }
+      .action-header-bar > div:first-child {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        flex-wrap: wrap;
+      }
+      .breadcrumbs {
+        font-size: 0.78rem;
+        flex-wrap: wrap;
+        gap: 0.35rem;
+        line-height: 1.4;
+      }
+      #btnBackStep {
+        padding: 0.35rem 0.65rem !important;
+        font-size: 0.74rem !important;
+        gap: 0.3rem !important;
+      }
+      .action-header-bar > div:last-child {
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+        align-items: stretch;
+        gap: 0.5rem;
+      }
+      .search-filter-box {
+        width: 100%;
+        min-width: 0;
+      }
+      .search-filter-box input {
+        width: 100%;
+        font-size: 0.82rem;
+        padding: 0.5rem 0.8rem 0.5rem 2.2rem;
+      }
+      .top-action-buttons {
+        width: 100%;
+      }
+      .top-action-buttons button,
+      .top-action-buttons .btn-action-gold {
+        width: 100%;
+        justify-content: center;
+        font-size: 0.8rem;
+        padding: 0.5rem 0.8rem;
+        border-radius: 4px;
+        letter-spacing: 0.04em;
+      }
 
       /* ── Card Grids: Stack nicely ── */
       .artists-grid { grid-template-columns: 1fr; gap: 1rem; }
@@ -825,12 +1127,83 @@
       .view-mode-section h2.piece-main-title { font-size: 1.6rem; margin-bottom: 1rem; }
       .artsy-grid { grid-template-columns: 110px 1fr; font-size: 0.8rem; row-gap: 0.5rem; }
 
-      /* ── Modal Top Bar (wrap buttons) ── */
-      .modal-top-bar { flex-wrap: wrap; gap: 0.5rem; padding: 0.75rem 1rem; }
-      .modal-top-actions { flex-wrap: wrap; gap: 0.4rem; }
-      .btn-set-cover { font-size: 0.7rem; padding: 0.35rem 0.7rem; }
-      .btn-edit-toggle { font-size: 0.7rem; padding: 0.35rem 0.8rem; }
-      .btn-modal-del { font-size: 0.7rem; padding: 0.35rem 0.6rem; }
+      /* ── Modal Top Bar (well-sized & wrapped cleanly) ── */
+      .modal-top-bar {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 0.55rem;
+        padding: 0.65rem 0.85rem;
+      }
+      .modal-top-bar > div:first-child {
+        display: flex;
+        align-items: center;
+        gap: 0.4rem;
+        flex-wrap: wrap;
+        width: 100%;
+      }
+      .modal-status-badge,
+      .badge-cover-active {
+        font-size: 0.68rem;
+        padding: 0.2rem 0.5rem;
+      }
+      #modalArtworkCounter {
+        font-size: 0.68rem;
+        padding: 0.15rem 0.4rem;
+      }
+      .modal-top-actions {
+        display: flex;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 0.35rem;
+        width: 100%;
+      }
+      #btnModalPrev,
+      #btnModalNext {
+        font-size: 0.72rem !important;
+        padding: 0.32rem 0.55rem !important;
+        min-height: 30px;
+        flex: 1 1 auto;
+        justify-content: center;
+        text-align: center;
+      }
+      .btn-set-cover {
+        font-size: 0.7rem;
+        padding: 0.32rem 0.55rem;
+        min-height: 30px;
+        flex: 1 1 auto;
+        justify-content: center;
+        white-space: nowrap;
+      }
+      .btn-edit-toggle {
+        font-size: 0.7rem;
+        padding: 0.32rem 0.65rem;
+        min-height: 30px;
+        flex: 1 1 auto;
+        justify-content: center;
+        white-space: nowrap;
+      }
+      .btn-modal-del {
+        font-size: 0.7rem;
+        padding: 0.32rem 0.55rem;
+        min-height: 30px;
+        flex: 1 1 auto;
+        justify-content: center;
+        white-space: nowrap;
+      }
+
+      /* ── Remove 'X' top right close button on mobile phone ── */
+      .btn-modal-close,
+      .dialog-close {
+        display: none !important;
+      }
+
+      /* ── Upload Artwork Modal Top Header ── */
+      #modalUploadArtwork .dialog-card > div:first-child {
+        padding: 0.85rem 1rem 0.75rem !important;
+      }
+      #modalUploadArtwork .dialog-card > div:first-child h3 {
+        font-size: 1.25rem !important;
+      }
 
       /* ── Edit Mode Form ── */
       .form-row-2 { grid-template-columns: 1fr; }
@@ -859,14 +1232,54 @@
        SMALL PHONE — below 400px
     ═══════════════════════════════════════════ */
     @media (max-width: 400px) {
+      #topbar {
+        padding: 0.45rem 0.65rem 0;
+      }
+      #topbar h3 {
+        font-size: 0.9rem;
+      }
+      .hamburger-btn {
+        width: 33px;
+        height: 33px;
+      }
+      #adminBackButton {
+        padding: 0.28rem 0.5rem !important;
+        font-size: 0.7rem !important;
+        min-height: 31px !important;
+      }
+      .topbar-actions {
+        padding: 0.4rem 0 0.45rem;
+        gap: 0.4rem;
+      }
+      .btn-sync {
+        font-size: 0.7rem;
+        padding: 0.4rem 0.55rem;
+        min-height: 33px;
+        letter-spacing: 0.03em;
+      }
+      .topbar-actions .btn-action-outline {
+        font-size: 0.7rem;
+        padding: 0.4rem 0.7rem;
+        min-height: 33px;
+      }
+      .modal-top-actions {
+        width: 100%;
+        gap: 0.3rem;
+      }
+      .btn-set-cover,
+      .btn-edit-toggle,
+      .btn-modal-del {
+        font-size: 0.68rem;
+        padding: 0.3rem 0.45rem;
+      }
       .artworks-admin-grid { grid-template-columns: 1fr; }
       .stats-row { grid-template-columns: 1fr; }
       #gate input { width: 90%; }
       .artist-card-cover { height: 140px; }
       .album-card-cover { height: 130px; }
-      .modal-top-actions { width: 100%; justify-content: flex-end; }
-      .btn-set-cover { flex: 1; justify-content: center; }
-      .btn-edit-toggle { flex: 1; justify-content: center; }
+      #content { padding: 0.75rem; }
+      .card { padding: 1rem; }
+      .tv-preview-window-btn { font-size: 0.7rem; }
     }
   </style>
 </head>
@@ -1097,15 +1510,49 @@
               <input type="url" id="ex-registration-link" placeholder="https://forms.google.com/…"/>
             </div>
             <div class="form-group">
-              <label for="ex-cta-text">Registration button label (optional)</label>
-              <input type="text" id="ex-cta-text" list="ex-cta-suggestions" placeholder="Choose a suggestion or type your own"/>
-              <datalist id="ex-cta-suggestions">
-                <option value="BOOK EXHIBITION"></option>
-                <option value="REGISTER"></option>
-                <option value="BOOK YOUR SPOT"></option>
-                <option value="GET TICKETS"></option>
-              </datalist>
+              <label for="ex-payment-link">Payment link (optional)</label>
+              <input type="url" id="ex-payment-link" placeholder="https://pay.artgalzim.com/… or payment gateway link"/>
             </div>
+          </div>
+          <div class="form-row-2" style="margin-bottom:1rem;">
+            <div class="form-group">
+              <label for="ex-action-type">Customer button action</label>
+              <select id="ex-action-type" onchange="updateExhibitionActionFields()">
+                <option value="link">Open registration / payment / contact link</option>
+                <option value="whatsapp">Message a WhatsApp number</option>
+                <option value="email">Send an email or portfolio</option>
+                <option value="none">No customer button</option>
+              </select>
+            </div>
+            <div class="form-group" id="ex-whatsapp-wrap" hidden>
+              <label for="ex-whatsapp-number">WhatsApp number (include country code)</label>
+              <input type="tel" id="ex-whatsapp-number" autocomplete="tel" placeholder="e.g. +263 77 123 4567"/>
+            </div>
+            <div class="form-group" id="ex-booking-email-wrap" hidden>
+              <label for="ex-booking-email">Booking / portfolio email</label>
+              <input type="email" id="ex-booking-email" autocomplete="email" placeholder="submissions@example.org"/>
+            </div>
+          </div>
+          <div class="form-group" style="margin-bottom:1rem;">
+            <label for="ex-action-instructions">Customer instructions (optional)</label>
+            <textarea id="ex-action-instructions" rows="3" placeholder="Tell visitors what to include or do when booking or submitting a portfolio."></textarea>
+          </div>
+          <div class="form-group" style="margin-bottom:1rem;">
+            <label for="ex-cta-text">Button label (optional)</label>
+            <input type="text" id="ex-cta-text" list="ex-cta-suggestions" placeholder="Choose a suggestion or type your custom label"/>
+            <datalist id="ex-cta-suggestions">
+              <option value="PAY NOW"></option>
+              <option value="BOOK & PAY"></option>
+              <option value="BUY TICKETS"></option>
+              <option value="BOOK EXHIBITION"></option>
+              <option value="REGISTER"></option>
+              <option value="MESSAGE ON WHATSAPP"></option>
+              <option value="SUBMIT PORTFOLIO"></option>
+              <option value="EMAIL TO APPLY"></option>
+              <option value="BOOK YOUR SPOT"></option>
+              <option value="GET TICKETS"></option>
+              <option value="LEARN MORE"></option>
+            </datalist>
           </div>
           <div class="form-row-2" style="margin-bottom:1rem;">
             <div class="form-group">
@@ -1347,70 +1794,174 @@
         </div>
       </div>
       <div class="panel" id="panel-artgalzim-tv">
-        <div class="card">
+        <div class="tv-preview-window-selector" role="group" aria-label="Choose the ARTGALZIM TV preview window">
+          <span>Preview window</span>
+          <button type="button" class="tv-preview-window-btn active" data-tv-preview-window="fullscreen" aria-pressed="true" onclick="setTvPreviewWindow('fullscreen')">Full Screen (16:9)</button>
+          <button type="button" class="tv-preview-window-btn" data-tv-preview-window="shorts" aria-pressed="false" onclick="setTvPreviewWindow('shorts')">Shorts (9:16)</button>
+        </div>
+        <div class="card exhibition-editor-card">
           <h4 id="tvEntryFormTitle">Add ARTGALZIM TV Video</h4>
-          <input type="hidden" id="tv-entry-id"/>
-          <input type="hidden" id="tv-entry-author"/>
-          <input type="hidden" id="tv-entry-end-date"/>
-          <div class="form-group" style="margin-bottom:1rem;">
-            <label for="tv-entry-title">Title (required)</label>
-            <input type="text" id="tv-entry-title" placeholder="Video title"/>
-          </div>
-          <div class="form-group" style="margin-bottom:1rem;">
-            <label for="tv-entry-excerpt">Short Description</label>
-            <textarea id="tv-entry-excerpt" rows="3" placeholder="A short introduction for this video"></textarea>
-          </div>
-          <div class="form-group" style="margin-bottom:1rem;">
-            <label for="tv-entry-body">Video Details</label>
-            <textarea id="tv-entry-body" rows="6" placeholder="Optional details about the video"></textarea>
-          </div>
-          <div class="form-row-2" style="margin-bottom:1rem;">
-            <div class="form-group">
-              <label for="tv-entry-event-date">Video Date</label>
-              <input type="date" id="tv-entry-event-date"/>
+          <div class="exhibition-editor-layout">
+            <div class="exhibition-editor-fields">
+              <input type="hidden" id="tv-entry-id"/>
+              <input type="hidden" id="tv-entry-end-date"/>
+              <div class="form-group" style="margin-bottom:1rem;">
+                <label for="tv-entry-title">Title (required)</label>
+                <input type="text" id="tv-entry-title" placeholder="Video title" oninput="updateTvLivePreview()"/>
+              </div>
+              <div class="form-group" style="margin-bottom:1rem;">
+                <label for="tv-entry-excerpt">Short Description</label>
+                <textarea id="tv-entry-excerpt" rows="3" placeholder="A short introduction for this video" oninput="updateTvLivePreview()"></textarea>
+              </div>
+              <div class="form-group" style="margin-bottom:1rem;">
+                <label for="tv-entry-body">Video Details</label>
+                <textarea id="tv-entry-body" rows="6" placeholder="Optional details about the video" oninput="updateTvLivePreview()"></textarea>
+              </div>
+              <div class="form-row-2" style="margin-bottom:1rem;">
+                <div class="form-group">
+                  <label for="tv-entry-date-type">Date & Time Option</label>
+                  <select id="tv-entry-date-type" onchange="handleTvDateTypeChange()">
+                    <option value="single">Single Date (Standard)</option>
+                    <option value="range">Date Range / Interview & Event Time</option>
+                    <option value="system">Instant System Time (Dynamic Timer)</option>
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label for="tv-entry-location">TV Section / Location (required)</label>
+                  <select id="tv-entry-location" required onchange="handleTvLocationChange()">
+                    <option value="fullscreen">Full Screen / Longform Row (16:9)</option>
+                    <option value="shorts">Shorts Row (9:16)</option>
+                  </select>
+                </div>
+              </div>
+              <div id="tv-date-controls-container" style="margin-bottom:1rem;">
+                <!-- 1. Single Date (Standard) -->
+                <div id="tv-date-single-wrap" class="form-group">
+                  <label for="tv-entry-event-date">Video Date</label>
+                  <input type="date" id="tv-entry-event-date" onchange="updateTvLivePreview()"/>
+                </div>
+                <!-- 2. Date Range (Event / Interview duration) -->
+                <div id="tv-date-range-wrap" class="form-row-2" style="display:none;">
+                  <div class="form-group">
+                    <label for="tv-entry-start-date">Start Date (Interview / Event)</label>
+                    <input type="date" id="tv-entry-start-date" onchange="handleTvRangeDateChange()"/>
+                  </div>
+                  <div class="form-group">
+                    <label for="tv-entry-end-date-picker">End Date (Interview / Event)</label>
+                    <input type="date" id="tv-entry-end-date-picker" onchange="handleTvRangeDateChange()"/>
+                  </div>
+                </div>
+                <!-- 3. Instant System Dynamic Timer -->
+                <div id="tv-date-system-wrap" style="display:none; background:var(--bg3, #151515); padding:0.85rem 1rem; border-radius:6px; border:1px solid var(--border);">
+                  <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:0.6rem;">
+                    <div>
+                      <div style="font-size:0.82rem; font-weight:600; color:var(--gold);">Instant System Timer</div>
+                      <div style="font-size:0.75rem; color:var(--muted); margin-top:0.2rem;">
+                        Timer timestamp: <span id="tv-system-time-display" style="color:#fff; font-family:monospace;">--</span>
+                      </div>
+                    </div>
+                    <div style="display:flex; align-items:center; gap:0.5rem;">
+                      <span id="tv-system-timer-preview-badge" style="background:var(--gold-d, rgba(201,168,76,0.15)); color:var(--gold); border:1px solid var(--border-g, rgba(201,168,76,0.3)); font-size:0.75rem; padding:0.25rem 0.6rem; border-radius:4px; font-weight:500;">Reflecting: Just Recent</span>
+                      <button type="button" class="btn-action-outline" style="padding:0.25rem 0.6rem; font-size:0.74rem;" onclick="resetTvSystemTimerNow()">Set to Now</button>
+                    </div>
+                  </div>
+                  <input type="hidden" id="tv-entry-timer-start"/>
+                </div>
+              </div>
+              <div class="form-row-2" style="margin-bottom:1rem;">
+                <div class="form-group">
+                  <label for="tv-entry-author">Creator / Channel Name</label>
+                  <input type="text" id="tv-entry-author" placeholder="ARTGALZIM TV" oninput="updateTvLivePreview()"/>
+                </div>
+                <div class="form-group">
+                  <label>Channel Badge / Logo</label>
+                  <div style="display:flex; align-items:center; gap:0.75rem; margin-top:0.2rem;">
+                    <div id="tv-logo-avatar-wrap" style="position:relative; width:44px; height:44px; border-radius:50%; overflow:hidden; border:2px solid var(--border-g); background:#111; cursor:pointer; flex-shrink:0;" onclick="document.getElementById('tv-entry-channel-logo').click()" title="Click to upload custom logo">
+                      <img id="tv-logo-avatar-img" src="/images/logo.jpg" alt="ARTGALZIM TV Badge" style="width:100%; height:100%; object-fit:cover; display:block;"/>
+                      <div class="tv-avatar-hover-overlay" style="position:absolute; inset:0; background:rgba(0,0,0,0.6); opacity:0; transition:opacity 0.2s; display:flex; align-items:center; justify-content:center; color:#fff; font-size:0.6rem; font-weight:700; text-transform:uppercase;">Change</div>
+                    </div>
+                    <div style="flex:1; display:flex; gap:0.4rem; flex-wrap:wrap; align-items:center;">
+                      <button type="button" class="btn-action-outline" style="padding:0.35rem 0.65rem; font-size:0.74rem;" onclick="document.getElementById('tv-entry-channel-logo').click()">Upload Logo</button>
+                      <button type="button" class="btn-action-outline" id="tv-reset-logo-btn" style="padding:0.35rem 0.65rem; font-size:0.74rem;" onclick="resetTvChannelLogo()">Use Default</button>
+                    </div>
+                  </div>
+                  <input type="file" id="tv-entry-channel-logo" accept="image/*" style="display:none;" onchange="handleTvChannelLogoChange(event)"/>
+                  <input type="hidden" id="tv-entry-author-avatar" value="/images/logo.jpg"/>
+                </div>
+              </div>
+              <div class="form-group" style="margin-bottom:1rem;">
+                <label for="tv-entry-image">Video Thumbnail (optional replacement)</label>
+                <input type="file" id="tv-entry-image" accept="image/*" onchange="handleTvThumbnailChange(event)"/>
+                <div id="tv-saved-image-notice" style="display:none; font-size:0.78rem; color:var(--gold); margin-top:0.4rem; align-items:center; gap:0.4rem;">
+                  <span>✓</span> <span id="tv-saved-image-text">Approved thumbnail image saved and active</span>
+                </div>
+                <div class="exhibition-crop-controls" id="tv-crop-controls" role="group" aria-label="Video thumbnail crop position">
+                  <label for="tv-image-focus-x">Horizontal crop position</label>
+                  <input type="range" id="tv-image-focus-x" min="0" max="100" value="50" aria-label="Horizontal crop position" oninput="updateTvCropValues()"/>
+                  <output id="tv-image-focus-x-value" for="tv-image-focus-x">50%</output>
+                  <label for="tv-image-focus-y">Vertical crop position</label>
+                  <input type="range" id="tv-image-focus-y" min="0" max="100" value="50" aria-label="Vertical crop position" oninput="updateTvCropValues()"/>
+                  <output id="tv-image-focus-y-value" for="tv-image-focus-y">50%</output>
+                </div>
+                <p class="exhibition-crop-hint">Adjust the focal point to frame thumbnails in the video card.</p>
+              </div>
+              <div class="form-group" style="margin-bottom:1rem;">
+                <label for="tv-entry-attachment">Video File (MP4, WebM, or Ogg)</label>
+                <input type="file" id="tv-entry-attachment" accept="video/mp4,video/webm,video/ogg,.mp4,.webm,.ogv" onchange="handleTvVideoFileChange(event)"/>
+                <div id="tv-saved-attachment-notice" style="display:none; font-size:0.78rem; color:var(--gold); margin-top:0.4rem; align-items:center; gap:0.4rem;">
+                  <span>✓</span> <span id="tv-saved-attachment-text">Approved video file saved and retained</span>
+                </div>
+              </div>
+              <p style="color:var(--muted);font-size:0.82rem;margin-top:-0.5rem;">YouTube and Instagram video links are also supported. Uploaded MP4, WebM, and Ogg videos play in the built-in player.</p>
+              <div class="form-row-2" style="margin-bottom:1rem;">
+                <div class="form-group">
+                  <label for="tv-entry-media-type">Video Source</label>
+                  <select id="tv-entry-media-type" onchange="previewJournalMedia('tv'); updateTvLivePreview();">
+                    <option value="">Choose a source</option>
+                    <option value="video">YouTube or direct video link</option>
+                    <option value="social">Instagram post / reel</option>
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label for="tv-entry-media-url">Video URL</label>
+                  <input type="url" id="tv-entry-media-url" placeholder="https://youtu.be/…" oninput="previewJournalMedia('tv'); updateTvLivePreview();"/>
+                </div>
+              </div>
+              <div class="form-group" style="margin-bottom:1rem;">
+                <label for="tv-entry-video-orientation">Video Layout</label>
+                <select id="tv-entry-video-orientation" onchange="handleTvOrientationChange()">
+                  <option value="auto">Auto-detect upload / YouTube Shorts URL</option>
+                  <option value="landscape">Landscape video (16:9)</option>
+                  <option value="portrait">Short / portrait (9:16)</option>
+                </select>
+              </div>
+              <div class="form-group" style="margin-bottom:1rem;">
+                <label for="tv-entry-badge">Card Tag / Badge Overlay (optional)</label>
+                <div style="display:flex; gap:0.5rem; align-items:center; flex-wrap:wrap; margin-bottom:0.5rem;">
+                  <input type="text" id="tv-entry-badge" placeholder="e.g. NEW, TRENDING, POPULAR..." oninput="handleTvBadgeManualInput()" style="flex:1; min-width:180px; text-transform:uppercase;"/>
+                  <button type="button" class="btn-action-outline" style="padding:0.45rem 0.8rem; font-size:0.75rem;" onclick="setTvBadge('')">Clear Tag</button>
+                </div>
+                <div style="display:flex; gap:0.4rem; align-items:center; flex-wrap:wrap;" id="tv-badge-preset-pills">
+                  <span style="font-size:0.75rem; color:var(--muted); margin-right:0.25rem;">Default tags:</span>
+                  <button type="button" class="tv-badge-pill" data-badge="NEW" onclick="setTvBadge('NEW')">NEW</button>
+                  <button type="button" class="tv-badge-pill" data-badge="TRENDING" onclick="setTvBadge('TRENDING')">TRENDING</button>
+                  <button type="button" class="tv-badge-pill" data-badge="POPULAR" onclick="setTvBadge('POPULAR')">POPULAR</button>
+                  <button type="button" class="tv-badge-pill" data-badge="FEATURED" onclick="setTvBadge('FEATURED')">FEATURED</button>
+                  <button type="button" class="tv-badge-pill" data-badge="EXCLUSIVE" onclick="setTvBadge('EXCLUSIVE')">EXCLUSIVE</button>
+                </div>
+              </div>
+              <div id="tv-media-preview" aria-live="polite" style="margin-bottom:1rem; display:none;"></div>
+              <div class="tv-entry-actions" style="display:flex;gap:1rem;align-items:center;">
+                <button class="btn-action-gold" onclick="saveJournalEntry('tv')">Save Video</button>
+                <button class="btn-action-outline" onclick="clearJournalEntryForm('tv')">Clear</button>
+              </div>
             </div>
-            <div class="form-group">
-              <label for="tv-entry-location">Location</label>
-              <input type="text" id="tv-entry-location" placeholder="Optional"/>
-            </div>
-          </div>
-          <div class="form-row-2" style="margin-bottom:1rem;">
-            <div class="form-group">
-              <label for="tv-entry-image">Video Thumbnail (optional replacement)</label>
-              <input type="file" id="tv-entry-image" accept="image/*"/>
-            </div>
-            <div class="form-group">
-              <label for="tv-entry-attachment">Video File (MP4, WebM, or Ogg)</label>
-              <input type="file" id="tv-entry-attachment" accept="video/mp4,video/webm,video/ogg,.mp4,.webm,.ogv" onchange="previewJournalMedia('tv')"/>
-            </div>
-          </div>
-          <p style="color:var(--muted);font-size:0.82rem;margin-top:-0.5rem;">YouTube and Instagram video links are also supported. Uploaded MP4, WebM, and Ogg videos play in the built-in player.</p>
-          <div class="form-row-2" style="margin-bottom:1rem;">
-            <div class="form-group">
-              <label for="tv-entry-media-type">Video Source</label>
-              <select id="tv-entry-media-type" onchange="previewJournalMedia('tv')">
-                <option value="">Choose a source</option>
-                <option value="video">YouTube or direct video link</option>
-                <option value="social">Instagram post / reel</option>
-              </select>
-            </div>
-            <div class="form-group">
-              <label for="tv-entry-media-url">Video URL</label>
-              <input type="url" id="tv-entry-media-url" placeholder="https://youtu.be/…" oninput="previewJournalMedia('tv')"/>
-            </div>
-          </div>
-          <div class="form-group" style="margin-bottom:1rem;">
-            <label for="tv-entry-video-orientation">Video Layout</label>
-            <select id="tv-entry-video-orientation" onchange="previewJournalMedia('tv')">
-              <option value="auto">Auto-detect upload / YouTube Shorts URL</option>
-              <option value="landscape">Landscape video</option>
-              <option value="portrait">Short (portrait)</option>
-            </select>
-          </div>
-          <div id="tv-media-preview" aria-live="polite" style="margin-bottom:1rem;"></div>
-          <div style="display:flex;gap:1rem;align-items:center;">
-            <button class="btn-action-gold" onclick="saveJournalEntry('tv')">Save Video</button>
-            <button class="btn-action-outline" onclick="clearJournalEntryForm('tv')">Clear</button>
+
+            <aside class="exhibition-preview-pane" aria-live="polite" aria-atomic="true">
+              <h5>Live frontend preview</h5>
+              <p>Previewing your current edits.</p>
+              <div class="exhibition-preview-stage" id="tvLivePreview"></div>
+            </aside>
           </div>
         </div>
         <div class="card">
@@ -2255,6 +2806,7 @@ function showPanel(id, persist = true) {
   if (id === 'overview') updateOverviewStats();
   if (id === 'exhibitions') loadExhibitions();
   if (id === 'journal-media' || id === 'artgalzim-tv') loadJournalAdmin();
+  if (id === 'artgalzim-tv') updateTvLivePreview();
   if (id === 'content-library') loadContentLibrary();
   if (persist) {
     saveNavState();
@@ -2444,46 +2996,60 @@ function renderExplorer() {
   const btnBack = document.getElementById('btnBackStep');
   const btnBackLabel = document.getElementById('btnBackStepLabel');
 
-  if (currentLevel === 'artists') {
+  if (currentLevel === 'artists' || !selectedArtist) {
+    currentLevel = 'artists';
+    selectedArtist = null;
+    selectedAlbum = null;
     if (btnBack) btnBack.style.display = 'none';
-    breadcrumbs.innerHTML = `<span class="crumb current">All Artists (${allArtistsData.length})</span>`;
-    topActions.innerHTML = `<button class="btn-action-gold" onclick="openNewArtistModal()">+ Add Artist</button>`;
+    if (breadcrumbs) breadcrumbs.innerHTML = `<span class="crumb current">All Artists (${allArtistsData.length})</span>`;
+    if (topActions) topActions.innerHTML = `<button class="btn-action-gold" onclick="openNewArtistModal()">+ Add Artist</button>`;
     renderArtistsView(container);
   } else if (currentLevel === 'albums') {
     if (btnBack) {
       btnBack.style.display = 'inline-flex';
       if (btnBackLabel) btnBackLabel.textContent = 'Back to Artists';
     }
-    breadcrumbs.innerHTML = `
-      <span class="crumb" onclick="navToArtists()">All Artists</span>
-      <span class="sep">/</span>
-      <span class="crumb current">${selectedArtist.name}</span>
-    `;
-    topActions.innerHTML = `<button class="btn-action-gold" onclick="openNewAlbumForArtist('${selectedArtist.name.replace(/'/g,"\\'")}')">+ Add Album / Folder</button>`;
+    if (breadcrumbs) {
+      breadcrumbs.innerHTML = `
+        <span class="crumb" onclick="navToArtists()">All Artists</span>
+        <span class="sep">/</span>
+        <span class="crumb current">${selectedArtist.name}</span>
+      `;
+    }
+    if (topActions) topActions.innerHTML = `<button class="btn-action-gold" onclick="openNewAlbumForArtist('${selectedArtist.name.replace(/'/g,"\\'")}')">+ Add Album / Folder</button>`;
     renderAlbumsView(container);
   } else if (currentLevel === 'artworks') {
     const isStudent = selectedArtist && (selectedArtist.tier === 'Student Artists' || selectedArtist.isStudent);
+    if (!isStudent && !selectedAlbum) {
+      navToAlbums(selectedArtist.name);
+      return;
+    }
     if (btnBack) {
       btnBack.style.display = 'inline-flex';
       if (btnBackLabel) btnBackLabel.textContent = isStudent ? 'Back to Artists' : 'Back to Albums';
     }
     if (isStudent) {
-      breadcrumbs.innerHTML = `
-        <span class="crumb" onclick="navToArtists()">All Artists</span>
-        <span class="sep">/</span>
-        <span class="crumb current">🎓 ${selectedArtist.name}</span>
-      `;
+      if (breadcrumbs) {
+        breadcrumbs.innerHTML = `
+          <span class="crumb" onclick="navToArtists()">All Artists</span>
+          <span class="sep">/</span>
+          <span class="crumb current">🎓 ${selectedArtist.name}</span>
+        `;
+      }
       const catName = (selectedAlbum && selectedAlbum.name) || 'Artworks';
-      topActions.innerHTML = `<button class="btn-action-gold" onclick="openUploadForAlbum('${selectedArtist.name.replace(/'/g,"\\'")}', '${catName.replace(/'/g,"\\'")}')">+ Upload Artwork for ${selectedArtist.name}</button>`;
+      if (topActions) topActions.innerHTML = `<button class="btn-action-gold" onclick="openUploadForAlbum('${selectedArtist.name.replace(/'/g,"\\'")}', '${catName.replace(/'/g,"\\'")}')">+ Upload Artwork for ${selectedArtist.name}</button>`;
     } else {
-      breadcrumbs.innerHTML = `
-        <span class="crumb" onclick="navToArtists()">All Artists</span>
-        <span class="sep">/</span>
-        <span class="crumb" onclick="navToAlbums('${selectedArtist.name.replace(/'/g,"\\'")}')">${selectedArtist.name}</span>
-        <span class="sep">/</span>
-        <span class="crumb current">${selectedAlbum.name}</span>
-      `;
-      topActions.innerHTML = `<button class="btn-action-gold" onclick="openUploadForAlbum('${selectedArtist.name.replace(/'/g,"\\'")}', '${selectedAlbum.name.replace(/'/g,"\\'")}')">+ Upload Artwork to this Album</button>`;
+      if (breadcrumbs) {
+        breadcrumbs.innerHTML = `
+          <span class="crumb" onclick="navToArtists()">All Artists</span>
+          <span class="sep">/</span>
+          <span class="crumb" onclick="navToAlbums('${selectedArtist.name.replace(/'/g,"\\'")}')">${selectedArtist.name}</span>
+          <span class="sep">/</span>
+          <span class="crumb current">${selectedAlbum ? selectedAlbum.name : 'Artworks'}</span>
+        `;
+      }
+      const albumName = selectedAlbum ? selectedAlbum.name : 'Artworks';
+      if (topActions) topActions.innerHTML = `<button class="btn-action-gold" onclick="openUploadForAlbum('${selectedArtist.name.replace(/'/g,"\\'")}', '${albumName.replace(/'/g,"\\'")}')">+ Upload Artwork to this Album</button>`;
     }
     renderArtworksView(container);
   }
@@ -3982,26 +4548,33 @@ function updateOverviewStats() {
 
   const exs = _exhibitions;
 
-  document.getElementById('stat-artists').textContent = allArtistsData.length;
-  document.getElementById('stat-categories').textContent = totalCats;
-  document.getElementById('stat-artworks').textContent = totalArtworks;
-  document.getElementById('stat-exhibitions').textContent = exs.length;
+  const statArtists = document.getElementById('stat-artists');
+  if (statArtists) statArtists.textContent = allArtistsData.length;
+  const statCategories = document.getElementById('stat-categories');
+  if (statCategories) statCategories.textContent = totalCats;
+  const statArtworks = document.getElementById('stat-artworks');
+  if (statArtworks) statArtworks.textContent = totalArtworks;
+  const statExhibitions = document.getElementById('stat-exhibitions');
+  if (statExhibitions) statExhibitions.textContent = exs.length;
 
   // List collections
-  let html = '<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:0.75rem;">';
-  allArtistsData.forEach(a => {
-    a.categories.forEach(c => {
-      const count = c.imageCount || (c.artworks ? c.artworks.length : 0);
-      html += `
-        <div style="background:var(--bg3);border:1px solid var(--border);border-radius:4px;padding:0.85rem;cursor:pointer;" onclick="showPanel('gallery-explorer'); navToAlbums('${a.name.replace(/'/g,"\\'")}')">
-          <div style="font-size:0.75rem;color:var(--gold);text-transform:uppercase;letter-spacing:0.06em;font-weight:600;">${a.name}</div>
-          <div style="font-size:0.95rem;margin-top:0.2rem;font-weight:500;">${c.name}</div>
-          <div style="font-size:0.75rem;color:var(--muted);margin-top:0.2rem;">${count} artwork${count !== 1 ? 's' : ''}</div>
-        </div>`;
+  const collectionsList = document.getElementById('overviewCollectionsList');
+  if (collectionsList) {
+    let html = '<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:0.75rem;">';
+    allArtistsData.forEach(a => {
+      a.categories.forEach(c => {
+        const count = c.imageCount || (c.artworks ? c.artworks.length : 0);
+        html += `
+          <div style="background:var(--bg3);border:1px solid var(--border);border-radius:4px;padding:0.85rem;cursor:pointer;" onclick="showPanel('gallery-explorer'); navToAlbums('${a.name.replace(/'/g,"\\'")}')">
+            <div style="font-size:0.75rem;color:var(--gold);text-transform:uppercase;letter-spacing:0.06em;font-weight:600;">${a.name}</div>
+            <div style="font-size:0.95rem;margin-top:0.2rem;font-weight:500;">${c.name}</div>
+            <div style="font-size:0.75rem;color:var(--muted);margin-top:0.2rem;">${count} artwork${count !== 1 ? 's' : ''}</div>
+          </div>`;
+      });
     });
-  });
-  html += '</div>';
-  document.getElementById('overviewCollectionsList').innerHTML = html;
+    html += '</div>';
+    collectionsList.innerHTML = html;
+  }
 }
 
 /* ══ EXHIBITIONS MANAGEMENT ════════════════════ */
@@ -4028,6 +4601,11 @@ function exhibitionPreviewData() {
     location: value('ex-location').trim(),
     theme: value('ex-theme').trim(),
     registrationLink: value('ex-registration-link').trim(),
+    paymentLink: value('ex-payment-link').trim(),
+    actionType: value('ex-action-type') || 'link',
+    whatsappNumber: value('ex-whatsapp-number').trim(),
+    bookingEmail: value('ex-booking-email').trim(),
+    actionInstructions: value('ex-action-instructions').trim(),
     contactLink: value('ex-contact-link').trim(),
     ctaText: value('ex-cta-text').trim(),
     conditions: value('ex-conditions').trim(),
@@ -4123,11 +4701,28 @@ function renderExhibitions() {
   renderExhibitionPreview();
 }
 
+function updateExhibitionActionFields() {
+  const actionType = document.getElementById('ex-action-type')?.value || 'link';
+  const whatsappWrap = document.getElementById('ex-whatsapp-wrap');
+  const emailWrap = document.getElementById('ex-booking-email-wrap');
+  const whatsappInput = document.getElementById('ex-whatsapp-number');
+  const emailInput = document.getElementById('ex-booking-email');
+  if (whatsappWrap) whatsappWrap.hidden = actionType !== 'whatsapp';
+  if (emailWrap) emailWrap.hidden = actionType !== 'email';
+  if (whatsappInput) whatsappInput.required = actionType === 'whatsapp';
+  if (emailInput) emailInput.required = actionType === 'email';
+}
+
 function clearExForm() {
-  ['ex-id','ex-title','ex-artist','ex-location','ex-category','ex-theme','ex-desc','ex-image','ex-start-time','ex-end-time','ex-registration-link','ex-cta-text','ex-conditions','ex-contact-link','ex-registration-fee','ex-time-range','ex-display-date-override'].forEach(id => document.getElementById(id).value = '');
+  ['ex-id','ex-title','ex-artist','ex-location','ex-category','ex-theme','ex-desc','ex-image','ex-start-time','ex-end-time','ex-registration-link','ex-payment-link','ex-whatsapp-number','ex-booking-email','ex-action-instructions','ex-cta-text','ex-conditions','ex-contact-link','ex-registration-fee','ex-time-range','ex-display-date-override'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.value = '';
+  });
   document.getElementById('ex-start').value  = '';
   document.getElementById('ex-end').value    = '';
   document.getElementById('ex-status').value = 'upcoming';
+  document.getElementById('ex-action-type').value = 'link';
+  updateExhibitionActionFields();
   document.getElementById('ex-is-placeholder').checked = false;
   document.getElementById('exFormTitle').textContent = 'Add New Exhibition / Event';
   if (exhibitionPreviewObjectUrl) URL.revokeObjectURL(exhibitionPreviewObjectUrl);
@@ -4150,6 +4745,14 @@ function editExhibition(id) {
   document.getElementById('ex-theme').value    = ex.theme || '';
   document.getElementById('ex-desc').value     = ex.description || '';
   document.getElementById('ex-registration-link').value = ex.registrationLink || '';
+  const paymentLinkEl = document.getElementById('ex-payment-link');
+  if (paymentLinkEl) paymentLinkEl.value = ex.paymentLink || '';
+  document.getElementById('ex-action-type').value = ex.actionType
+    || (ex.whatsappNumber ? 'whatsapp' : ex.bookingEmail ? 'email' : 'link');
+  document.getElementById('ex-whatsapp-number').value = ex.whatsappNumber || '';
+  document.getElementById('ex-booking-email').value = ex.bookingEmail || '';
+  document.getElementById('ex-action-instructions').value = ex.actionInstructions || '';
+  updateExhibitionActionFields();
   document.getElementById('ex-cta-text').value = ex.ctaText || '';
   document.getElementById('ex-conditions').value = ex.conditions || '';
   document.getElementById('ex-contact-link').value = ex.contactLink || '';
@@ -4181,6 +4784,11 @@ async function saveExhibition() {
     theme:       document.getElementById('ex-theme').value.trim(),
     description: document.getElementById('ex-desc').value.trim(),
     registrationLink: document.getElementById('ex-registration-link').value.trim(),
+    paymentLink: (document.getElementById('ex-payment-link')?.value || '').trim(),
+    actionType: document.getElementById('ex-action-type').value,
+    whatsappNumber: document.getElementById('ex-whatsapp-number').value.trim(),
+    bookingEmail: document.getElementById('ex-booking-email').value.trim(),
+    actionInstructions: document.getElementById('ex-action-instructions').value.trim(),
     contactLink: document.getElementById('ex-contact-link').value.trim(),
     ctaText:     document.getElementById('ex-cta-text').value.trim(),
     conditions:  document.getElementById('ex-conditions').value.trim(),
@@ -4190,12 +4798,33 @@ async function saveExhibition() {
     displayDateOverride: document.getElementById('ex-display-date-override').value.trim(),
   };
   if (!payload.title) { toast('Title is required', 'error'); return; }
+  if (payload.actionType === 'whatsapp') {
+    const digits = payload.whatsappNumber.replace(/\D/g, '');
+    if (digits.length < 7 || digits.length > 15) {
+      toast('Enter a WhatsApp number with country code (7 to 15 digits).', 'error');
+      return;
+    }
+  }
+  if (payload.actionType === 'email'
+      && (!payload.bookingEmail || !document.getElementById('ex-booking-email').checkValidity())) {
+    toast('Enter a valid booking or portfolio email address.', 'error');
+    return;
+  }
   if (payload.registrationLink) {
     try {
       const registrationUrl = new URL(payload.registrationLink);
       if (!['http:', 'https:'].includes(registrationUrl.protocol)) throw new Error();
     } catch {
       toast('Enter a valid http or https registration link.', 'error');
+      return;
+    }
+  }
+  if (payload.paymentLink) {
+    try {
+      const paymentUrl = new URL(payload.paymentLink);
+      if (!['http:', 'https:'].includes(paymentUrl.protocol)) throw new Error();
+    } catch {
+      toast('Enter a valid http or https payment link.', 'error');
       return;
     }
   }
@@ -4477,7 +5106,7 @@ function renderJournalFolders() {
         ${folder.organization ? `<p class="journal-admin-folder-preview-description">${escapeAdminHtml(folder.organization)}</p>` : ''}
         ${folder.description ? `<p class="journal-admin-folder-preview-description">${escapeAdminHtml(folder.description)}</p>` : ''}
         <div class="album-card-footer">
-          <span class="album-card-count">${childCount} subfolder${childCount === 1 ? '' : 's'} · ${entries.length} entr${entries.length === 1 ? 'y' : 'ies'}</span>
+          <span class="album-card-count">${childCount} subfolder${childCount === 1 ? '' : 's'} · ${entries.length} ${entries.length === 1 ? 'entry' : 'entries'}</span>
           <button class="btn-action-outline" type="button" data-id="${id}" onclick="openJournalFolder(this.dataset.id)">Open folder</button>
         </div>
       </div>
@@ -4491,7 +5120,7 @@ function renderJournalFolders() {
         <h4 class="album-card-title">Unfiled content</h4>
         <p class="journal-admin-folder-preview-description">Entries not assigned to a News &amp; Gallery folder.</p>
         <div class="album-card-footer">
-          <span class="album-card-count">${unfiledEntries.length} entr${unfiledEntries.length === 1 ? 'y' : 'ies'}</span>
+          <span class="album-card-count">${unfiledEntries.length} ${unfiledEntries.length === 1 ? 'entry' : 'entries'}</span>
           <button class="btn-action-outline" type="button" onclick="openJournalFolder('${JOURNAL_UNFILED_ID}')">Open content</button>
         </div>
       </div>
@@ -4658,8 +5287,9 @@ function renderTvEntries() {
   list.innerHTML = entries.map(entry => {
     const id = escapeAdminHtml(entry._id);
     const layout = entry.videoOrientation === 'portrait' ? 'Short' : 'Landscape';
+    const badgeHtml = entry.badge ? `<span style="background:rgba(212,175,55,0.15);border:1px solid rgba(212,175,55,0.4);color:var(--gold-light,#f0cf77);font-size:0.65rem;font-weight:700;padding:1px 6px;border-radius:3px;margin-left:6px;letter-spacing:0.04em;">${escapeAdminHtml(entry.badge)}</span>` : '';
     return `<div style="display:flex;justify-content:space-between;gap:1rem;align-items:center;border-top:1px solid var(--border);padding:0.8rem 0;">
-      <div><strong>${escapeAdminHtml(entry.title)}</strong><div style="color:var(--muted);font-size:0.78rem;">${escapeAdminHtml(layout)} · ${escapeAdminHtml(entry.mediaType || 'Video')} · ${entry._draft ? 'Draft' : 'Published'}</div></div>
+      <div><strong>${escapeAdminHtml(entry.title)}</strong>${badgeHtml}<div style="color:var(--muted);font-size:0.78rem;">${escapeAdminHtml(layout)} · ${escapeAdminHtml(entry.mediaType || 'Video')} · ${entry._draft ? 'Draft' : 'Published'}</div></div>
       <div style="display:flex;gap:0.5rem;"><button class="btn-action-outline" data-id="${id}" onclick="editJournalEntry(this.dataset.id)">Edit</button><button class="btn-modal-del" data-id="${id}" onclick="deleteJournalEntry(this.dataset.id)">Delete</button></div>
     </div>`;
   }).join('');
@@ -4798,8 +5428,34 @@ function clearJournalEntryForm(destination = 'journal') {
     document.getElementById('journal-entry-artist-curator').value = '';
     document.getElementById('journal-entry-category').value = '';
   } else {
+    document.getElementById('tv-entry-location').value = 'fullscreen';
     document.getElementById('tv-entry-media-type').value = '';
     document.getElementById('tv-entry-video-orientation').value = 'auto';
+    document.getElementById('tv-image-focus-x').value = '50';
+    document.getElementById('tv-image-focus-y').value = '50';
+    resetTvChannelLogo();
+    if (tvThumbnailPreviewUrl) URL.revokeObjectURL(tvThumbnailPreviewUrl);
+    tvThumbnailPreviewUrl = '';
+    existingTvImageUrl = '';
+    existingTvAttachmentUrl = '';
+    existingTvAttachmentName = '';
+    const imgNotice = document.getElementById('tv-saved-image-notice');
+    if (imgNotice) imgNotice.style.display = 'none';
+    const attachNotice = document.getElementById('tv-saved-attachment-notice');
+    if (attachNotice) attachNotice.style.display = 'none';
+    const dateTypeSelect = document.getElementById('tv-entry-date-type');
+    if (dateTypeSelect) dateTypeSelect.value = 'single';
+    const timerInput = document.getElementById('tv-entry-timer-start');
+    if (timerInput) timerInput.value = '';
+    const startDateInput = document.getElementById('tv-entry-start-date');
+    if (startDateInput) startDateInput.value = '';
+    const endDateInput = document.getElementById('tv-entry-end-date-picker');
+    if (endDateInput) endDateInput.value = '';
+    const badgeInput = document.getElementById('tv-entry-badge');
+    if (badgeInput) badgeInput.value = '';
+    if (typeof updateTvBadgePillsUI === 'function') updateTvBadgePillsUI('');
+    if (typeof handleTvDateTypeChange === 'function') handleTvDateTypeChange();
+    updateTvCropValues();
   }
   const mediaType = document.getElementById(`${prefix}-media-type`);
   if (destination !== 'tv' && mediaType) mediaType.value = '';
@@ -4818,6 +5474,7 @@ function clearJournalEntryForm(destination = 'journal') {
   }
   document.getElementById(destination === 'tv' ? 'tvEntryFormTitle' : 'journalEntryFormTitle').textContent =
     destination === 'tv' ? 'Add ARTGALZIM TV Video' : 'Add News & Gallery Entry';
+  if (destination === 'tv') updateTvLivePreview();
 }
 
 function journalMediaEmbed(mediaUrl, mediaType) {
@@ -5061,7 +5718,7 @@ async function openAdminContentPreview() {
     renderJournalDraftPreview(body);
   } else if (document.getElementById('panel-artgalzim-tv')?.classList.contains('active')) {
     title.textContent = 'Preview';
-    body.textContent = 'The ARTGALZIM TV workspace is unchanged. Open a News & Gallery entry to use this draft preview.';
+    renderTvDraftPreview(body);
   } else {
     title.textContent = 'Workspace Preview';
     renderActiveWorkspacePreview(body);
@@ -5182,6 +5839,491 @@ function renderJournalDraftPreview(parent) {
   parent.appendChild(layout);
 }
 
+let tvThumbnailPreviewUrl = '';
+let tvLogoPreviewUrl = '';
+let existingTvImageUrl = '';
+let existingTvAttachmentUrl = '';
+let existingTvAttachmentName = '';
+
+function formatTvRelativeTimer(timestamp) {
+  if (!timestamp) return 'Just Recent';
+  const time = new Date(timestamp).getTime();
+  if (isNaN(time)) return 'Just Recent';
+  const now = Date.now();
+  const diffMs = Math.max(0, now - time);
+  const diffSec = Math.floor(diffMs / 1000);
+  const diffMin = Math.floor(diffSec / 60);
+  const diffHours = Math.floor(diffMin / 60);
+  const diffDays = Math.floor(diffHours / 24);
+  const diffWeeks = Math.floor(diffDays / 7);
+
+  // 1. Period after posting while waiting for 1 hour
+  if (diffHours < 1) {
+    return 'Just Recent';
+  }
+  // 2. 1 hour ago going onwards till 1 day ago
+  if (diffDays < 1) {
+    return diffHours === 1 ? '1 hour ago' : `${diffHours} hours ago`;
+  }
+  // 3. 1 day ago, 2 days till a week arrives
+  if (diffDays < 7) {
+    return diffDays === 1 ? '1 day ago' : `${diffDays} days ago`;
+  }
+  // 4. 1 week till 4 weeks a month and switches to 1 month ago
+  if (diffDays < 30) {
+    return diffWeeks === 1 ? '1 week ago' : `${diffWeeks} weeks ago`;
+  }
+
+  // 5. Switches to 1 month ago till, 2 months and counts only months till 1 year
+  const dateObj = new Date(time);
+  const nowDate = new Date(now);
+  let months = (nowDate.getFullYear() - dateObj.getFullYear()) * 12 + (nowDate.getMonth() - dateObj.getMonth());
+  if (nowDate.getDate() < dateObj.getDate()) months--;
+  months = Math.max(1, months);
+
+  const years = Math.floor(months / 12);
+  if (years < 1) {
+    return months === 1 ? '1 month ago' : `${months} months ago`;
+  }
+  // 6. Counts only years (2 years ago etc.), strictly single unit
+  return years === 1 ? '1 year ago' : `${years} years ago`;
+}
+
+function formatTvSingleDate(dateStr) {
+  if (!dateStr) return '';
+  const d = new Date(dateStr);
+  if (isNaN(d.getTime())) return dateStr;
+  try {
+    return new Intl.DateTimeFormat('en-GB', {
+      day: 'numeric',
+      month: 'short',
+      year: 'numeric',
+      timeZone: 'Africa/Harare'
+    }).format(d);
+  } catch (e) {
+    const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+    return `${d.getDate()} ${months[d.getMonth()]} ${d.getFullYear()}`;
+  }
+}
+
+function formatTvDateRange(startDateStr, endDateStr) {
+  if (!startDateStr && !endDateStr) return '';
+  if (startDateStr && !endDateStr) return formatTvSingleDate(startDateStr);
+  if (!startDateStr && endDateStr) return formatTvSingleDate(endDateStr);
+
+  const start = new Date(startDateStr);
+  const end = new Date(endDateStr);
+  if (isNaN(start.getTime()) || isNaN(end.getTime())) {
+    return `${startDateStr} – ${endDateStr}`;
+  }
+
+  try {
+    const parts = (date) => {
+      const dtf = new Intl.DateTimeFormat('en-GB', {
+        day: 'numeric',
+        month: 'short',
+        year: 'numeric',
+        timeZone: 'Africa/Harare'
+      });
+      const map = {};
+      dtf.formatToParts(date).forEach(p => { map[p.type] = p.value; });
+      return { day: map.day, month: map.month, year: map.year };
+    };
+    const s = parts(start);
+    const e = parts(end);
+    if (s.year === e.year && s.month === e.month) {
+      if (s.day === e.day) return `${s.day} ${s.month} ${s.year}`;
+      return `${s.day} – ${e.day} ${s.month} ${s.year}`;
+    }
+    if (s.year === e.year) {
+      return `${s.day} ${s.month} – ${e.day} ${e.month} ${s.year}`;
+    }
+    return `${s.day} ${s.month} ${s.year} – ${e.day} ${e.month} ${e.year}`;
+  } catch (err) {
+    const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+    const startDay = start.getDate();
+    const endDay = end.getDate();
+    const startMonth = months[start.getMonth()];
+    const endMonth = months[end.getMonth()];
+    const startYear = start.getFullYear();
+    const endYear = end.getFullYear();
+
+    if (startYear === endYear && startMonth === endMonth) {
+      if (startDay === endDay) return `${startDay} ${startMonth} ${startYear}`;
+      return `${startDay} – ${endDay} ${startMonth} ${startYear}`;
+    }
+    if (startYear === endYear) {
+      return `${startDay} ${startMonth} – ${endDay} ${endMonth} ${startYear}`;
+    }
+    return `${startDay} ${startMonth} ${startYear} – ${endDay} ${endMonth} ${endYear}`;
+  }
+}
+
+function handleTvDateTypeChange() {
+  const mode = document.getElementById('tv-entry-date-type')?.value || 'single';
+  const singleWrap = document.getElementById('tv-date-single-wrap');
+  const rangeWrap = document.getElementById('tv-date-range-wrap');
+  const systemWrap = document.getElementById('tv-date-system-wrap');
+
+  if (singleWrap) singleWrap.style.display = mode === 'single' ? 'block' : 'none';
+  if (rangeWrap) rangeWrap.style.display = mode === 'range' ? 'grid' : 'none';
+  if (systemWrap) systemWrap.style.display = mode === 'system' ? 'block' : 'none';
+
+  if (mode === 'system') {
+    const timerInput = document.getElementById('tv-entry-timer-start');
+    if (timerInput && !timerInput.value) {
+      timerInput.value = new Date().toISOString();
+    }
+    const displaySpan = document.getElementById('tv-system-time-display');
+    if (displaySpan && timerInput?.value) {
+      const d = new Date(timerInput.value);
+      displaySpan.textContent = isNaN(d.getTime()) ? timerInput.value : d.toLocaleString('en-GB', { timeZone: 'Africa/Harare', dateStyle: 'medium', timeStyle: 'short' }) + ' (CAT / Harare)';
+    }
+  }
+  updateTvLivePreview();
+}
+
+function resetTvSystemTimerNow() {
+  const timerInput = document.getElementById('tv-entry-timer-start');
+  const displaySpan = document.getElementById('tv-system-time-display');
+  const nowIso = new Date().toISOString();
+  if (timerInput) timerInput.value = nowIso;
+  if (displaySpan) displaySpan.textContent = new Date().toLocaleString('en-GB', { timeZone: 'Africa/Harare', dateStyle: 'medium', timeStyle: 'short' }) + ' (CAT / Harare)';
+  updateTvLivePreview();
+  toast('Timer dedicated to this video set to current system time (Harare / CAT).', 'info');
+}
+
+function handleTvRangeDateChange() {
+  const start = document.getElementById('tv-entry-start-date')?.value || '';
+  const end = document.getElementById('tv-entry-end-date-picker')?.value || '';
+  const hiddenEventDate = document.getElementById('tv-entry-event-date');
+  const hiddenEndDate = document.getElementById('tv-entry-end-date');
+  if (hiddenEventDate) hiddenEventDate.value = start;
+  if (hiddenEndDate) hiddenEndDate.value = end;
+  updateTvLivePreview();
+}
+
+function syncTvPreviewWindowSelector() {
+  const selectedLocation = document.getElementById('tv-entry-location')?.value || 'fullscreen';
+  document.querySelectorAll('[data-tv-preview-window]').forEach(button => {
+    const isSelected = button.dataset.tvPreviewWindow === selectedLocation;
+    button.classList.toggle('active', isSelected);
+    button.setAttribute('aria-pressed', String(isSelected));
+  });
+}
+
+function setTvPreviewWindow(location) {
+  const locationSelect = document.getElementById('tv-entry-location');
+  const orientationSelect = document.getElementById('tv-entry-video-orientation');
+  if (!locationSelect || !orientationSelect) return;
+  locationSelect.value = location === 'shorts' ? 'shorts' : 'fullscreen';
+  orientationSelect.value = location === 'shorts' ? 'portrait' : 'landscape';
+  handleTvLocationChange();
+}
+
+function handleTvLocationChange() {
+  const loc = document.getElementById('tv-entry-location').value;
+  const orient = document.getElementById('tv-entry-video-orientation');
+  if (loc === 'shorts') orient.value = 'portrait';
+  else if (loc === 'fullscreen') orient.value = 'landscape';
+  previewJournalMedia('tv');
+  updateTvLivePreview();
+}
+
+function handleTvOrientationChange() {
+  const orient = document.getElementById('tv-entry-video-orientation').value;
+  const loc = document.getElementById('tv-entry-location');
+  if (orient === 'portrait') loc.value = 'shorts';
+  else if (orient === 'landscape') loc.value = 'fullscreen';
+  previewJournalMedia('tv');
+  updateTvLivePreview();
+}
+
+function handleTvChannelLogoChange(event) {
+  const file = event.target.files?.[0];
+  if (!file) return;
+  if (tvLogoPreviewUrl) URL.revokeObjectURL(tvLogoPreviewUrl);
+  tvLogoPreviewUrl = URL.createObjectURL(file);
+  document.getElementById('tv-logo-avatar-img').src = tvLogoPreviewUrl;
+  document.getElementById('tv-entry-author-avatar').value = tvLogoPreviewUrl;
+  updateTvLivePreview();
+}
+
+function resetTvChannelLogo() {
+  if (tvLogoPreviewUrl) URL.revokeObjectURL(tvLogoPreviewUrl);
+  tvLogoPreviewUrl = '';
+  const fileInput = document.getElementById('tv-entry-channel-logo');
+  if (fileInput) fileInput.value = '';
+  document.getElementById('tv-logo-avatar-img').src = '/images/logo.jpg';
+  document.getElementById('tv-entry-author-avatar').value = '/images/logo.jpg';
+  updateTvLivePreview();
+}
+
+function handleTvThumbnailChange(event) {
+  const file = event.target.files?.[0];
+  if (tvThumbnailPreviewUrl) URL.revokeObjectURL(tvThumbnailPreviewUrl);
+  tvThumbnailPreviewUrl = file ? URL.createObjectURL(file) : '';
+  updateTvCropValues();
+  updateTvLivePreview();
+}
+
+function handleTvVideoFileChange(event) {
+  previewJournalMedia('tv');
+  updateTvLivePreview();
+}
+
+function updateTvCropValues() {
+  const focusX = document.getElementById('tv-image-focus-x')?.value || '50';
+  const focusY = document.getElementById('tv-image-focus-y')?.value || '50';
+  const outX = document.getElementById('tv-image-focus-x-value');
+  const outY = document.getElementById('tv-image-focus-y-value');
+  if (outX) outX.value = `${focusX}%`;
+  if (outY) outY.value = `${focusY}%`;
+  updateTvLivePreview();
+}
+
+function getTvPreviewMediaThumbnail() {
+  if (tvThumbnailPreviewUrl) return tvThumbnailPreviewUrl;
+  if (existingTvImageUrl) return existingTvImageUrl;
+  const mediaUrl = document.getElementById('tv-entry-media-url')?.value.trim() || '';
+  if (mediaUrl) {
+    try {
+      const url = new URL(mediaUrl);
+      const host = url.hostname.toLowerCase().replace(/^www\./, '');
+      if (['youtube.com', 'm.youtube.com', 'youtu.be'].includes(host)) {
+        const videoId = host === 'youtu.be'
+          ? url.pathname.slice(1)
+          : url.searchParams.get('v') || (url.pathname.match(/\/(shorts|embed)\/([A-Za-z0-9_-]+)/)?.[2] || '');
+        if (videoId) return `https://img.youtube.com/vi/${videoId}/hqdefault.jpg`;
+      }
+    } catch (e) {}
+  }
+  return '';
+}
+
+function getTvDateDisplayText() {
+  const dateType = document.getElementById('tv-entry-date-type')?.value || 'single';
+  if (dateType === 'system') {
+    const timerVal = document.getElementById('tv-entry-timer-start')?.value || new Date().toISOString();
+    const formatted = formatTvRelativeTimer(timerVal);
+    const badge = document.getElementById('tv-system-timer-preview-badge');
+    if (badge) badge.textContent = `Reflecting: ${formatted}`;
+    return formatted;
+  }
+  if (dateType === 'range') {
+    const startVal = document.getElementById('tv-entry-start-date')?.value || '';
+    const endVal = document.getElementById('tv-entry-end-date-picker')?.value || '';
+    return formatTvDateRange(startVal, endVal) || 'Interview / Event Date';
+  }
+  const singleVal = document.getElementById('tv-entry-event-date')?.value || '';
+  return formatTvSingleDate(singleVal) || 'Recent';
+}
+
+function setTvBadge(val) {
+  const input = document.getElementById('tv-entry-badge');
+  if (input) input.value = val;
+  updateTvBadgePillsUI(val);
+  updateTvLivePreview();
+}
+
+function handleTvBadgeManualInput() {
+  const input = document.getElementById('tv-entry-badge');
+  const val = input ? input.value.trim().toUpperCase() : '';
+  updateTvBadgePillsUI(val);
+  updateTvLivePreview();
+}
+
+function updateTvBadgePillsUI(currentVal) {
+  const pills = document.querySelectorAll('#tv-badge-preset-pills .tv-badge-pill');
+  const upper = (currentVal || '').toUpperCase();
+  pills.forEach(pill => {
+    const badgeAttr = pill.getAttribute('data-badge') || '';
+    pill.classList.toggle('active', badgeAttr.toUpperCase() === upper && upper !== '');
+  });
+}
+
+function updateTvLivePreview() {
+  const previewStage = document.getElementById('tvLivePreview');
+  if (!previewStage) return;
+  syncTvPreviewWindowSelector();
+  previewStage.replaceChildren();
+
+  const titleText = document.getElementById('tv-entry-title').value.trim() || 'Untitled Video';
+  const authorText = document.getElementById('tv-entry-author').value.trim() || 'ARTGALZIM TV';
+  const avatarUrl = document.getElementById('tv-entry-author-avatar')?.value || '/images/logo.jpg';
+  const locationSelect = document.getElementById('tv-entry-location');
+  const orientationSelect = document.getElementById('tv-entry-video-orientation');
+  const badgeVal = document.getElementById('tv-entry-badge')?.value.trim() || '';
+
+  const focusX = document.getElementById('tv-image-focus-x')?.value || '50';
+  const focusY = document.getElementById('tv-image-focus-y')?.value || '50';
+
+  let isShort = false;
+  if (locationSelect?.value === 'shorts') {
+    isShort = true;
+  } else if (orientationSelect?.value === 'portrait') {
+    isShort = true;
+  } else if (orientationSelect?.value === 'auto') {
+    const player = document.querySelector('#tv-media-preview .journal-admin-preview');
+    if (player && player.classList.contains('is-short')) isShort = true;
+  }
+
+  const thumbSrc = getTvPreviewMediaThumbnail() || (isShort ? '/images/MAIN IMAGES/home/artwork_1.webp' : '/images/MAIN IMAGES/home/Art Gallery Frontview jpeg.jpeg');
+  const dateDisplay = getTvDateDisplayText();
+
+  const card = document.createElement('article');
+
+  if (isShort) {
+    card.className = 'ag-tv-short-card';
+    card.setAttribute('role', 'button');
+    card.setAttribute('aria-label', `Play Short: ${titleText}`);
+
+    const img = document.createElement('img');
+    img.src = thumbSrc;
+    img.alt = titleText;
+    img.style.objectFit = 'cover';
+    img.style.objectPosition = `${focusX}% ${focusY}%`;
+    card.appendChild(img);
+
+    if (badgeVal) {
+      const badge = document.createElement('span');
+      badge.className = 'ag-tv-short-badge';
+      badge.textContent = badgeVal;
+      card.appendChild(badge);
+    }
+
+    const gradient = document.createElement('div');
+    gradient.className = 'ag-tv-short-gradient';
+
+    const title = document.createElement('h3');
+    title.className = 'ag-tv-short-title';
+    title.textContent = titleText;
+    gradient.appendChild(title);
+
+    const views = document.createElement('span');
+    views.className = 'ag-tv-short-views';
+    views.textContent = `0 views • ${dateDisplay}`;
+    gradient.appendChild(views);
+
+    card.appendChild(gradient);
+  } else {
+    card.className = 'ag-tv-card';
+    card.setAttribute('role', 'button');
+    card.setAttribute('aria-label', `Play ${titleText}`);
+
+    const thumbWrap = document.createElement('div');
+    thumbWrap.className = 'ag-tv-thumb-wrap';
+
+    const img = document.createElement('img');
+    img.src = thumbSrc;
+    img.alt = titleText;
+    img.style.objectFit = 'cover';
+    img.style.objectPosition = `${focusX}% ${focusY}%`;
+    thumbWrap.appendChild(img);
+
+    if (badgeVal) {
+      const cardBadge = document.createElement('span');
+      cardBadge.className = 'ag-tv-card-badge';
+      cardBadge.textContent = badgeVal;
+      thumbWrap.appendChild(cardBadge);
+    }
+
+    const badge = document.createElement('span');
+    badge.className = 'ag-tv-duration-badge';
+    badge.textContent = 'Preview';
+    thumbWrap.appendChild(badge);
+
+    card.appendChild(thumbWrap);
+
+    const metaRow = document.createElement('div');
+    metaRow.className = 'ag-tv-meta-row';
+
+    const avatar = document.createElement('img');
+    avatar.className = 'ag-tv-avatar';
+    avatar.src = avatarUrl;
+    avatar.alt = authorText;
+    metaRow.appendChild(avatar);
+
+    const info = document.createElement('div');
+    info.className = 'ag-tv-info';
+
+    const title = document.createElement('h3');
+    title.className = 'ag-tv-title';
+    title.textContent = titleText;
+    info.appendChild(title);
+
+    const channelLine = document.createElement('div');
+    channelLine.className = 'ag-tv-channel-line';
+    const channelName = document.createElement('span');
+    channelName.textContent = authorText;
+    channelLine.appendChild(channelName);
+
+    const verified = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+    verified.setAttribute('class', 'ag-tv-verified-badge');
+    verified.setAttribute('viewBox', '0 0 24 24');
+    verified.innerHTML = '<path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10 10-4.5 10-10S17.5 2 12 2zm-1.8 14.6l-3.8-3.8 1.4-1.4 2.4 2.4 6-6 1.4 1.4-7.4 7.4z"/>';
+    channelLine.appendChild(verified);
+    info.appendChild(channelLine);
+
+    const statsLine = document.createElement('div');
+    statsLine.className = 'ag-tv-stats-line';
+    statsLine.textContent = `0 views • ${dateDisplay}`;
+    info.appendChild(statsLine);
+
+    metaRow.appendChild(info);
+    card.appendChild(metaRow);
+  }
+
+  previewStage.appendChild(card);
+}
+
+function renderTvDraftPreview(parent) {
+  const titleText = document.getElementById('tv-entry-title').value.trim() || 'Untitled Video';
+  const layout = document.createElement('div');
+  layout.className = 'admin-content-preview-layout';
+
+  const media = document.createElement('div');
+  media.className = 'admin-content-preview-media';
+
+  const preview = document.getElementById('tv-media-preview');
+  if (preview && preview.firstChild) {
+    const clone = preview.cloneNode(true);
+    while (clone.firstChild) {
+      media.appendChild(clone.firstChild);
+    }
+  } else {
+    media.textContent = 'No media attached or linked.';
+  }
+
+  const copy = document.createElement('div');
+  copy.className = 'admin-content-preview-copy';
+
+  const heading = document.createElement('h3');
+  heading.textContent = titleText;
+  copy.appendChild(heading);
+
+  const meta = document.createElement('p');
+  meta.className = 'journal-meta';
+  const author = document.getElementById('tv-entry-author').value.trim();
+  const dateDisplay = getTvDateDisplayText();
+  meta.textContent = [author, dateDisplay].filter(Boolean).join(' • ');
+  if (meta.textContent) copy.appendChild(meta);
+
+  const excerpt = document.createElement('div');
+  excerpt.className = 'journal-detail-excerpt';
+  excerpt.textContent = document.getElementById('tv-entry-excerpt').value.trim();
+  copy.appendChild(excerpt);
+
+  const bodyContent = document.createElement('div');
+  bodyContent.className = 'journal-detail-body';
+  bodyContent.style.whiteSpace = 'pre-wrap';
+  bodyContent.textContent = document.getElementById('tv-entry-body').value.trim();
+  copy.appendChild(bodyContent);
+
+  layout.append(media, copy);
+  parent.appendChild(layout);
+}
+
 function renderActiveWorkspacePreview(parent) {
   const panel = document.querySelector('.panel.active');
   if (!panel) {
@@ -5251,18 +6393,37 @@ function previewJournalMedia(destination = 'journal') {
       if (!orientationControl || orientationControl.value !== 'auto' || !player.videoWidth || !player.videoHeight) return;
       orientationControl.value = player.videoHeight > player.videoWidth ? 'portrait' : 'landscape';
       player.classList.toggle('is-short', orientationControl.value === 'portrait');
+      if (destination === 'tv') updateTvLivePreview();
     }, { once: true });
     preview.appendChild(player);
+    preview.style.display = 'block';
+    if (destination === 'tv') setTimeout(updateTvLivePreview, 10);
+    return;
+  }
+  if (destination === 'tv' && !attachment && existingTvAttachmentUrl) {
+    const player = document.createElement('video');
+    player.src = existingTvAttachmentUrl;
+    player.controls = true;
+    player.playsInline = true;
+    player.preload = 'metadata';
+    player.className = `journal-admin-preview${orientation === 'portrait' ? ' is-short' : ''}`;
+    preview.appendChild(player);
+    preview.style.display = 'block';
+    if (destination === 'tv') setTimeout(updateTvLivePreview, 10);
     return;
   }
   const mediaType = document.getElementById(`${prefix}-media-type`).value;
   const mediaUrl = document.getElementById(`${prefix}-media-url`).value.trim();
   const previewOrientation = journalPreviewOrientation(orientation, mediaUrl);
-  if (!mediaType && !mediaUrl) return;
+  if (!mediaType && !mediaUrl) {
+    preview.style.display = 'none';
+    return;
+  }
   const embed = journalMediaEmbed(mediaUrl, mediaType);
   if (!embed) {
     preview.textContent = 'Paste a supported HTTPS link to preview it here.';
     preview.style.color = 'var(--muted)';
+    preview.style.display = 'block';
     return;
   }
   if (embed.kind === 'video') {
@@ -5273,6 +6434,8 @@ function previewJournalMedia(destination = 'journal') {
     player.preload = 'metadata';
     player.className = `journal-admin-preview${previewOrientation === 'portrait' ? ' is-short' : ''}`;
     preview.appendChild(player);
+    preview.style.display = 'block';
+    if (destination === 'tv') setTimeout(updateTvLivePreview, 10);
     return;
   }
   const frame = document.createElement('iframe');
@@ -5283,6 +6446,8 @@ function previewJournalMedia(destination = 'journal') {
   frame.allowFullscreen = true;
   frame.className = `journal-admin-preview${previewOrientation === 'portrait' ? ' is-short' : ''}`;
   preview.appendChild(frame);
+  preview.style.display = 'block';
+  if (destination === 'tv') setTimeout(updateTvLivePreview, 10);
 }
 
 function editJournalEntry(id) {
@@ -5311,9 +6476,55 @@ function editJournalEntry(id) {
   document.getElementById(`${prefix}-media-type`).value = entry.mediaType || '';
   document.getElementById(`${prefix}-media-url`).value = entry.mediaUrl || '';
   if (destination === 'tv') {
-    document.getElementById('tv-entry-video-orientation').value = entry.videoOrientation || 'auto';
+    existingTvImageUrl = entry.imageUrl || (Array.isArray(entry.imageUrls) ? entry.imageUrls[0] : '') || '';
+    existingTvAttachmentUrl = entry.attachmentUrl || entry.fileUrl || '';
+    existingTvAttachmentName = entry.attachmentName || '';
+
+    const imgNotice = document.getElementById('tv-saved-image-notice');
+    if (imgNotice) {
+      imgNotice.style.display = existingTvImageUrl ? 'flex' : 'none';
+      const text = document.getElementById('tv-saved-image-text');
+      if (text) text.textContent = existingTvImageUrl ? 'Approved thumbnail image saved and active' : '';
+    }
+    const attachNotice = document.getElementById('tv-saved-attachment-notice');
+    if (attachNotice) {
+      attachNotice.style.display = existingTvAttachmentUrl ? 'flex' : 'none';
+      const text = document.getElementById('tv-saved-attachment-text');
+      if (text) text.textContent = existingTvAttachmentUrl ? `Approved video file saved: ${existingTvAttachmentName || 'Video file'}` : '';
+    }
+
+    const loc = entry.location === 'shorts' || entry.videoOrientation === 'portrait' ? 'shorts' : 'fullscreen';
+    document.getElementById('tv-entry-location').value = loc;
+    document.getElementById('tv-entry-video-orientation').value = entry.videoOrientation || (loc === 'shorts' ? 'portrait' : 'landscape');
+    if (entry.imagePosition) {
+      document.getElementById('tv-image-focus-x').value = entry.imagePosition.x ?? 50;
+      document.getElementById('tv-image-focus-y').value = entry.imagePosition.y ?? 50;
+      updateTvCropValues();
+    }
+    const avatar = entry.authorAvatar || '/images/logo.jpg';
+    document.getElementById('tv-logo-avatar-img').src = avatar;
+    document.getElementById('tv-entry-author-avatar').value = avatar;
+
+    const dateType = entry.dateType || (entry.timerStart ? 'system' : (entry.endDate ? 'range' : 'single'));
+    const dateTypeSelect = document.getElementById('tv-entry-date-type');
+    if (dateTypeSelect) dateTypeSelect.value = dateType;
+    if (dateType === 'system') {
+      const timerInput = document.getElementById('tv-entry-timer-start');
+      if (timerInput) timerInput.value = entry.timerStart || entry.publishedAt || entry._createdAt || new Date().toISOString();
+    } else if (dateType === 'range') {
+      const startInput = document.getElementById('tv-entry-start-date');
+      const endInput = document.getElementById('tv-entry-end-date-picker');
+      if (startInput) startInput.value = entry.eventDate || '';
+      if (endInput) endInput.value = entry.endDate || '';
+    }
+    const badgeVal = entry.badge || '';
+    const badgeInput = document.getElementById('tv-entry-badge');
+    if (badgeInput) badgeInput.value = badgeVal;
+    if (typeof updateTvBadgePillsUI === 'function') updateTvBadgePillsUI(badgeVal);
+    handleTvDateTypeChange();
   }
   previewJournalMedia(destination);
+  if (destination === 'tv') setTimeout(updateTvLivePreview, 50);
   if (destination === 'journal') {
     const existingImageUrls = Array.isArray(entry.imageUrls)
       ? entry.imageUrls
@@ -5355,6 +6566,37 @@ async function saveJournalEntry(destination = 'journal') {
   form.set('eventDate', document.getElementById(`${prefix}-event-date`).value);
   form.set('endDate', document.getElementById(`${prefix}-end-date`).value);
   form.set('location', document.getElementById(`${prefix}-location`).value.trim());
+  if (destination === 'tv') {
+    const locationVal = document.getElementById('tv-entry-location').value;
+    if (!locationVal) {
+      toast('Please choose a TV section/location (Full Screen or Shorts).', 'error');
+      return;
+    }
+    form.set('location', locationVal);
+    form.set('badge', document.getElementById('tv-entry-badge')?.value.trim() || '');
+    form.set('imagePositionX', document.getElementById('tv-image-focus-x')?.value || '50');
+    form.set('imagePositionY', document.getElementById('tv-image-focus-y')?.value || '50');
+    const channelLogoFile = document.getElementById('tv-entry-channel-logo')?.files?.[0];
+    if (channelLogoFile) form.set('channelLogo', channelLogoFile);
+    form.set('authorAvatar', document.getElementById('tv-entry-author-avatar')?.value || '/images/logo.jpg');
+
+    const dateType = document.getElementById('tv-entry-date-type')?.value || 'single';
+    form.set('dateType', dateType);
+    if (dateType === 'system') {
+      const timerVal = document.getElementById('tv-entry-timer-start')?.value || new Date().toISOString();
+      form.set('timerStart', timerVal);
+      form.set('eventDate', '');
+      form.set('endDate', '');
+    } else if (dateType === 'range') {
+      form.set('eventDate', document.getElementById('tv-entry-start-date')?.value || '');
+      form.set('endDate', document.getElementById('tv-entry-end-date-picker')?.value || '');
+      form.set('timerStart', '');
+    } else {
+      form.set('eventDate', document.getElementById('tv-entry-event-date')?.value || '');
+      form.set('endDate', '');
+      form.set('timerStart', '');
+    }
+  }
   const image = document.getElementById(`${prefix}-image`).files[0];
   const images = destination === 'tv' ? [] : Array.from(document.getElementById(`${prefix}-image`).files);
   const attachment = document.getElementById(`${prefix}-attachment`).files[0];
@@ -5449,9 +6691,13 @@ async function triggerSync() {
     if (!response.ok) throw new Error(result.error || 'Sanity publish failed.');
     setPendingSync(false);
     toast(`Published ${result.published || 0} Sanity document(s).`);
-    await Promise.all([loadAllData(), loadExhibitions(), loadContentLibrary()]);
-    renderExplorer();
-    updateOverviewStats();
+    try {
+      await Promise.all([loadAllData(), loadExhibitions(), loadContentLibrary()]);
+      renderExplorer();
+      updateOverviewStats();
+    } catch (refreshErr) {
+      console.warn('Post-sync dashboard view refresh encountered an issue:', refreshErr);
+    }
   } catch (error) {
     toast('Publish failed: ' + error.message, 'error');
   }
