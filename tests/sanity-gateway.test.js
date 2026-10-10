@@ -191,7 +191,11 @@ function createSanityMock() {
       const isImage = url.pathname.includes('/assets/images/');
       const id = `${isImage ? 'image' : 'file'}-mock-${++assetSequence}`;
       const filename = url.searchParams.get('filename') || 'asset';
-      documents.uploads.push({ path: url.pathname, contentType: options.headers?.['content-type'] });
+      documents.uploads.push({
+        path: url.pathname,
+        contentType: options.headers?.['content-type'],
+        bodySize: options.body instanceof Blob ? options.body.size : null
+      });
       documents.set(id, {
         _id: id,
         _type: isImage ? 'sanity.imageAsset' : 'sanity.fileAsset',
@@ -825,6 +829,8 @@ test('dashboard artist, folder, artwork and content actions stay in sync with Sa
     assert.equal(documents.get(`drafts.${tvEntryId}`).duration, '1:23');
     assert.equal(documents.get(`drafts.${tvEntryId}`).artistCurator, undefined);
     assert.equal(documents.get(`drafts.${tvEntryId}`).category, undefined);
+    assert.equal(documents.has('drafts.journal-folder-artgalzim-tv'), false);
+    assert.equal(documents.has('journal-folder-artgalzim-tv'), false);
 
     const shortEntryForm = new FormData();
     shortEntryForm.set('destination', 'tv');
@@ -874,8 +880,9 @@ test('dashboard artist, folder, artwork and content actions stay in sync with Sa
     assert.equal(uploadedTvEntry.attachmentName, 'gallery-tour.mp4');
     assert.match(uploadedTvEntry.attachmentUrl, /^https:\/\/cdn\.sanity\.io\/files\/mock\//);
     assert.equal(uploadedTvEntry.image.asset._ref.startsWith('image-mock-'), true);
+    assert.equal(documents.has('drafts.journal-folder-artgalzim-tv'), false);
     assert.ok(documents.uploads.some(upload => upload.path.includes('/assets/files/')
-      && upload.contentType === 'video/mp4'));
+      && upload.contentType === 'video/mp4' && upload.bodySize === 11));
 
     const invalidTvEntry = new FormData();
     invalidTvEntry.set('destination', 'tv');

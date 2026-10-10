@@ -5084,7 +5084,8 @@ async function loadJournalAdmin() {
     if (!foldersResponse.ok || !entriesResponse.ok) throw new Error('Unable to load Gallery & Media content.');
     [_journalFolders, _journalEntries] = await Promise.all([foldersResponse.json(), entriesResponse.json()]);
     if (_selectedJournalFolderId && _selectedJournalFolderId !== JOURNAL_UNFILED_ID &&
-        !_journalFolders.some(folder => folder._id === _selectedJournalFolderId)) {
+        (!_journalFolders.some(folder => folder._id === _selectedJournalFolderId) ||
+          isTvSystemFolderRecord(_journalFolders.find(folder => folder._id === _selectedJournalFolderId)))) {
       _selectedJournalFolderId = null;
     }
     renderJournalFolders();
@@ -5097,9 +5098,18 @@ async function loadJournalAdmin() {
   }
 }
 
+function isTvSystemFolderRecord(folder) {
+  const id = String(folder?._id || '').replace(/^drafts\./, '');
+  const slug = typeof folder?.slug === 'string' ? folder.slug : folder?.slug?.current;
+  return id === 'journal-folder-artgalzim-tv'
+    || slug === 'artgalzim-tv'
+    || String(folder?.title || '').trim().toLowerCase() === 'artgalzim tv';
+}
+
 function renderJournalFolders() {
   const list = document.getElementById('journalFolderList');
   const visibleFolders = _journalFolders.filter(folder =>
+    !isTvSystemFolderRecord(folder) &&
     (folder.parentFolderId || null) === (_selectedJournalFolderId || null)
   );
   const unfiledEntries = _journalEntries.filter(entry =>
@@ -5109,7 +5119,7 @@ function renderJournalFolders() {
     const id = escapeAdminHtml(folder._id);
     const entries = _journalEntries.filter(entry => entry.folderId === folder._id &&
       entry.destination !== 'tv' && entry.entryType !== 'ARTGALZIM TV');
-    const childCount = _journalFolders.filter(child => child.parentFolderId === folder._id).length;
+    const childCount = _journalFolders.filter(child => !isTvSystemFolderRecord(child) && child.parentFolderId === folder._id).length;
     const cover = folder.coverUrl
       ? `<div class="album-card-cover"><img src="${escapeAdminHtml(folder.coverUrl)}" alt="${escapeAdminHtml(folder.title || 'Folder')} cover" loading="lazy"></div>`
       : '<div class="album-card-cover" aria-hidden="true"></div>';
@@ -5178,11 +5188,11 @@ function refreshJournalParentOptions(selectedId = document.getElementById('journ
   const editingId = document.getElementById('journal-folder-id').value;
   const excluded = editingId ? journalFolderDescendantIds(editingId) : new Set();
   select.innerHTML = '<option value="">Top level (no parent)</option>' + _journalFolders
-    .filter(folder => !excluded.has(folder._id))
+    .filter(folder => !isTvSystemFolderRecord(folder) && !excluded.has(folder._id))
     .sort((a, b) => journalFolderPath(a).localeCompare(journalFolderPath(b)))
     .map(folder => `<option value="${escapeAdminHtml(folder._id)}">${escapeAdminHtml(journalFolderPath(folder))}</option>`)
     .join('');
-  if (_journalFolders.some(folder => folder._id === selectedId) && !excluded.has(selectedId)) {
+  if (_journalFolders.some(folder => folder._id === selectedId && !isTvSystemFolderRecord(folder)) && !excluded.has(selectedId)) {
     select.value = selectedId;
   } else {
     select.value = '';
@@ -5312,7 +5322,7 @@ function renderTvEntries() {
 
 function refreshJournalFolderOptions(selectedId = document.getElementById('journal-entry-folder').value) {
   const input = document.getElementById('journal-entry-folder');
-  input.value = _journalFolders.some(folder => folder._id === selectedId) ? selectedId : '';
+  input.value = _journalFolders.some(folder => folder._id === selectedId && !isTvSystemFolderRecord(folder)) ? selectedId : '';
 }
 
 function openJournalFolderForm() {

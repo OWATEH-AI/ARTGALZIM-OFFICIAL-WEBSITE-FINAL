@@ -141,14 +141,14 @@ export function createSanityGateway(env) {
 
   async function upload(file) {
     if (!file || !file.size) return null;
-      const assetType = file.type.startsWith('image/') ? 'images' : 'files';
-      const response = await fetch(`${apiRoot}/assets/${assetType}/${dataset}?filename=${encodeURIComponent(file.name)}`, {
+    const assetType = file.type.startsWith('image/') ? 'images' : 'files';
+    const response = await fetch(`${apiRoot}/assets/${assetType}/${dataset}?filename=${encodeURIComponent(file.name)}`, {
       method: 'POST',
       headers: {
         authorization: `Bearer ${env.SANITY_API_TOKEN}`,
         'content-type': file.type || 'application/octet-stream'
       },
-      body: await file.arrayBuffer()
+      body: file
     });
     const result = await response.json();
     if (!response.ok) throw new Error(result.message || `Sanity asset upload failed (${response.status})`);
@@ -821,20 +821,6 @@ export function createSanityGateway(env) {
         const folder = folderId ? await getDocById('journalFolder', folderId) : null;
         if (folderId && (!folder || folder.isDeleted)) return json({ error: 'Journal folder not found.' }, 404);
         if (destination === 'journal' && !folder) return json({ error: 'Choose a journal folder.' }, 400);
-        let tvFolder = null;
-        if (destination === 'tv') {
-          const allDocs = await getAllDocuments();
-          tvFolder = allDocs.find(doc => doc._type === 'journalFolder' && !doc.isDeleted && (doc.title === 'ARTGALZIM TV' || doc.id === 'journal-folder-artgalzim-tv'));
-          if (!tvFolder) {
-            const defaultTvFolderId = 'journal-folder-artgalzim-tv';
-            await saveDraft('journalFolder', defaultTvFolderId, {
-              title: 'ARTGALZIM TV',
-              slug: 'artgalzim-tv',
-              description: 'Default folder for ARTGALZIM TV episodes, documentaries, and shorts.'
-            });
-            tvFolder = { _id: defaultTvFolderId, title: 'ARTGALZIM TV' };
-          }
-        }
         const id = String(form.get('id') || `journal-entry-${slug(title)}-${Date.now()}`).replace(/^drafts\./, '');
         const existing = form.get('id') ? await getDocById('journalEntry', id) : null;
         if (form.get('id') && !existing) return json({ error: 'Journal entry not found.' }, 404);
@@ -911,8 +897,8 @@ export function createSanityGateway(env) {
         await saveDraft('journalEntry', id, {
           title,
           slug: entrySlug,
-          folderId: folder ? folderId : String(form.get('folderId') || ''),
-          folderTitle: folder?.title || '',
+          folderId: destination === 'tv' ? '' : folderId,
+          folderTitle: destination === 'tv' ? '' : (folder?.title || ''),
           entryType,
           destination,
           mediaType,
