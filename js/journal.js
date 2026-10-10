@@ -4,7 +4,8 @@ import {
   getTvVideoDuration,
   getTvVideoOrientation,
   getTvVideoSourceUrl,
-  groupTvVideos
+  groupTvVideos,
+  isTvSystemFolder
 } from './tv-layout.js';
 
 const feed = document.getElementById('journalFeed');
@@ -2642,7 +2643,7 @@ function renderJournal() {
   }
   if (currentFolderId) {
     const folder = journalFolders.find(item => item._id === currentFolderId);
-    if (!folder) {
+    if (!folder || isTvSystemFolder(folder)) {
       currentFolderId = null;
       renderJournal();
       return;
@@ -2700,7 +2701,7 @@ function renderJournal() {
     folderFrame.appendChild(heading);
     feed.appendChild(folderFrame);
     const childFolders = journalFolders
-      .filter(item => item.parentFolderId === folder._id)
+      .filter(item => !isTvSystemFolder(item) && item.parentFolderId === folder._id)
       .sort((a, b) => String(a.title || '').localeCompare(String(b.title || '')));
     if (childFolders.length) {
       const grid = section('Folders', 'journal-folder-section', folderFrame);
@@ -2718,7 +2719,9 @@ function renderJournal() {
     if (!entries.length && !childFolders.length) addText(folderFrame, 'p', 'This folder is empty. Published stories, media, and subfolders will appear here.', 'journal-empty');
     return;
   }
-  const folders = [...journalFolders].sort((a, b) => String(a.title || '').localeCompare(String(b.title || '')));
+  const folders = journalFolders
+    .filter(folder => !isTvSystemFolder(folder))
+    .sort((a, b) => String(a.title || '').localeCompare(String(b.title || '')));
   const rootFolders = folders.filter(folder => !folder.parentFolderId);
   if (rootFolders.length) {
     const grid = section('Folders', 'journal-folder-section');

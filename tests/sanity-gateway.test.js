@@ -7,7 +7,8 @@ import {
   getTvVideoDuration,
   getTvVideoOrientation,
   getTvVideoSourceUrl,
-  groupTvVideos
+  groupTvVideos,
+  isTvSystemFolder
 } from '../js/tv-layout.js';
 
 test('TV video orientation keeps Shorts separate and defaults unknown media to landscape', () => {
@@ -30,6 +31,9 @@ test('TV video orientation keeps Shorts separate and defaults unknown media to l
     landscape: [landscape, explicitlyLandscape, unknownProvider],
     shorts: [short, explicitPortrait]
   });
+  assert.equal(isTvSystemFolder({ _id: 'journal-folder-artgalzim-tv', title: 'ARTGALZIM TV' }), true);
+  assert.equal(isTvSystemFolder({ _id: 'drafts.journal-folder-artgalzim-tv', title: 'ARTGALZIM TV' }), true);
+  assert.equal(isTvSystemFolder({ _id: 'news-folder', title: 'News', slug: 'news' }), false);
 });
 
 test('TV media helpers format real durations and discover direct sources and YouTube posters', () => {
