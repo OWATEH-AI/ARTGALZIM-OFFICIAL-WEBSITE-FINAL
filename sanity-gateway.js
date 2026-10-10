@@ -897,6 +897,10 @@ export function createSanityGateway(env) {
         const entrySlug = slug(form.get('slug') || title);
         const excerpt = String(form.get('excerpt') || '').trim();
         const bodyText = String(form.get('body') || '').trim();
+        const submittedDuration = String(form.get('duration') || '').trim();
+        const duration = /^\d+:[0-5]\d(?:\:[0-5]\d)?$/.test(submittedDuration)
+          ? submittedDuration
+          : (destination === 'tv' ? String(existing?.duration || '') : '');
         const dateType = String(form.get('dateType') || existing?.dateType || '');
         const timerStart = String(form.get('timerStart') || existing?.timerStart || '');
         await saveDraft('journalEntry', id, {
@@ -909,6 +913,7 @@ export function createSanityGateway(env) {
           mediaType,
           mediaUrl,
           ...(destination === 'tv' ? { videoOrientation } : {}),
+          ...(destination === 'tv' ? { duration } : {}),
           ...(dateType ? { dateType } : {}),
           ...(timerStart ? { timerStart } : {}),
           excerpt: destination === 'journal' ? sanitizeHtml(excerpt, JOURNAL_RICH_TEXT_OPTIONS) : excerpt,
@@ -1050,7 +1055,7 @@ export function createSanityGateway(env) {
       }
       if (url.pathname === '/api/public-gallery' && request.method === 'GET') return json({ data: await publicGallery() });
       if (url.pathname === '/api/public-content' && request.method === 'GET') {
-        const docs = await query('*[_type in ["post", "libraryItem", "exhibition", "journalFolder", "journalEntry"] && (!defined(isDeleted) || isDeleted == false)]{_id, _type, id, title, slug, excerpt, body, description, eyebrow, coverHeading, coverSubheading, updateText, updateUrl, conditions, publishedAt, kind, assetUrl, artist, artistCurator, category, organization, parentFolderId, folderId, folderTitle, entryType, destination, mediaType, mediaUrl, videoOrientation, dateType, timerStart, eventDate, endDate, author, attachmentName, location, startDate, startTime, endTime, theme, status, contactLink, registrationLink, paymentLink, ctaText, registrationFee, timeRange, isPlaceholder, displayDateOverride, imagePosition, "authorAvatar": coalesce(authorAvatar.asset->url, authorAvatar), "fileUrl": coalesce(file.asset->url, attachment.asset->url, attachmentUrl), "imageUrl": coalesce(image.asset->url, poster.asset->url, imageUrl), "imageUrls": coalesce(images[].asset->url, imagesUrl), "coverUrl": coalesce(cover.asset->url, coverUrl)} | order(publishedAt desc)');
+        const docs = await query('*[_type in ["post", "libraryItem", "exhibition", "journalFolder", "journalEntry"] && (!defined(isDeleted) || isDeleted == false)]{_id, _type, id, title, slug, excerpt, body, description, eyebrow, coverHeading, coverSubheading, updateText, updateUrl, conditions, publishedAt, kind, assetUrl, artist, artistCurator, category, organization, parentFolderId, folderId, folderTitle, entryType, destination, mediaType, mediaUrl, videoOrientation, duration, dateType, timerStart, eventDate, endDate, author, attachmentName, location, startDate, startTime, endTime, theme, status, contactLink, registrationLink, paymentLink, ctaText, registrationFee, timeRange, isPlaceholder, displayDateOverride, imagePosition, "authorAvatar": coalesce(authorAvatar.asset->url, authorAvatar), "fileUrl": coalesce(file.asset->url, attachment.asset->url, attachmentUrl), "imageUrl": coalesce(image.asset->url, poster.asset->url, imageUrl), "imageUrls": coalesce(images[].asset->url, imagesUrl), "coverUrl": coalesce(cover.asset->url, coverUrl)} | order(publishedAt desc)');
         return json({ data: docs });
       }
       if (url.pathname === '/api/login' && request.method === 'POST') {

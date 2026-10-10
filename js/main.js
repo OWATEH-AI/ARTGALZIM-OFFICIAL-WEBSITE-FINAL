@@ -1249,6 +1249,7 @@
 
       const close = document.createElement('button');
       close.innerHTML = '✕';
+      close.className = 'admin-portal-close-btn';
       Object.assign(close.style, {
         position: 'absolute', top: '20px', right: '30px',
         background: 'none', border: 'none', color: '#fff',
@@ -1256,6 +1257,10 @@
       });
       close.onclick = () => { overlay.style.display = 'none'; document.body.style.overflow = ''; };
       overlay.appendChild(close);
+
+      const style = document.createElement('style');
+      style.textContent = '@media (max-width: 768px) { .admin-portal-close-btn { display: none !important; } }';
+      overlay.appendChild(style);
 
       const iframe = document.createElement('iframe');
       iframe.src = 'admin.html';

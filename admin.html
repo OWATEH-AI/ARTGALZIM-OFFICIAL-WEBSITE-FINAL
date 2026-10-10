@@ -773,7 +773,7 @@
     .ag-tv-info { flex: 1; min-width: 0; }
     .ag-tv-title {
       font-size: 0.94rem; font-weight: 600; line-height: 1.35; color: #f4eee4;
-      margin: 0 0 4px; display: -webkit-box; line-clamp: 2; -webkit-line-clamp: 2; -webkit-box-orient: vertical;
+      margin: 0 0 4px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; line-clamp: 2;
       overflow: hidden; text-overflow: ellipsis;
     }
     .ag-tv-channel-line {
@@ -782,6 +782,15 @@
     }
     .ag-tv-verified-badge { width: 14px; height: 14px; fill: var(--gold); }
     .ag-tv-stats-line { font-size: 0.8rem; color: var(--muted); }
+    .tv-media-metadata {
+      display: flex; justify-content: space-between; align-items: center; gap: 0.75rem;
+      margin-top: 0.55rem; padding: 0.6rem 0.75rem; border-left: 2px solid var(--gold);
+      background: linear-gradient(110deg, var(--gold-d), transparent 85%); color: var(--muted); font-size: 0.78rem;
+    }
+    .tv-media-metadata output { color: var(--gold-light); font-variant-numeric: tabular-nums; text-align: end; }
+    .ag-tv-preview-details { display: grid; gap: 0.65rem; margin-top: 1rem; padding-top: 0.85rem; border-top: 1px solid var(--border); }
+    .ag-tv-preview-details h4 { color: var(--gold); font-size: 0.7rem; text-transform: uppercase; }
+    .ag-tv-preview-details p { color: var(--muted); font-size: 0.82rem; line-height: 1.55; white-space: pre-wrap; overflow-wrap: anywhere; }
     .ag-tv-short-card {
       position: relative; width: 100%; max-width: 250px; margin-inline: auto; aspect-ratio: 9 / 16;
       border-radius: 12px; overflow: hidden; background: #111; box-shadow: 0 4px 18px rgba(0,0,0,0.5);
@@ -827,7 +836,7 @@
     }
     .ag-tv-short-title {
       font-size: 0.94rem; font-weight: 600; color: #fff; margin: 0 0 4px; line-height: 1.3;
-      display: -webkit-box; line-clamp: 2; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; text-overflow: ellipsis;
+      display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; line-clamp: 2; overflow: hidden; text-overflow: ellipsis;
     }
     .ag-tv-short-views { font-size: 0.78rem; color: rgba(255,255,255,0.7); }
     #tv-logo-avatar-wrap:hover .tv-avatar-hover-overlay { opacity: 1 !important; }
@@ -1908,6 +1917,10 @@
               <div class="form-group" style="margin-bottom:1rem;">
                 <label for="tv-entry-attachment">Video File (MP4, WebM, or Ogg)</label>
                 <input type="file" id="tv-entry-attachment" accept="video/mp4,video/webm,video/ogg,.mp4,.webm,.ogv" onchange="handleTvVideoFileChange(event)"/>
+                <div class="tv-media-metadata" aria-live="polite">
+                  <span>Detected video duration</span>
+                  <output id="tv-entry-duration-output">Waiting for video</output>
+                </div>
                 <div id="tv-saved-attachment-notice" style="display:none; font-size:0.78rem; color:var(--gold); margin-top:0.4rem; align-items:center; gap:0.4rem;">
                   <span>✓</span> <span id="tv-saved-attachment-text">Approved video file saved and retained</span>
                 </div>
@@ -1924,7 +1937,7 @@
                 </div>
                 <div class="form-group">
                   <label for="tv-entry-media-url">Video URL</label>
-                  <input type="url" id="tv-entry-media-url" placeholder="https://youtu.be/…" oninput="previewJournalMedia('tv'); updateTvLivePreview();"/>
+                  <input type="url" id="tv-entry-media-url" placeholder="https://youtu.be/…" oninput="handleTvMediaUrlChange()"/>
                 </div>
               </div>
               <div class="form-group" style="margin-bottom:1rem;">
@@ -4900,6 +4913,7 @@ async function loadContentLibrary() {
 
 function renderPostList() {
   const list = document.getElementById('postList');
+  if (!list) return;
   if (!_posts.length) {
     list.textContent = 'No blog posts yet.';
     return;
@@ -4973,6 +4987,7 @@ function clearLibraryForm() {
 
 function renderLibraryList() {
   const list = document.getElementById('libraryList');
+  if (!list) return;
   if (!_libraryItems.length) {
     list.textContent = 'No media uploaded yet.';
     return;
@@ -5428,6 +5443,7 @@ function clearJournalEntryForm(destination = 'journal') {
     document.getElementById('journal-entry-artist-curator').value = '';
     document.getElementById('journal-entry-category').value = '';
   } else {
+    tvMediaMetadataToken++;
     document.getElementById('tv-entry-location').value = 'fullscreen';
     document.getElementById('tv-entry-media-type').value = '';
     document.getElementById('tv-entry-video-orientation').value = 'auto';
@@ -5436,6 +5452,8 @@ function clearJournalEntryForm(destination = 'journal') {
     resetTvChannelLogo();
     if (tvThumbnailPreviewUrl) URL.revokeObjectURL(tvThumbnailPreviewUrl);
     tvThumbnailPreviewUrl = '';
+    clearGeneratedTvThumbnail();
+    setTvDetectedDuration('');
     existingTvImageUrl = '';
     existingTvAttachmentUrl = '';
     existingTvAttachmentName = '';
@@ -5840,6 +5858,10 @@ function renderJournalDraftPreview(parent) {
 }
 
 let tvThumbnailPreviewUrl = '';
+let tvGeneratedThumbnailUrl = '';
+let tvGeneratedThumbnailFile = null;
+let tvDetectedDuration = '';
+let tvMediaMetadataToken = 0;
 let tvLogoPreviewUrl = '';
 let existingTvImageUrl = '';
 let existingTvAttachmentUrl = '';
@@ -6063,13 +6085,158 @@ function handleTvThumbnailChange(event) {
   const file = event.target.files?.[0];
   if (tvThumbnailPreviewUrl) URL.revokeObjectURL(tvThumbnailPreviewUrl);
   tvThumbnailPreviewUrl = file ? URL.createObjectURL(file) : '';
+  if (file) clearGeneratedTvThumbnail();
   updateTvCropValues();
   updateTvLivePreview();
 }
 
 function handleTvVideoFileChange(event) {
+  tvMediaMetadataToken++;
+  clearGeneratedTvThumbnail();
+  setTvDetectedDuration('');
+  const output = document.getElementById('tv-entry-duration-output');
+  if (output && event.target.files?.[0]) output.value = 'Detecting…';
   previewJournalMedia('tv');
   updateTvLivePreview();
+}
+
+function handleTvMediaUrlChange() {
+  tvMediaMetadataToken++;
+  clearGeneratedTvThumbnail();
+  setTvDetectedDuration('');
+  previewJournalMedia('tv');
+  updateTvLivePreview();
+}
+
+function clearGeneratedTvThumbnail() {
+  if (tvGeneratedThumbnailUrl) URL.revokeObjectURL(tvGeneratedThumbnailUrl);
+  tvGeneratedThumbnailUrl = '';
+  tvGeneratedThumbnailFile = null;
+}
+
+function formatAdminTvDuration(seconds) {
+  const value = Number(seconds);
+  if (!Number.isFinite(value) || value <= 0) return '';
+  const totalSeconds = Math.floor(value);
+  const secondPart = String(totalSeconds % 60).padStart(2, '0');
+  const totalMinutes = Math.floor(totalSeconds / 60);
+  const minutePart = totalMinutes % 60;
+  const hourPart = Math.floor(totalMinutes / 60);
+  return hourPart ? `${hourPart}:${String(minutePart).padStart(2, '0')}:${secondPart}` : `${totalMinutes}:${secondPart}`;
+}
+
+function setTvDetectedDuration(value) {
+  tvDetectedDuration = typeof value === 'string' ? value.trim() : formatAdminTvDuration(value);
+  const output = document.getElementById('tv-entry-duration-output');
+  if (output) output.value = tvDetectedDuration || 'Not available';
+  updateTvLivePreview();
+}
+
+async function createGeneratedTvThumbnail(video, metadataToken) {
+  if (metadataToken !== tvMediaMetadataToken || tvThumbnailPreviewUrl || existingTvImageUrl || tvGeneratedThumbnailFile) return;
+  const originalTime = video.currentTime;
+  try {
+    if (Number.isFinite(video.duration) && video.duration > 0) {
+      const frameTime = Math.min(0.25, video.duration / 10);
+      if (Math.abs(video.currentTime - frameTime) > 0.01) {
+        await new Promise((resolve, reject) => {
+          video.addEventListener('seeked', resolve, { once: true });
+          video.addEventListener('error', reject, { once: true });
+          video.currentTime = frameTime;
+        });
+      }
+    }
+    const width = video.videoWidth;
+    const height = video.videoHeight;
+    if (!width || !height || metadataToken !== tvMediaMetadataToken) return;
+    const scale = Math.min(1, 1280 / Math.max(width, height));
+    const canvas = document.createElement('canvas');
+    canvas.width = Math.max(1, Math.round(width * scale));
+    canvas.height = Math.max(1, Math.round(height * scale));
+    const context = canvas.getContext('2d');
+    if (!context) return;
+    context.drawImage(video, 0, 0, canvas.width, canvas.height);
+    const blob = await new Promise(resolve => canvas.toBlob(resolve, 'image/jpeg', 0.88));
+    if (!blob || metadataToken !== tvMediaMetadataToken) return;
+    tvGeneratedThumbnailFile = new File([blob], 'artgalzim-tv-thumbnail.jpg', { type: 'image/jpeg' });
+    tvGeneratedThumbnailUrl = URL.createObjectURL(blob);
+    updateTvLivePreview();
+  } catch (error) {
+    console.info('Automatic ARTGALZIM TV thumbnail is unavailable for this video source.');
+  } finally {
+    if (video.isConnected && Number.isFinite(originalTime) && Math.abs(video.currentTime - originalTime) > 0.01) {
+      try { video.currentTime = originalTime; } catch (error) {}
+    }
+  }
+}
+
+function handleTvPreviewMetadata(video, metadataToken) {
+  if (metadataToken !== tvMediaMetadataToken) return;
+  setTvDetectedDuration(video.duration);
+  const orientationControl = document.getElementById('tv-entry-video-orientation');
+  if (orientationControl?.value === 'auto' && video.videoWidth && video.videoHeight) {
+    const orientation = video.videoHeight > video.videoWidth ? 'portrait' : 'landscape';
+    orientationControl.value = orientation;
+    document.getElementById('tv-entry-location').value = orientation === 'portrait' ? 'shorts' : 'fullscreen';
+    video.classList.toggle('is-short', orientation === 'portrait');
+    syncTvPreviewWindowSelector();
+  }
+  createGeneratedTvThumbnail(video, metadataToken);
+}
+
+async function detectTvUploadMetadata(file, includePoster) {
+  const objectUrl = URL.createObjectURL(file);
+  const video = document.createElement('video');
+  video.preload = 'metadata';
+  video.muted = true;
+  video.playsInline = true;
+  try {
+    const metadata = await new Promise((resolve, reject) => {
+      const timeoutId = setTimeout(() => reject(new Error('Timed out reading video metadata.')), 12000);
+      video.addEventListener('loadedmetadata', () => {
+        clearTimeout(timeoutId);
+        resolve({ duration: video.duration, width: video.videoWidth, height: video.videoHeight });
+      }, { once: true });
+      video.addEventListener('error', () => {
+        clearTimeout(timeoutId);
+        reject(new Error('Could not read this video. Choose a supported MP4, WebM, or Ogg file.'));
+      }, { once: true });
+      video.src = objectUrl;
+      video.load();
+    });
+    let posterFile = null;
+    if (includePoster && metadata.width && metadata.height) {
+      const frameTime = Number.isFinite(metadata.duration) && metadata.duration > 0
+        ? Math.min(0.25, metadata.duration / 10)
+        : 0;
+      if (frameTime > 0) {
+        await new Promise((resolve, reject) => {
+          video.addEventListener('seeked', resolve, { once: true });
+          video.addEventListener('error', reject, { once: true });
+          video.currentTime = frameTime;
+        });
+      }
+      const scale = Math.min(1, 1280 / Math.max(metadata.width, metadata.height));
+      const canvas = document.createElement('canvas');
+      canvas.width = Math.max(1, Math.round(metadata.width * scale));
+      canvas.height = Math.max(1, Math.round(metadata.height * scale));
+      const context = canvas.getContext('2d');
+      if (context) {
+        context.drawImage(video, 0, 0, canvas.width, canvas.height);
+        const blob = await new Promise(resolve => canvas.toBlob(resolve, 'image/jpeg', 0.88));
+        if (blob) posterFile = new File([blob], 'artgalzim-tv-thumbnail.jpg', { type: 'image/jpeg' });
+      }
+    }
+    return {
+      duration: formatAdminTvDuration(metadata.duration),
+      orientation: metadata.height > metadata.width ? 'portrait' : 'landscape',
+      posterFile
+    };
+  } finally {
+    video.removeAttribute('src');
+    video.load();
+    URL.revokeObjectURL(objectUrl);
+  }
 }
 
 function updateTvCropValues() {
@@ -6084,6 +6251,7 @@ function updateTvCropValues() {
 
 function getTvPreviewMediaThumbnail() {
   if (tvThumbnailPreviewUrl) return tvThumbnailPreviewUrl;
+  if (tvGeneratedThumbnailUrl) return tvGeneratedThumbnailUrl;
   if (existingTvImageUrl) return existingTvImageUrl;
   const mediaUrl = document.getElementById('tv-entry-media-url')?.value.trim() || '';
   if (mediaUrl) {
@@ -6155,8 +6323,8 @@ function updateTvLivePreview() {
   const orientationSelect = document.getElementById('tv-entry-video-orientation');
   const badgeVal = document.getElementById('tv-entry-badge')?.value.trim() || '';
 
-  const focusX = document.getElementById('tv-image-focus-x')?.value || '50';
-  const focusY = document.getElementById('tv-image-focus-y')?.value || '50';
+  const focusX = Math.max(0, Math.min(100, Number(document.getElementById('tv-image-focus-x')?.value || 50)));
+  const focusY = Math.max(0, Math.min(100, Number(document.getElementById('tv-image-focus-y')?.value || 50)));
 
   let isShort = false;
   if (locationSelect?.value === 'shorts') {
@@ -6202,7 +6370,7 @@ function updateTvLivePreview() {
 
     const views = document.createElement('span');
     views.className = 'ag-tv-short-views';
-    views.textContent = `0 views • ${dateDisplay}`;
+    views.textContent = [`0 views`, tvDetectedDuration, dateDisplay].filter(Boolean).join(' • ');
     gradient.appendChild(views);
 
     card.appendChild(gradient);
@@ -6228,10 +6396,12 @@ function updateTvLivePreview() {
       thumbWrap.appendChild(cardBadge);
     }
 
-    const badge = document.createElement('span');
-    badge.className = 'ag-tv-duration-badge';
-    badge.textContent = 'Preview';
-    thumbWrap.appendChild(badge);
+    if (tvDetectedDuration) {
+      const durationBadge = document.createElement('span');
+      durationBadge.className = 'ag-tv-duration-badge';
+      durationBadge.textContent = tvDetectedDuration;
+      thumbWrap.appendChild(durationBadge);
+    }
 
     card.appendChild(thumbWrap);
 
@@ -6275,6 +6445,27 @@ function updateTvLivePreview() {
   }
 
   previewStage.appendChild(card);
+  const excerptText = document.getElementById('tv-entry-excerpt')?.value.trim() || '';
+  const bodyText = document.getElementById('tv-entry-body')?.value.trim() || '';
+  if (excerptText || bodyText) {
+    const details = document.createElement('div');
+    details.className = 'ag-tv-preview-details';
+    if (excerptText) {
+      const excerptHeading = document.createElement('h4');
+      excerptHeading.textContent = 'Description';
+      const excerpt = document.createElement('p');
+      excerpt.textContent = excerptText;
+      details.append(excerptHeading, excerpt);
+    }
+    if (bodyText) {
+      const bodyHeading = document.createElement('h4');
+      bodyHeading.textContent = 'Video details';
+      const body = document.createElement('p');
+      body.textContent = bodyText;
+      details.append(bodyHeading, body);
+    }
+    previewStage.appendChild(details);
+  }
 }
 
 function renderTvDraftPreview(parent) {
@@ -6373,6 +6564,7 @@ function journalPreviewOrientation(orientation, mediaUrl) {
 }
 
 function previewJournalMedia(destination = 'journal') {
+  const metadataToken = destination === 'tv' ? ++tvMediaMetadataToken : 0;
   const prefix = destination === 'tv' ? 'tv-entry' : 'journal-entry';
   const preview = document.getElementById(destination === 'tv' ? 'tv-media-preview' : 'journal-media-preview');
   if (journalMediaPreviewUrls[destination]) URL.revokeObjectURL(journalMediaPreviewUrls[destination]);
@@ -6390,10 +6582,7 @@ function previewJournalMedia(destination = 'journal') {
     player.preload = 'metadata';
     player.className = `journal-admin-preview${orientation === 'portrait' ? ' is-short' : ''}`;
     player.addEventListener('loadedmetadata', () => {
-      if (!orientationControl || orientationControl.value !== 'auto' || !player.videoWidth || !player.videoHeight) return;
-      orientationControl.value = player.videoHeight > player.videoWidth ? 'portrait' : 'landscape';
-      player.classList.toggle('is-short', orientationControl.value === 'portrait');
-      if (destination === 'tv') updateTvLivePreview();
+      if (destination === 'tv') handleTvPreviewMetadata(player, metadataToken);
     }, { once: true });
     preview.appendChild(player);
     preview.style.display = 'block';
@@ -6407,6 +6596,7 @@ function previewJournalMedia(destination = 'journal') {
     player.playsInline = true;
     player.preload = 'metadata';
     player.className = `journal-admin-preview${orientation === 'portrait' ? ' is-short' : ''}`;
+    player.addEventListener('loadedmetadata', () => handleTvPreviewMetadata(player, metadataToken), { once: true });
     preview.appendChild(player);
     preview.style.display = 'block';
     if (destination === 'tv') setTimeout(updateTvLivePreview, 10);
@@ -6433,6 +6623,9 @@ function previewJournalMedia(destination = 'journal') {
     player.playsInline = true;
     player.preload = 'metadata';
     player.className = `journal-admin-preview${previewOrientation === 'portrait' ? ' is-short' : ''}`;
+    if (destination === 'tv') {
+      player.addEventListener('loadedmetadata', () => handleTvPreviewMetadata(player, metadataToken), { once: true });
+    }
     preview.appendChild(player);
     preview.style.display = 'block';
     if (destination === 'tv') setTimeout(updateTvLivePreview, 10);
@@ -6455,6 +6648,13 @@ function editJournalEntry(id) {
   if (!entry) return;
   const destination = entry.destination === 'tv' || entry.entryType === 'ARTGALZIM TV' ? 'tv' : 'journal';
   const prefix = destination === 'tv' ? 'tv-entry' : 'journal-entry';
+  if (destination === 'tv') {
+    tvMediaMetadataToken++;
+    if (tvThumbnailPreviewUrl) URL.revokeObjectURL(tvThumbnailPreviewUrl);
+    tvThumbnailPreviewUrl = '';
+    clearGeneratedTvThumbnail();
+    setTvDetectedDuration('');
+  }
   showPanel(destination === 'tv' ? 'artgalzim-tv' : 'journal-media');
   document.getElementById(`${prefix}-id`).value = id;
   if (destination === 'journal') {
@@ -6496,11 +6696,10 @@ function editJournalEntry(id) {
     const loc = entry.location === 'shorts' || entry.videoOrientation === 'portrait' ? 'shorts' : 'fullscreen';
     document.getElementById('tv-entry-location').value = loc;
     document.getElementById('tv-entry-video-orientation').value = entry.videoOrientation || (loc === 'shorts' ? 'portrait' : 'landscape');
-    if (entry.imagePosition) {
-      document.getElementById('tv-image-focus-x').value = entry.imagePosition.x ?? 50;
-      document.getElementById('tv-image-focus-y').value = entry.imagePosition.y ?? 50;
-      updateTvCropValues();
-    }
+    document.getElementById('tv-image-focus-x').value = entry.imagePosition?.x ?? 50;
+    document.getElementById('tv-image-focus-y').value = entry.imagePosition?.y ?? 50;
+    updateTvCropValues();
+    setTvDetectedDuration(entry.duration || '');
     const avatar = entry.authorAvatar || '/images/logo.jpg';
     document.getElementById('tv-logo-avatar-img').src = avatar;
     document.getElementById('tv-entry-author-avatar').value = avatar;
@@ -6600,21 +6799,38 @@ async function saveJournalEntry(destination = 'journal') {
   const image = document.getElementById(`${prefix}-image`).files[0];
   const images = destination === 'tv' ? [] : Array.from(document.getElementById(`${prefix}-image`).files);
   const attachment = document.getElementById(`${prefix}-attachment`).files[0];
-  if (destination === 'tv' && videoOrientation === 'auto'
-    && attachment && /\.(mp4|webm|ogv)$/i.test(attachment.name)) {
+  if (destination === 'tv' && attachment && /\.(mp4|webm|ogv)$/i.test(attachment.name)) {
     try {
-      videoOrientation = await detectJournalVideoOrientation(attachment);
-      orientationControl.value = videoOrientation;
+      const metadata = await detectTvUploadMetadata(attachment, !image && !existingTvImageUrl && !tvGeneratedThumbnailFile);
+      setTvDetectedDuration(metadata.duration);
+      if (videoOrientation === 'auto') {
+        videoOrientation = metadata.orientation;
+        orientationControl.value = videoOrientation;
+        document.getElementById('tv-entry-location').value = videoOrientation === 'portrait' ? 'shorts' : 'fullscreen';
+      }
+      if (metadata.posterFile && !image && !existingTvImageUrl && !tvGeneratedThumbnailFile) {
+        clearGeneratedTvThumbnail();
+        tvGeneratedThumbnailFile = metadata.posterFile;
+        tvGeneratedThumbnailUrl = URL.createObjectURL(metadata.posterFile);
+        updateTvLivePreview();
+      }
     } catch (error) {
-      toast(error.message, 'error');
-      return;
+      if (videoOrientation === 'auto') {
+        toast(error.message, 'error');
+        return;
+      }
     }
   }
-  if (destination === 'tv') form.set('videoOrientation', videoOrientation);
+  if (destination === 'tv') {
+    form.set('videoOrientation', videoOrientation);
+    form.set('location', document.getElementById('tv-entry-location').value);
+    form.set('duration', tvDetectedDuration);
+  }
   if (destination === 'tv' && image) form.set('image', image);
+  else if (destination === 'tv' && tvGeneratedThumbnailFile) form.set('image', tvGeneratedThumbnailFile);
   if (attachment) form.set('attachment', attachment);
   isJournalEntrySaveInProgress = true;
-  const hasLocalFiles = images.length > 0 || Boolean(attachment) || (destination === 'tv' && Boolean(image));
+  const hasLocalFiles = images.length > 0 || Boolean(attachment) || (destination === 'tv' && Boolean(image || tvGeneratedThumbnailFile));
   if (hasLocalFiles) {
     toast('Uploading content...', 'info', { duration: 0 });
     showAdminLoading('Uploading content...', 'Uploading the selected content. Duplicate submissions are blocked until this finishes.');
@@ -6641,32 +6857,6 @@ async function saveJournalEntry(destination = 'journal') {
     isJournalEntrySaveInProgress = false;
   }
 
-  function detectJournalVideoOrientation(file) {
-    return new Promise((resolve, reject) => {
-      const objectUrl = URL.createObjectURL(file);
-      const video = document.createElement('video');
-      const cleanup = () => {
-        URL.revokeObjectURL(objectUrl);
-        video.removeAttribute('src');
-        video.load();
-      };
-      video.preload = 'metadata';
-      video.onloadedmetadata = () => {
-        const { videoWidth, videoHeight } = video;
-        cleanup();
-        if (!videoWidth || !videoHeight) {
-          reject(new Error('Could not read the video dimensions. Choose Landscape video or Short (portrait) manually.'));
-          return;
-        }
-        resolve(videoHeight > videoWidth ? 'portrait' : 'landscape');
-      };
-      video.onerror = () => {
-        cleanup();
-        reject(new Error('Could not inspect this video. Choose Landscape video or Short (portrait) manually.'));
-      };
-      video.src = objectUrl;
-    });
-  }
 }
 
 async function deleteJournalEntry(id) {
