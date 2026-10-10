@@ -9,6 +9,13 @@
   grid-template-columns: repeat(3, 1fr);
   gap: 2rem;
 }
+@media (max-width: 768px) {
+  .exhibition-list { padding: 2rem 1rem 3rem; }
+  .exh-grid {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 1.5rem;
+  }
+}
 .exh-card {
   background: var(--bg2);
   border: 1px solid var(--border);

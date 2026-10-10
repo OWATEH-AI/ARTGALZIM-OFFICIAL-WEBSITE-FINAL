@@ -1,7 +1,14 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 import { createSanityGateway } from '../sanity-gateway.js';
-import { getTvVideoOrientation, groupTvVideos } from '../js/tv-layout.js';
+import {
+  formatTvDuration,
+  getTvThumbnailCandidates,
+  getTvVideoDuration,
+  getTvVideoOrientation,
+  getTvVideoSourceUrl,
+  groupTvVideos
+} from '../js/tv-layout.js';
 
 test('TV video orientation keeps Shorts separate and defaults unknown media to landscape', () => {
   const landscape = { _id: 'landscape', mediaUrl: 'https://www.youtube.com/watch?v=abcDEF12345' };
@@ -23,6 +30,23 @@ test('TV video orientation keeps Shorts separate and defaults unknown media to l
     landscape: [landscape, explicitlyLandscape, unknownProvider],
     shorts: [short, explicitPortrait]
   });
+});
+
+test('TV media helpers format real durations and discover direct sources and YouTube posters', () => {
+  assert.equal(formatTvDuration(65), '1:05');
+  assert.equal(formatTvDuration(3661), '1:01:01');
+  assert.equal(formatTvDuration(0), '');
+  assert.equal(getTvVideoDuration({ duration: '1:05' }), '1:05');
+  assert.equal(getTvVideoDuration({ durationSeconds: 65 }), '1:05');
+  assert.equal(getTvVideoDuration({}), '');
+  assert.equal(getTvVideoSourceUrl({ attachmentUrl: 'https://cdn.example.test/video.mp4' }), 'https://cdn.example.test/video.mp4');
+  assert.equal(getTvVideoSourceUrl({ fileUrl: 'https://cdn.example.test/upload.mp4', attachmentName: 'upload.mp4' }), 'https://cdn.example.test/upload.mp4');
+  assert.equal(getTvVideoSourceUrl({ mediaUrl: 'https://youtu.be/abcDEF12345' }), '');
+  assert.deepEqual(getTvThumbnailCandidates({ mediaUrl: 'https://youtube.com/shorts/abcDEF12345' }), [
+    'https://i.ytimg.com/vi/abcDEF12345/hqdefault.jpg',
+    'https://i.ytimg.com/vi/abcDEF12345/mqdefault.jpg',
+    'https://i.ytimg.com/vi/abcDEF12345/default.jpg'
+  ]);
 });
 
 test('public gallery keeps album cover metadata as source of truth for empty folders without inventing artwork content', async () => {
@@ -776,6 +800,7 @@ test('dashboard artist, folder, artwork and content actions stay in sync with Sa
     tvEntryForm.set('title', 'Gallery video feature');
     tvEntryForm.set('mediaType', 'video');
     tvEntryForm.set('mediaUrl', 'https://www.youtube.com/watch?v=abcDEF12345');
+    tvEntryForm.set('duration', '1:23');
     const createdTvEntry = await authenticatedRequest('/api/journal/entries', {
       method: 'POST',
       body: tvEntryForm
@@ -785,6 +810,7 @@ test('dashboard artist, folder, artwork and content actions stay in sync with Sa
     assert.equal(documents.get(`drafts.${tvEntryId}`).destination, 'tv');
     assert.equal(documents.get(`drafts.${tvEntryId}`).folderId, '');
     assert.equal(documents.get(`drafts.${tvEntryId}`).videoOrientation, 'landscape');
+    assert.equal(documents.get(`drafts.${tvEntryId}`).duration, '1:23');
     assert.equal(documents.get(`drafts.${tvEntryId}`).artistCurator, undefined);
     assert.equal(documents.get(`drafts.${tvEntryId}`).category, undefined);
 
@@ -819,6 +845,7 @@ test('dashboard artist, folder, artwork and content actions stay in sync with Sa
     uploadedTvEntryForm.set('destination', 'tv');
     uploadedTvEntryForm.set('entryType', 'Program');
     uploadedTvEntryForm.set('title', 'Uploaded gallery tour');
+    uploadedTvEntryForm.set('duration', '0:52');
     uploadedTvEntryForm.append('attachment', new Blob(['video-bytes'], { type: 'video/mp4' }), 'gallery-tour.mp4');
     uploadedTvEntryForm.append('image', new Blob(['poster-bytes'], { type: 'image/jpeg' }), 'gallery-tour-poster.jpg');
     const uploadedTvEntryResponse = await authenticatedRequest('/api/journal/entries', {
@@ -829,6 +856,7 @@ test('dashboard artist, folder, artwork and content actions stay in sync with Sa
     const uploadedTvEntryId = (await uploadedTvEntryResponse.json()).id;
     const uploadedTvEntry = documents.get(`drafts.${uploadedTvEntryId}`);
     assert.equal(uploadedTvEntry.mediaType, 'video');
+    assert.equal(uploadedTvEntry.duration, '0:52');
     assert.equal(uploadedTvEntry.mediaUrl, '');
     assert.equal(uploadedTvEntry.attachment.asset._ref.startsWith('file-mock-'), true);
     assert.equal(uploadedTvEntry.attachmentName, 'gallery-tour.mp4');
@@ -858,7 +886,8 @@ test('dashboard artist, folder, artwork and content actions stay in sync with Sa
     assert.match(documents.queries.at(-1), /organization, parentFolderId, folderId/);
     assert.match(documents.queries.at(-1), /folderId, folderTitle, entryType, destination, mediaType/);
     assert.match(documents.queries.at(-1), /artistCurator, category/);
-    assert.match(documents.queries.at(-1), /mediaType, mediaUrl, videoOrientation/);
+    assert.match(documents.queries.at(-1), /mediaType, mediaUrl, videoOrientation, duration/);
+    assert.match(documents.queries.at(-1), /imagePosition/);
 
     const invalidMedia = new FormData();
     invalidMedia.set('folderId', folderId);
@@ -954,12 +983,22 @@ test('dashboard artist, folder, artwork and content actions stay in sync with Sa
     assert.equal(documents.has(folderCoverAssetId), false);
     assert.equal(documents.deletedAssets.includes(folderCoverAssetId), true);
     assert.equal(documents.has('drafts.artwork-published-student-example-portfolio-published-student-work-jpg'), false);
+    assert.equal(documents.has(`drafts.${uploadedTvEntryId}`), false);
+    const publishedTvEntry = documents.get(uploadedTvEntryId);
+    assert.equal(publishedTvEntry.destination, 'tv');
+    assert.equal(publishedTvEntry.mediaType, 'video');
+    assert.equal(publishedTvEntry.attachmentUrl, uploadedTvEntry.attachmentUrl);
     assert.equal(documents.has(replacedFolderCoverAssetId), false);
     assert.equal(documents.deletedAssets.includes(replacedFolderCoverAssetId), true);
     assert.equal(documents.has(replacedJournalCoverAssetId), false);
     assert.equal(documents.deletedAssets.includes(replacedJournalCoverAssetId), true);
     assert.equal(documents.has(retainedArtworkAssetId), true);
     assert.equal(documents.deletedAssets.includes(retainedArtworkAssetId), false);
+    const publishedTvContentResponse = await request('/api/public-content');
+    const publishedTvContent = await publishedTvContentResponse.json();
+    assert.equal(publishedTvContentResponse.status, 200);
+    assert.equal(publishedTvContent.data.some(entry => entry._id === uploadedTvEntryId), true);
+    assert.match(documents.queries.at(-1), /"fileUrl": coalesce\(file\.asset->url, attachment\.asset->url, attachmentUrl\)/);
     const publishedGalleryResponse = await request('/api/public-gallery');
     const publishedGallery = await publishedGalleryResponse.json();
     assert.deepEqual(publishedGallery.data.artistsCollections['Student Example/Empty Folder'], {

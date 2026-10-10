@@ -287,6 +287,13 @@ export const schemaTypes = [
         options: { list: [{ title: 'Landscape video', value: 'landscape' }, { title: 'Short (portrait)', value: 'portrait' }] }
       }),
       defineField({
+        name: 'duration',
+        title: 'Detected Video Duration',
+        description: 'Detected from the uploaded or directly linked video.',
+        type: 'string',
+        readOnly: true
+      }),
+      defineField({
         name: 'artistCurator',
         title: 'Artist / Curator',
         type: 'string',
