@@ -91,3 +91,10 @@ export function groupTvVideos(entries) {
     return groups;
   }, { landscape: [], shorts: [] });
 }
+
+export function isTvSystemFolder(folder) {
+  const id = String(folder?._id || '').replace(/^drafts\./, '');
+  const slug = typeof folder?.slug === 'string' ? folder.slug : folder?.slug?.current;
+  const title = String(folder?.title || '').trim().toLowerCase();
+  return id === 'journal-folder-artgalzim-tv' || slug === 'artgalzim-tv' || title === 'artgalzim tv';
+}

@@ -4,7 +4,8 @@ import {
   getTvVideoDuration,
   getTvVideoOrientation,
   getTvVideoSourceUrl,
-  groupTvVideos
+  groupTvVideos,
+  isTvSystemFolder
 } from './tv-layout.js';
 
 const feed = document.getElementById('journalFeed');
@@ -19,6 +20,7 @@ let pendingFolderLoadId = null;
 let folderLoadingTimer = null;
 let galleryHistoryDepth = 0;
 let folderPreloaderActive = false;
+let activeVideoDownloadCountdown = null;
 
 function showFolderPreloader() {
   const preloader = document.getElementById('preloader');
@@ -196,8 +198,60 @@ function formatVideoTime(seconds) {
   return `${m}:${s < 10 ? '0' : ''}${s}`;
 }
 
+function getSanityVideoDownload(entry) {
+  const id = String(entry?._id || '');
+  const source = entry?.fileUrl || entry?.attachmentUrl || entry?.mediaUrl || '';
+  try {
+    const url = new URL(source, window.location.href);
+    if (url.protocol !== 'https:' || url.hostname !== 'cdn.sanity.io' || !url.pathname.startsWith('/files/')) {
+      return { url: '', size: 0 };
+    }
+    return {
+      url: `/api/video-download?id=${encodeURIComponent(id)}`,
+      size: Number(entry.attachmentSize) || 0
+    };
+  } catch {
+    return { url: '', size: 0 };
+  }
+}
+
+function videoDownloadWaitSeconds(size) {
+  return Math.min(10, Math.max(3, 2 + Math.ceil((Number(size) || 0) / (25 * 1024 * 1024))));
+}
+
+function showVideoDownloadStatus(size) {
+  if (activeVideoDownloadCountdown) return;
+
+  const notice = document.createElement('div');
+  notice.className = 'ag-download-status';
+  notice.setAttribute('role', 'status');
+  notice.setAttribute('aria-live', 'polite');
+  const message = document.createElement('span');
+  notice.appendChild(message);
+  document.body.appendChild(notice);
+
+  let remaining = videoDownloadWaitSeconds(size);
+  const updateMessage = () => {
+    message.textContent = remaining > 0
+      ? `Preparing your download. Starting in ${remaining} second${remaining === 1 ? '' : 's'}...`
+      : 'Your download has begun.';
+  };
+  updateMessage();
+  const timer = window.setInterval(() => {
+    remaining -= 1;
+    updateMessage();
+    if (remaining > 0) return;
+    window.clearInterval(timer);
+    activeVideoDownloadCountdown = null;
+    window.setTimeout(() => notice.remove(), 12000);
+  }, 1000);
+  activeVideoDownloadCountdown = { notice, timer };
+}
+
 function createPremiumVideoPlayer({
   videoUrl,
+  downloadUrl = '',
+  downloadSize = 0,
   posterUrl = '',
   title = '',
   prevVideo = null,
@@ -265,21 +319,36 @@ function createPremiumVideoPlayer({
   });
   popover.appendChild(speedGrid);
 
-  const downloadItem = document.createElement('button');
-  downloadItem.type = 'button';
+  const downloadItem = document.createElement('a');
   downloadItem.className = 'ag-menu-item';
   downloadItem.innerHTML = `<svg viewBox="0 0 24 24"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg><span class="ag-menu-item-text">Download Video</span>`;
+  let isSanityCdnVideo = false;
+  try {
+    isSanityCdnVideo = new URL(videoUrl, window.location.href).hostname === 'cdn.sanity.io';
+  } catch {}
+  const resolvedDownloadUrl = downloadUrl
+    ? safeMediaUrl(downloadUrl)
+    : (isSanityCdnVideo ? '' : safeMediaUrl(videoUrl));
+  downloadItem.href = resolvedDownloadUrl || '#';
+  downloadItem.download = '';
+  if (!downloadUrl) {
+    downloadItem.target = '_blank';
+    downloadItem.rel = 'noopener noreferrer';
+  }
+  downloadItem.hidden = !resolvedDownloadUrl;
   downloadItem.addEventListener('click', (e) => {
     e.stopPropagation();
-    const a = document.createElement('a');
-    a.href = safeMediaUrl(videoUrl);
-    const cleanName = (title || 'artgalzim-video').replace(/[^a-z0-9_-]/gi, '_');
-    a.download = cleanName.endsWith('.mp4') ? cleanName : `${cleanName}.mp4`;
-    a.target = '_blank';
-    document.body.appendChild(a);
-    a.click();
-    a.remove();
-    popover.classList.remove('is-open');
+    if (!resolvedDownloadUrl) {
+      e.preventDefault();
+      return;
+    }
+    if (downloadUrl) {
+      showVideoDownloadStatus(downloadSize);
+      popover.classList.remove('is-open');
+    } else {
+      const cleanName = (title || 'artgalzim-video').replace(/[^a-z0-9_-]/gi, '_');
+      downloadItem.download = cleanName.endsWith('.mp4') ? cleanName : `${cleanName}.mp4`;
+    }
   });
   popover.appendChild(downloadItem);
 
@@ -725,14 +794,17 @@ function createPremiumYouTubePlayer({
   return container;
 }
 
-function addMediaViewer(parent, mediaUrl, mediaType, title, className = 'journal-media-viewer', posterUrl = '', directVideoAsset = false) {
+function addMediaViewer(parent, mediaUrl, mediaType, title, className = 'journal-media-viewer', posterUrl = '', directVideoAsset = false, entry = null) {
   const embed = mediaEmbed(mediaUrl, mediaType, directVideoAsset);
   if (!embed) return false;
   const viewer = document.createElement('div');
   viewer.className = className;
   if (embed.kind === 'video') {
+    const download = getSanityVideoDownload(entry);
     const player = createPremiumVideoPlayer({
       videoUrl: embed.src,
+      downloadUrl: download.url,
+      downloadSize: download.size,
       posterUrl,
       title,
       autoplay: false
@@ -1070,7 +1142,7 @@ function renderEntryDetail(entry) {
     const mediaUrl = safeMediaUrl(entry.mediaUrl);
     const mediaType = entry.mediaType || '';
     if (mediaUrl) {
-      if (!addMediaViewer(mediaColumn, mediaUrl, mediaType, entry.title, 'journal-media-viewer', imageUrls[0])) {
+      if (!addMediaViewer(mediaColumn, mediaUrl, mediaType, entry.title, 'journal-media-viewer', imageUrls[0], false, entry)) {
         addText(mediaColumn, 'p', 'This media link cannot be embedded. Please contact the gallery for access.', 'journal-meta');
       }
     }
@@ -1080,7 +1152,7 @@ function renderEntryDetail(entry) {
       if (/\.pdf$/i.test(attachmentName)) {
         addMediaViewer(mediaColumn, attachmentUrl, 'document', entry.title, 'journal-document-viewer');
       } else if (/\.(mp4|webm|ogv)$/i.test(attachmentName)) {
-        addMediaViewer(mediaColumn, attachmentUrl, 'video', entry.title, 'journal-media-viewer', imageUrls[0], true);
+        addMediaViewer(mediaColumn, attachmentUrl, 'video', entry.title, 'journal-media-viewer', imageUrls[0], true, entry);
       } else if (/\.(mp3|m4a|wav|ogg)$/i.test(attachmentName)) {
         const audio = document.createElement('audio');
         audio.src = attachmentUrl;
@@ -1165,7 +1237,7 @@ function renderEntryDetail(entry) {
   }
   const mediaUrl = entry.mediaUrl || '';
   const mediaType = entry.mediaType || '';
-  if (mediaUrl && !addMediaViewer(article, mediaUrl, mediaType, entry.title, 'journal-media-viewer', entry.imageUrl)) {
+  if (mediaUrl && !addMediaViewer(article, mediaUrl, mediaType, entry.title, 'journal-media-viewer', entry.imageUrl, false, entry)) {
     addText(article, 'p', 'This media link cannot be embedded. Please contact the gallery for access.', 'journal-meta');
   }
   if (entry.excerpt && currentJournalTab === 'tv') addText(article, 'p', entry.excerpt, 'journal-detail-excerpt');
@@ -1176,7 +1248,7 @@ function renderEntryDetail(entry) {
     if (/\.pdf$/i.test(attachmentName)) {
       addMediaViewer(article, attachmentUrl, 'document', entry.title, 'journal-document-viewer');
     } else if (/\.(mp4|webm|ogv)$/i.test(attachmentName)) {
-      addMediaViewer(article, attachmentUrl, 'video', entry.title, 'journal-media-viewer', entry.imageUrl, true);
+      addMediaViewer(article, attachmentUrl, 'video', entry.title, 'journal-media-viewer', entry.imageUrl, true, entry);
     } else if (/\.(mp3|m4a|wav|ogg)$/i.test(attachmentName)) {
       const audio = document.createElement('audio');
       audio.src = attachmentUrl;
@@ -2009,8 +2081,11 @@ function renderTv() {
       const posterUrl = getVideoThumbnail(entry);
       const directUrl = safeMediaUrl(getTvVideoSourceUrl(entry));
       if (directUrl) {
+        const download = getSanityVideoDownload(entry);
         return createPremiumVideoPlayer({
           videoUrl: directUrl,
+          downloadUrl: download.url,
+          downloadSize: download.size,
           posterUrl,
           title: entry.title || 'ARTGALZIM Short',
           autoplay: true,
@@ -2336,8 +2411,11 @@ function renderTv() {
 
     let playerBox;
     if (hasUploadedVideo || (effectiveVideoUrl && /\.(mp4|webm|ogv)$/i.test(effectiveVideoUrl))) {
+      const download = getSanityVideoDownload(activeVideo);
       playerBox = createPremiumVideoPlayer({
         videoUrl: effectiveVideoUrl,
+        downloadUrl: download.url,
+        downloadSize: download.size,
         posterUrl: getVideoThumbnail(activeVideo),
         title: activeVideo.title,
         prevVideo,
@@ -2642,7 +2720,7 @@ function renderJournal() {
   }
   if (currentFolderId) {
     const folder = journalFolders.find(item => item._id === currentFolderId);
-    if (!folder) {
+    if (!folder || isTvSystemFolder(folder)) {
       currentFolderId = null;
       renderJournal();
       return;
@@ -2700,7 +2778,7 @@ function renderJournal() {
     folderFrame.appendChild(heading);
     feed.appendChild(folderFrame);
     const childFolders = journalFolders
-      .filter(item => item.parentFolderId === folder._id)
+      .filter(item => !isTvSystemFolder(item) && item.parentFolderId === folder._id)
       .sort((a, b) => String(a.title || '').localeCompare(String(b.title || '')));
     if (childFolders.length) {
       const grid = section('Folders', 'journal-folder-section', folderFrame);
@@ -2718,7 +2796,9 @@ function renderJournal() {
     if (!entries.length && !childFolders.length) addText(folderFrame, 'p', 'This folder is empty. Published stories, media, and subfolders will appear here.', 'journal-empty');
     return;
   }
-  const folders = [...journalFolders].sort((a, b) => String(a.title || '').localeCompare(String(b.title || '')));
+  const folders = journalFolders
+    .filter(folder => !isTvSystemFolder(folder))
+    .sort((a, b) => String(a.title || '').localeCompare(String(b.title || '')));
   const rootFolders = folders.filter(folder => !folder.parentFolderId);
   if (rootFolders.length) {
     const grid = section('Folders', 'journal-folder-section');

@@ -7,7 +7,8 @@ import {
   getTvVideoDuration,
   getTvVideoOrientation,
   getTvVideoSourceUrl,
-  groupTvVideos
+  groupTvVideos,
+  isTvSystemFolder
 } from '../js/tv-layout.js';
 
 test('TV video orientation keeps Shorts separate and defaults unknown media to landscape', () => {
@@ -30,6 +31,9 @@ test('TV video orientation keeps Shorts separate and defaults unknown media to l
     landscape: [landscape, explicitlyLandscape, unknownProvider],
     shorts: [short, explicitPortrait]
   });
+  assert.equal(isTvSystemFolder({ _id: 'journal-folder-artgalzim-tv', title: 'ARTGALZIM TV' }), true);
+  assert.equal(isTvSystemFolder({ _id: 'drafts.journal-folder-artgalzim-tv', title: 'ARTGALZIM TV' }), true);
+  assert.equal(isTvSystemFolder({ _id: 'news-folder', title: 'News', slug: 'news' }), false);
 });
 
 test('TV media helpers format real durations and discover direct sources and YouTube posters', () => {
@@ -91,6 +95,7 @@ function createSanityMock() {
   const documents = new Map();
   documents.queries = [];
   documents.uploads = [];
+  documents.videoDownloads = [];
   documents.operations = [];
   documents.deletedAssets = [];
   let assetSequence = 0;
@@ -194,6 +199,13 @@ function createSanityMock() {
       });
       return Response.json({
         document: documents.get(id)
+      });
+    }
+
+    if (url.hostname === 'cdn.sanity.io' && url.pathname.startsWith('/files/')) {
+      documents.videoDownloads.push({ url: url.href, range: options.headers?.range || '' });
+      return new Response('video-bytes', {
+        headers: { 'content-type': 'video/mp4', 'content-length': '11', 'accept-ranges': 'bytes' }
       });
     }
 
@@ -882,6 +894,7 @@ test('dashboard artist, folder, artwork and content actions stay in sync with Sa
     assert.match(documents.queries.at(-1), /"journalFolder", "journalEntry"/);
     assert.match(documents.queries.at(-1), /attachment\.asset->url/);
     assert.match(documents.queries.at(-1), /"fileUrl": coalesce\(file\.asset->url, attachment\.asset->url, attachmentUrl\)/);
+    assert.match(documents.queries.at(-1), /"attachmentSize": coalesce\(attachment\.asset->size, 0\)/);
     assert.match(documents.queries.at(-1), /cover\.asset->url/);
     assert.match(documents.queries.at(-1), /organization, parentFolderId, folderId/);
     assert.match(documents.queries.at(-1), /folderId, folderTitle, entryType, destination, mediaType/);
@@ -999,6 +1012,38 @@ test('dashboard artist, folder, artwork and content actions stay in sync with Sa
     assert.equal(publishedTvContentResponse.status, 200);
     assert.equal(publishedTvContent.data.some(entry => entry._id === uploadedTvEntryId), true);
     assert.match(documents.queries.at(-1), /"fileUrl": coalesce\(file\.asset->url, attachment\.asset->url, attachmentUrl\)/);
+
+    const downloadableTvId = 'journal-entry-downloadable-tv';
+    documents.set(downloadableTvId, {
+      _id: downloadableTvId,
+      _type: 'journalEntry',
+      title: 'Downloadable TV video',
+      destination: 'tv',
+      mediaType: 'video',
+      attachmentName: 'gallery-walkthrough.mp4',
+      attachmentUrl: 'https://cdn.sanity.io/files/2a274c3r/production/gallery-walkthrough.mp4'
+    });
+    const downloadStart = Date.now();
+    const videoDownload = await request(`/api/video-download?id=${downloadableTvId}`);
+    assert.equal(videoDownload.status, 200);
+    assert.ok(Date.now() - downloadStart >= 2900, 'download response should wait at least three seconds');
+    assert.equal(videoDownload.headers.get('location'), null);
+    assert.match(videoDownload.headers.get('content-disposition'), /attachment; filename="gallery-walkthrough\.mp4"/);
+    assert.match(videoDownload.headers.get('content-disposition'), /filename\*=UTF-8''gallery-walkthrough\.mp4/);
+    assert.equal(await videoDownload.text(), 'video-bytes');
+    assert.equal(documents.videoDownloads.length, 1);
+    assert.match(documents.videoDownloads[0].url, /^https:\/\/cdn\.sanity\.io\/files\/2a274c3r\/production\//);
+
+    documents.set('journal-entry-foreign-video', {
+      _id: 'journal-entry-foreign-video',
+      _type: 'journalEntry',
+      title: 'Foreign video',
+      mediaType: 'video',
+      attachmentUrl: 'https://example.test/video.mp4'
+    });
+    const rejectedForeignDownload = await request('/api/video-download?id=journal-entry-foreign-video');
+    assert.equal(rejectedForeignDownload.status, 404);
+    assert.equal(documents.videoDownloads.length, 1);
     const publishedGalleryResponse = await request('/api/public-gallery');
     const publishedGallery = await publishedGalleryResponse.json();
     assert.deepEqual(publishedGallery.data.artistsCollections['Student Example/Empty Folder'], {
