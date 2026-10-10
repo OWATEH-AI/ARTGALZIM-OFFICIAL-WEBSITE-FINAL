@@ -55,6 +55,11 @@ function isDirectVideoUpload(file) {
   return file instanceof File && file.size > 0 && /\.(mp4|webm|ogv)$/i.test(file.name);
 }
 
+function videoDownloadWaitSeconds(size) {
+  const bytes = Number(size) || 0;
+  return Math.min(10, Math.max(3, 2 + Math.ceil(bytes / (25 * 1024 * 1024))));
+}
+
 function cleanArtwork(doc) {
   const src = doc.imageUrl || doc.sourcePath || '';
   const filename = doc.filename || src.split('/').pop() || '';
@@ -1043,6 +1048,54 @@ export function createSanityGateway(env) {
     return json({ error: 'API route not found.' }, 404);
   }
 
+  async function downloadVideo(request, url) {
+    const id = url.searchParams.get('id') || '';
+    if (!/^journal-entry-[a-z0-9-]+$/i.test(id)) return json({ error: 'Video not found.' }, 404);
+
+    const entry = (await query(`*[_type == "journalEntry" && _id == ${JSON.stringify(id)}][0]{title, entryType, destination, mediaType, mediaUrl, attachmentName, "fileUrl": coalesce(attachment.asset->url, attachmentUrl), "fileSize": coalesce(attachment.asset->size, 0)}`))[0];
+    if (!entry || entry.mediaType !== 'video') return json({ error: 'Video not found.' }, 404);
+
+    const assetUrl = entry.fileUrl || entry.attachmentUrl || entry.mediaUrl || '';
+    let asset;
+    try {
+      asset = new URL(assetUrl);
+    } catch {
+      return json({ error: 'This video is not available for download.' }, 404);
+    }
+    const expectedPath = `/files/${projectId}/${dataset}/`;
+    if (asset.protocol !== 'https:' || asset.hostname !== 'cdn.sanity.io' || !asset.pathname.startsWith(expectedPath)) {
+      return json({ error: 'This video is not available for download.' }, 404);
+    }
+
+    const range = request.headers.get('range');
+    const upstream = await fetch(asset.href, { headers: range ? { range } : {} });
+    if (!upstream.ok && upstream.status !== 206) {
+      return json({ error: 'Unable to prepare this video for download.' }, 502);
+    }
+
+    const size = Number(entry.fileSize) || Number(upstream.headers.get('content-length')) || 0;
+    const waitSeconds = videoDownloadWaitSeconds(size);
+    await new Promise(resolve => setTimeout(resolve, waitSeconds * 1000));
+
+    let filename = String(entry.attachmentName || `${entry.title || 'artgalzim-video'}.mp4`)
+      .replace(/[\\/\r\n\u0000-\u001f]/g, '_')
+      .trim()
+      .slice(0, 180) || 'artgalzim-video.mp4';
+    const asciiFilename = filename.replace(/[^\x20-\x7e]/g, '_').replace(/["\\]/g, '_');
+    const encodedFilename = encodeURIComponent(filename).replace(/['()*]/g, character => `%${character.charCodeAt(0).toString(16).toUpperCase()}`);
+    const headers = new Headers({
+      'content-disposition': `attachment; filename="${asciiFilename}"; filename*=UTF-8''${encodedFilename}`,
+      'content-type': upstream.headers.get('content-type') || 'application/octet-stream',
+      'cache-control': 'private, no-store',
+      'x-content-type-options': 'nosniff'
+    });
+    for (const header of ['content-length', 'content-range', 'accept-ranges', 'etag', 'last-modified']) {
+      const value = upstream.headers.get(header);
+      if (value) headers.set(header, value);
+    }
+    return new Response(upstream.body, { status: upstream.status, headers });
+  }
+
   return async function handle(request) {
     const url = new URL(request.url);
     if (!url.pathname.startsWith('/api/')) return null;
@@ -1054,8 +1107,9 @@ export function createSanityGateway(env) {
         return json({ ok: true, provider: 'sanity', configured, connected: true });
       }
       if (url.pathname === '/api/public-gallery' && request.method === 'GET') return json({ data: await publicGallery() });
+      if (url.pathname === '/api/video-download' && request.method === 'GET') return await downloadVideo(request, url);
       if (url.pathname === '/api/public-content' && request.method === 'GET') {
-        const docs = await query('*[_type in ["post", "libraryItem", "exhibition", "journalFolder", "journalEntry"] && (!defined(isDeleted) || isDeleted == false)]{_id, _type, id, title, slug, excerpt, body, description, eyebrow, coverHeading, coverSubheading, updateText, updateUrl, conditions, publishedAt, kind, assetUrl, artist, artistCurator, category, organization, parentFolderId, folderId, folderTitle, entryType, destination, mediaType, mediaUrl, videoOrientation, duration, dateType, timerStart, eventDate, endDate, author, attachmentName, location, startDate, startTime, endTime, theme, status, contactLink, registrationLink, paymentLink, ctaText, registrationFee, timeRange, isPlaceholder, displayDateOverride, imagePosition, "authorAvatar": coalesce(authorAvatar.asset->url, authorAvatar), "fileUrl": coalesce(file.asset->url, attachment.asset->url, attachmentUrl), "imageUrl": coalesce(image.asset->url, poster.asset->url, imageUrl), "imageUrls": coalesce(images[].asset->url, imagesUrl), "coverUrl": coalesce(cover.asset->url, coverUrl)} | order(publishedAt desc)');
+        const docs = await query('*[_type in ["post", "libraryItem", "exhibition", "journalFolder", "journalEntry"] && (!defined(isDeleted) || isDeleted == false)]{_id, _type, id, title, slug, excerpt, body, description, eyebrow, coverHeading, coverSubheading, updateText, updateUrl, conditions, publishedAt, kind, assetUrl, artist, artistCurator, category, organization, parentFolderId, folderId, folderTitle, entryType, destination, mediaType, mediaUrl, videoOrientation, duration, dateType, timerStart, eventDate, endDate, author, attachmentName, "attachmentSize": coalesce(attachment.asset->size, 0), location, startDate, startTime, endTime, theme, status, contactLink, registrationLink, paymentLink, ctaText, registrationFee, timeRange, isPlaceholder, displayDateOverride, imagePosition, "authorAvatar": coalesce(authorAvatar.asset->url, authorAvatar), "fileUrl": coalesce(file.asset->url, attachment.asset->url, attachmentUrl), "imageUrl": coalesce(image.asset->url, poster.asset->url, imageUrl), "imageUrls": coalesce(images[].asset->url, imagesUrl), "coverUrl": coalesce(cover.asset->url, coverUrl)} | order(publishedAt desc)');
         return json({ data: docs });
       }
       if (url.pathname === '/api/login' && request.method === 'POST') {

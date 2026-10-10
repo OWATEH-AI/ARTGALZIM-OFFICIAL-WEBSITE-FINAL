@@ -4,6 +4,7 @@ const fs      = require('fs');
 const path    = require('path');
 const sharp   = require('sharp');
 const { exec } = require('child_process');
+const { Readable } = require('node:stream');
 
 const app  = express();
 const PORT = 3747;
@@ -29,7 +30,8 @@ app.use('/api', async (req, res, next) => {
       if (name.toLowerCase() !== 'set-cookie') res.setHeader(name, value);
     });
     if (response.headers.get('set-cookie')) res.setHeader('set-cookie', response.headers.get('set-cookie'));
-    res.send(Buffer.from(await response.arrayBuffer()));
+    if (response.body) Readable.fromWeb(response.body).pipe(res);
+    else res.end();
   } catch (error) {
     console.error('[Sanity API]', error);
     res.status(500).json({ error: 'Sanity API request failed.' });
