@@ -918,26 +918,22 @@
         card.appendChild(submenu);
         card.querySelector('.ap-artist-cover').addEventListener('click', () => submenu.classList.toggle('open'));
       }
-      collection.categories.forEach(category => {
-        const link = [...submenu.querySelectorAll('a')].find(item => normalize(item.textContent) === normalize(category.name))
-          || document.createElement('a');
-        link.replaceChildren();
+      const categoryOrder = ['Abstract', 'Portraits', 'Commissions'];
+      const orderedCategories = [...collection.categories].sort((first, second) => {
+        const firstIndex = categoryOrder.indexOf(first.name);
+        const secondIndex = categoryOrder.indexOf(second.name);
+        return (firstIndex < 0 ? categoryOrder.length : firstIndex) - (secondIndex < 0 ? categoryOrder.length : secondIndex)
+          || first.name.localeCompare(second.name);
+      });
+      submenu.replaceChildren();
+      orderedCategories.forEach(category => {
+        const link = document.createElement('a');
         link.href = '#';
-        link.className = 'ap-album-card';
-        link.removeAttribute('onclick');
-        const imageFrame = document.createElement('div');
-        imageFrame.className = 'ap-album-img';
-        const image = document.createElement('img');
-        image.src = category.cover || '';
-        image.alt = category.name;
-        image.loading = 'lazy';
-        imageFrame.appendChild(image);
-        const label = document.createElement('div');
-        label.className = 'ap-album-label';
-        const heading = document.createElement('h3');
-        heading.textContent = category.name;
-        label.appendChild(heading);
-        link.append(imageFrame, label);
+        link.append(document.createTextNode(category.name));
+        link.append(document.createTextNode(' '));
+        const arrow = document.createElement('span');
+        arrow.textContent = '→';
+        link.appendChild(arrow);
         link.addEventListener('click', event => {
           event.preventDefault();
           window.openAlbumViewer(`${artist} - ${category.name}`);
