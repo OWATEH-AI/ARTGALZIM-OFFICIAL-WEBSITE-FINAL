@@ -96,6 +96,7 @@ function createSanityMock() {
   documents.queries = [];
   documents.uploads = [];
   documents.videoDownloads = [];
+  documents.portfolioPreviewRequests = [];
   documents.operations = [];
   documents.deletedAssets = [];
   documents.emptyAssetUpload = false;
@@ -219,6 +220,25 @@ function createSanityMock() {
       });
     }
 
+    if (url.hostname === 'cdn.sanity.io' && url.pathname.endsWith('/portfolio.pdf')) {
+      const range = options.headers?.range || '';
+      documents.portfolioPreviewRequests.push({ url: url.href, range });
+      if (range) {
+        return new Response('%PDF', {
+          status: 206,
+          headers: {
+            'content-type': 'application/pdf',
+            'content-length': '4',
+            'content-range': 'bytes 0-3/16',
+            'accept-ranges': 'bytes'
+          }
+        });
+      }
+      return new Response('%PDF-mobile-test', {
+        headers: { 'content-type': 'application/pdf', 'content-length': '16', 'accept-ranges': 'bytes' }
+      });
+    }
+
     if (url.hostname === 'cdn.sanity.io' && url.pathname.startsWith('/files/')) {
       documents.videoDownloads.push({ url: url.href, range: options.headers?.range || '' });
       return new Response('video-bytes', {
@@ -231,6 +251,38 @@ function createSanityMock() {
 
   return documents;
 }
+
+test('Sanity portfolio previews are inline, support byte ranges, and reject foreign URLs', async () => {
+  const originalFetch = globalThis.fetch;
+  const documents = createSanityMock();
+  const gateway = createSanityGateway({});
+  const source = 'https://cdn.sanity.io/files/2a274c3r/production/file-example/portfolio.pdf';
+  const route = `/api/portfolio-preview?url=${encodeURIComponent(source)}`;
+
+  try {
+    const preview = await gateway(new Request(`https://example.test${route}`));
+    assert.equal(preview.status, 200);
+    assert.equal(preview.headers.get('content-type'), 'application/pdf');
+    assert.match(preview.headers.get('content-disposition'), /^inline;/);
+    assert.equal(preview.headers.get('accept-ranges'), 'bytes');
+    assert.equal(await preview.text(), '%PDF-mobile-test');
+
+    const rangedPreview = await gateway(new Request(`https://example.test${route}`, {
+      headers: { range: 'bytes=0-3' }
+    }));
+    assert.equal(rangedPreview.status, 206);
+    assert.equal(rangedPreview.headers.get('content-range'), 'bytes 0-3/16');
+    assert.equal(await rangedPreview.text(), '%PDF');
+    assert.equal(documents.portfolioPreviewRequests[1].range, 'bytes=0-3');
+
+    const foreignUrl = `https://example.test/api/portfolio-preview?url=${encodeURIComponent('https://evil.example/portfolio.pdf')}`;
+    const rejected = await gateway(new Request(foreignUrl));
+    assert.equal(rejected.status, 404);
+    assert.equal(documents.portfolioPreviewRequests.length, 2);
+  } finally {
+    globalThis.fetch = originalFetch;
+  }
+});
 
 test('artist portfolios are draft-only until sync and then appear in the public artist data', async () => {
   const originalFetch = globalThis.fetch;

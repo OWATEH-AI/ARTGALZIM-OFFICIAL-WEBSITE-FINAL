@@ -1224,6 +1224,43 @@ export function createSanityGateway(env) {
     return new Response(upstream.body, { status: upstream.status, headers });
   }
 
+  async function previewPortfolio(request, url) {
+    const source = url.searchParams.get('url') || '';
+    let asset;
+    try {
+      asset = new URL(source);
+    } catch {
+      return json({ error: 'Portfolio preview is not available.' }, 404);
+    }
+    const expectedPath = `/files/${projectId}/${dataset}/`;
+    if (asset.protocol !== 'https:' || asset.hostname !== 'cdn.sanity.io'
+      || !asset.pathname.startsWith(expectedPath) || !/\.pdf$/i.test(asset.pathname)) {
+      return json({ error: 'Portfolio preview is not available.' }, 404);
+    }
+
+    const range = request.headers.get('range');
+    const method = request.method === 'HEAD' ? 'HEAD' : 'GET';
+    const upstream = await fetch(asset.href, {
+      method,
+      headers: range ? { range } : {}
+    });
+    if (!upstream.ok && upstream.status !== 206 && upstream.status !== 416) {
+      return json({ error: 'Unable to open this portfolio.' }, upstream.status === 404 ? 404 : 502);
+    }
+
+    const headers = new Headers({
+      'content-type': 'application/pdf',
+      'content-disposition': 'inline; filename="artist-portfolio.pdf"',
+      'cache-control': 'public, max-age=3600',
+      'x-content-type-options': 'nosniff'
+    });
+    for (const header of ['content-length', 'content-range', 'accept-ranges', 'etag', 'last-modified']) {
+      const value = upstream.headers.get(header);
+      if (value) headers.set(header, value);
+    }
+    return new Response(method === 'HEAD' ? null : upstream.body, { status: upstream.status, headers });
+  }
+
   return async function handle(request) {
     const url = new URL(request.url);
     if (!url.pathname.startsWith('/api/')) return null;
@@ -1235,6 +1272,7 @@ export function createSanityGateway(env) {
         return json({ ok: true, provider: 'sanity', configured, connected: true });
       }
       if (url.pathname === '/api/public-gallery' && request.method === 'GET') return json({ data: await publicGallery() });
+      if (url.pathname === '/api/portfolio-preview' && ['GET', 'HEAD'].includes(request.method)) return await previewPortfolio(request, url);
       if (url.pathname === '/api/video-download' && request.method === 'GET') return await downloadVideo(request, url);
       if (url.pathname === '/api/public-content' && request.method === 'GET') {
         const docs = await query('*[_type in ["post", "libraryItem", "exhibition", "journalFolder", "journalEntry"] && (!defined(isDeleted) || isDeleted == false)]{_id, _type, id, title, slug, excerpt, body, description, eyebrow, coverHeading, coverSubheading, updateText, updateUrl, conditions, publishedAt, kind, assetUrl, artist, artistCurator, category, organization, parentFolderId, folderId, folderTitle, entryType, destination, mediaType, mediaUrl, videoOrientation, duration, dateType, timerStart, eventDate, endDate, author, attachmentName, "attachmentSize": coalesce(attachment.asset->size, 0), location, startDate, startTime, endTime, theme, status, contactLink, registrationLink, paymentLink, ctaText, registrationFee, timeRange, isPlaceholder, displayDateOverride, imagePosition, "authorAvatar": coalesce(authorAvatar.asset->url, authorAvatar), "fileUrl": coalesce(file.asset->url, attachment.asset->url, attachmentUrl), "imageUrl": coalesce(image.asset->url, poster.asset->url, imageUrl), "imageUrls": coalesce(images[].asset->url, imagesUrl), "coverUrl": coalesce(cover.asset->url, coverUrl)} | order(publishedAt desc)');

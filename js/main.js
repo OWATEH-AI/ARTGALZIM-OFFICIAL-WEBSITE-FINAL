@@ -6,6 +6,9 @@
 (function () {
   "use strict";
 
+  const isPageReload = performance.getEntriesByType("navigation")[0]?.type === "reload";
+  if (isPageReload && "scrollRestoration" in history) history.scrollRestoration = "manual";
+
   // ---- Master Artwork Metadata Lookup ----
   // This serves as the source of truth for detailed artworks when they are clicked from dynamic collections.
   const MASTER_ARTWORK_METADATA = {
@@ -519,8 +522,9 @@
       }, 350);
     });
   });
-  window.addEventListener("pageshow", () => {
+  window.addEventListener("pageshow", (event) => {
     document.body.style.opacity = "1";
+    if (isPageReload && !event.persisted) window.scrollTo(0, 0);
   });
 
   // ---- Contact Form ----
@@ -984,6 +988,9 @@
       const googleDocument = host === 'docs.google.com' && url.pathname.match(/^\/(document|presentation|spreadsheets)\/d\/([^/]+)/);
       if (driveFile) embedUrl = `https://drive.google.com/file/d/${encodeURIComponent(driveFile[1])}/preview`;
       else if (googleDocument) embedUrl = `https://docs.google.com/${googleDocument[1]}/d/${encodeURIComponent(googleDocument[2])}/preview`;
+      else if (host === 'cdn.sanity.io' && /\.pdf$/i.test(url.pathname)) {
+        embedUrl = `/api/portfolio-preview?url=${encodeURIComponent(url.href)}`;
+      }
       else embedUrl = url.href;
     } catch {
       return;

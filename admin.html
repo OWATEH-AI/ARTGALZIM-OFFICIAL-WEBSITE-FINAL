@@ -2409,6 +2409,15 @@
    ARTGALZIM ADMIN DASHBOARD — HIGH-PERFORMANCE CLIENT SCRIPT
    ========================================================================== */
 
+(() => {
+  const isPageReload = performance.getEntriesByType('navigation')[0]?.type === 'reload';
+  if (!isPageReload) return;
+  if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
+  window.addEventListener('pageshow', event => {
+    if (!event.persisted) window.scrollTo(0, 0);
+  }, { once: true });
+})();
+
 let API_BASE = '';
 
 let serverConnected = false;
