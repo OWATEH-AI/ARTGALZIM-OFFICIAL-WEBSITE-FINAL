@@ -146,7 +146,7 @@
             <img src="${image}" alt="${title}" style="position:absolute; top:0; left:0; width:100%; height:100%; object-fit:cover; object-position:${imagePosition}; z-index:0; filter: brightness(0.35);">
             <div class="exh-coming-soon" style="position:absolute; inset:0; z-index:1; display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; padding: 1rem;">
               <span style="font-size:1.6rem; font-family:'Cormorant Garamond', serif; font-weight:700; color:#fff; text-shadow: 0 4px 10px rgba(0,0,0,0.8); letter-spacing:0.05em; line-height:1.2;">More exhibitions</span>
-              <span style="font-size:1rem; font-weight:600; color:var(--gold); text-shadow: 0 2px 6px rgba(0,0,0,0.8); margin-top:0.5rem; letter-spacing:0.15em; text-transform:uppercase;">coming soon</span>
+              <span style="font-size:1rem; font-weight:600; color:var(--gold-light); text-shadow: 0 2px 6px rgba(0,0,0,0.8); margin-top:0.5rem; letter-spacing:0.15em; text-transform:uppercase;">coming soon</span>
             </div>
           </div>
           <div class="exh-body">

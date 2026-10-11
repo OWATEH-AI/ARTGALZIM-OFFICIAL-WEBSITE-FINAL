@@ -674,6 +674,11 @@
     .dialog-card h3 {
       font-family: 'Cormorant Garamond', serif; font-size: 1.6rem; color: var(--gold); font-weight: 500; margin-bottom: 1.25rem;
     }
+    #modalArtistPortfolio [role="tab"][aria-selected="true"] {
+      background: var(--gold);
+      border-color: var(--gold);
+      color: #0a0a0a;
+    }
     .dialog-close {
       position: absolute; top: 1.25rem; right: 1.25rem; background: none; border: none; color: var(--muted); font-size: 1.3rem; cursor: pointer; z-index: 10;
     }
@@ -2248,6 +2253,43 @@
   </div>
 </div>
 
+<!-- ═══════════════ MODAL: ARTIST PORTFOLIO ═══════════════ -->
+<div class="dialog-overlay" id="modalArtistPortfolio">
+  <div class="dialog-card" style="max-width:620px;">
+    <button class="dialog-close" type="button" onclick="closeArtistPortfolioModal()" aria-label="Close">✕</button>
+    <h3 id="artistPortfolioHeading">Add Artist Portfolio</h3>
+    <p id="artistPortfolioStatus" style="font-size:0.85rem; color:var(--muted); margin-bottom:1.25rem;"></p>
+    <input type="hidden" id="artistPortfolioArtist"/>
+    <div class="form-group">
+      <label>Portfolio source</label>
+      <div role="tablist" aria-label="Portfolio source" style="display:flex; gap:0.5rem; margin-bottom:0.75rem;">
+        <button id="artistPortfolioUploadTab" class="btn-action-outline" type="button" role="tab" aria-selected="true" onclick="setArtistPortfolioMode('upload')">Upload PDF</button>
+        <button id="artistPortfolioLinkTab" class="btn-action-outline" type="button" role="tab" aria-selected="false" onclick="setArtistPortfolioMode('link')">Paste document link</button>
+      </div>
+      <div id="artistPortfolioUploadPanel">
+        <input type="file" id="artistPortfolioFile" accept=".pdf,application/pdf" aria-label="Portfolio PDF"/>
+        <small id="artistPortfolioFileStatus" style="display:block; color:var(--muted); margin-top:0.4rem;"></small>
+      </div>
+      <div id="artistPortfolioLinkPanel" hidden>
+        <input type="url" id="artistPortfolioUrl" placeholder="https://…/portfolio.pdf" aria-label="Portfolio document URL"/>
+        <small style="display:block; color:var(--muted); margin-top:0.4rem;">Use a direct PDF link or a Google Drive/Docs link. It opens in the gallery viewer.</small>
+      </div>
+    </div>
+    <div class="form-group">
+      <label for="artistPortfolioThumbnail">Portfolio thumbnail</label>
+      <input type="file" id="artistPortfolioThumbnail" accept="image/*" aria-label="Artist portfolio thumbnail" onchange="previewArtistPortfolioThumbnail(this)"/>
+      <small id="artistPortfolioThumbnailStatus" style="display:block; color:var(--muted); margin-top:0.4rem;"></small>
+      <div id="artistPortfolioThumbnailPreview" role="group" aria-label="Portfolio thumbnail preview" hidden style="width:min(210px,100%); aspect-ratio:4/5; margin-top:0.75rem; overflow:hidden; border:1px solid var(--border); border-radius:4px; background:var(--bg3);">
+        <img id="artistPortfolioThumbnailPreviewImage" alt="Portfolio thumbnail preview" style="display:block; width:100%; height:100%; object-fit:cover;"/>
+      </div>
+    </div>
+    <div style="display:flex; justify-content:flex-end; gap:0.75rem; margin-top:1.5rem;">
+      <button class="btn-action-outline" type="button" onclick="closeArtistPortfolioModal()">Cancel</button>
+      <button class="btn-action-gold" type="button" onclick="submitArtistPortfolio()">Save Portfolio</button>
+    </div>
+  </div>
+</div>
+
 <!-- ═══════════════ MODAL: UPLOAD ARTWORK (DEDICATED ALBUM ONLY) ═══════════════ -->
 <div class="dialog-overlay" id="modalUploadArtwork">
   <div class="dialog-card" style="max-width:680px; max-height:90vh; display:flex; flex-direction:column; padding:0; overflow:hidden;">
@@ -3029,7 +3071,7 @@ function renderExplorer() {
         <span class="crumb current">${selectedArtist.name}</span>
       `;
     }
-    if (topActions) topActions.innerHTML = `<button class="btn-action-gold" onclick="openNewAlbumForArtist('${selectedArtist.name.replace(/'/g,"\\'")}')">+ Add Album / Folder</button>`;
+    if (topActions) topActions.innerHTML = `<button class="btn-action-outline" onclick="openArtistPortfolioModal('${selectedArtist.name.replace(/'/g,"\\'")}')">${selectedArtist.portfolioFileUrl || selectedArtist.portfolioUrl ? 'Edit Portfolio' : '+ Add Portfolio'}</button><button class="btn-action-gold" onclick="openNewAlbumForArtist('${selectedArtist.name.replace(/'/g,"\\'")}')">+ Add Album / Folder</button>`;
     renderAlbumsView(container);
   } else if (currentLevel === 'artworks') {
     const isStudent = selectedArtist && (selectedArtist.tier === 'Student Artists' || selectedArtist.isStudent);
@@ -3050,7 +3092,7 @@ function renderExplorer() {
         `;
       }
       const catName = (selectedAlbum && selectedAlbum.name) || 'Artworks';
-      if (topActions) topActions.innerHTML = `<button class="btn-action-gold" onclick="openUploadForAlbum('${selectedArtist.name.replace(/'/g,"\\'")}', '${catName.replace(/'/g,"\\'")}')">+ Upload Artwork for ${selectedArtist.name}</button>`;
+      if (topActions) topActions.innerHTML = `<button class="btn-action-outline" onclick="openArtistPortfolioModal('${selectedArtist.name.replace(/'/g,"\\'")}')">${selectedArtist.portfolioFileUrl || selectedArtist.portfolioUrl ? 'Edit Portfolio' : '+ Add Portfolio'}</button><button class="btn-action-gold" onclick="openUploadForAlbum('${selectedArtist.name.replace(/'/g,"\\'")}', '${catName.replace(/'/g,"\\'")}')">+ Upload Artwork for ${selectedArtist.name}</button>`;
     } else {
       if (breadcrumbs) {
         breadcrumbs.innerHTML = `
@@ -4111,6 +4153,109 @@ function openNewAlbumForArtist(artistName) {
   openDialog('modalNewAlbum');
 }
 
+function setArtistPortfolioMode(mode) {
+  const useLink = mode === 'link';
+  document.getElementById('artistPortfolioUploadPanel').hidden = useLink;
+  document.getElementById('artistPortfolioLinkPanel').hidden = !useLink;
+  document.getElementById('artistPortfolioUploadTab').setAttribute('aria-selected', String(!useLink));
+  document.getElementById('artistPortfolioLinkTab').setAttribute('aria-selected', String(useLink));
+}
+
+let artistPortfolioPreviewObjectUrl = '';
+
+function setArtistPortfolioThumbnailPreview(src) {
+  const preview = document.getElementById('artistPortfolioThumbnailPreview');
+  const image = document.getElementById('artistPortfolioThumbnailPreviewImage');
+  preview.hidden = !src;
+  image.src = src || '';
+}
+
+function previewArtistPortfolioThumbnail(input) {
+  const file = input.files?.[0];
+  if (!file) return;
+  if (artistPortfolioPreviewObjectUrl) URL.revokeObjectURL(artistPortfolioPreviewObjectUrl);
+  artistPortfolioPreviewObjectUrl = URL.createObjectURL(file);
+  setArtistPortfolioThumbnailPreview(artistPortfolioPreviewObjectUrl);
+  document.getElementById('artistPortfolioThumbnailStatus').textContent = `Previewing ${file.name}`;
+}
+
+function closeArtistPortfolioModal() {
+  closeDialog('modalArtistPortfolio');
+  if (artistPortfolioPreviewObjectUrl) URL.revokeObjectURL(artistPortfolioPreviewObjectUrl);
+  artistPortfolioPreviewObjectUrl = '';
+  document.getElementById('artistPortfolioThumbnail').value = '';
+  setArtistPortfolioThumbnailPreview('');
+}
+
+function openArtistPortfolioModal(artistName) {
+  const artist = allArtistsData.find(item => item.name === artistName);
+  if (!artist) return toast('Artist not found in the Sanity gallery.', 'error');
+  if (artistPortfolioPreviewObjectUrl) URL.revokeObjectURL(artistPortfolioPreviewObjectUrl);
+  artistPortfolioPreviewObjectUrl = '';
+  document.getElementById('artistPortfolioArtist').value = artist.name;
+  document.getElementById('artistPortfolioUrl').value = artist.portfolioUrl || '';
+  document.getElementById('artistPortfolioFile').value = '';
+  document.getElementById('artistPortfolioThumbnail').value = '';
+  document.getElementById('artistPortfolioHeading').textContent = artist.portfolioUrl || artist.portfolioFileUrl
+    ? `Edit ${artist.name}'s Portfolio`
+    : `Add ${artist.name}'s Portfolio`;
+  document.getElementById('artistPortfolioFileStatus').textContent = artist.portfolioFileUrl
+    ? 'A PDF is already saved. Choose a replacement PDF or leave this blank to keep it.'
+    : 'Choose a PDF file up to 50 MB.';
+  document.getElementById('artistPortfolioThumbnailStatus').textContent = artist.portfolioThumbnailUrl
+    ? 'A thumbnail is already saved. Choose a replacement or leave this blank to keep it.'
+    : 'Upload a portrait or artwork image to represent the portfolio.';
+  setArtistPortfolioThumbnailPreview(artist.portfolioThumbnailUrl || '');
+  setArtistPortfolioMode(artist.portfolioUrl ? 'link' : 'upload');
+  openDialog('modalArtistPortfolio');
+}
+
+async function submitArtistPortfolio() {
+  const artist = document.getElementById('artistPortfolioArtist').value;
+  const mode = document.getElementById('artistPortfolioLinkPanel').hidden ? 'upload' : 'link';
+  const portfolioFile = document.getElementById('artistPortfolioFile').files[0];
+  const portfolioUrl = document.getElementById('artistPortfolioUrl').value.trim();
+  const thumbnail = document.getElementById('artistPortfolioThumbnail').files[0];
+  const currentArtist = allArtistsData.find(item => item.name === artist);
+  if (!artist) return toast('Choose an artist before saving a portfolio.', 'error');
+  if (mode === 'link' && !portfolioUrl) return toast('Paste a PDF or Google document link.', 'error');
+  if (mode === 'upload' && !portfolioFile && !currentArtist?.portfolioFileUrl) return toast('Choose a PDF file to upload.', 'error');
+  if (!thumbnail && !currentArtist?.portfolioThumbnailUrl) return toast('Upload a thumbnail for the portfolio.', 'error');
+  if (!serverConnected && !await checkServerHealth()) return toast('Sanity admin connection is unavailable. Sign in again and retry.', 'error');
+
+  const form = new FormData();
+  form.set('artist', artist);
+  form.set('mode', mode);
+  if (mode === 'link') form.set('portfolioUrl', portfolioUrl);
+  if (portfolioFile) form.set('portfolioFile', portfolioFile);
+  if (thumbnail) form.set('portfolioThumbnail', thumbnail);
+  closeArtistPortfolioModal();
+  showAdminLoading('Saving Portfolio...', `Uploading portfolio assets for ${artist} to Sanity...`);
+  try {
+    const response = await fetch(`${API_BASE}/api/artist-portfolio`, { method: 'POST', body: form });
+    const responseText = await response.text();
+    let result;
+    try {
+      result = responseText ? JSON.parse(responseText) : null;
+    } catch {
+      throw new Error(`Portfolio API returned invalid JSON (HTTP ${response.status}). Restart the local admin server and retry.`);
+    }
+    if (!result) {
+      throw new Error(`Portfolio API returned an empty response (HTTP ${response.status}). Restart the local admin server and retry.`);
+    }
+    if (!response.ok || !result.ok) throw new Error(result.error || 'Unable to save this portfolio.');
+    setPendingSync(true);
+    await loadAllData();
+    selectedArtist = allArtistsData.find(item => item.name === artist) || selectedArtist;
+    renderExplorer();
+    toast(`Portfolio saved for ${artist}. Push & Sync Changes to publish.`);
+  } catch (error) {
+    toast(error.message || 'Portfolio save failed.', 'error');
+  } finally {
+    hideAdminLoading();
+  }
+}
+
 async function submitCreateAlbum() {
   const artist = document.getElementById('newAlbumArtistNameInput').value;
   const category = document.getElementById('newAlbumCategoryName').value.trim();
@@ -5084,7 +5229,8 @@ async function loadJournalAdmin() {
     if (!foldersResponse.ok || !entriesResponse.ok) throw new Error('Unable to load Gallery & Media content.');
     [_journalFolders, _journalEntries] = await Promise.all([foldersResponse.json(), entriesResponse.json()]);
     if (_selectedJournalFolderId && _selectedJournalFolderId !== JOURNAL_UNFILED_ID &&
-        !_journalFolders.some(folder => folder._id === _selectedJournalFolderId)) {
+        (!_journalFolders.some(folder => folder._id === _selectedJournalFolderId) ||
+          isTvSystemFolderRecord(_journalFolders.find(folder => folder._id === _selectedJournalFolderId)))) {
       _selectedJournalFolderId = null;
     }
     renderJournalFolders();
@@ -5097,9 +5243,18 @@ async function loadJournalAdmin() {
   }
 }
 
+function isTvSystemFolderRecord(folder) {
+  const id = String(folder?._id || '').replace(/^drafts\./, '');
+  const slug = typeof folder?.slug === 'string' ? folder.slug : folder?.slug?.current;
+  return id === 'journal-folder-artgalzim-tv'
+    || slug === 'artgalzim-tv'
+    || String(folder?.title || '').trim().toLowerCase() === 'artgalzim tv';
+}
+
 function renderJournalFolders() {
   const list = document.getElementById('journalFolderList');
   const visibleFolders = _journalFolders.filter(folder =>
+    !isTvSystemFolderRecord(folder) &&
     (folder.parentFolderId || null) === (_selectedJournalFolderId || null)
   );
   const unfiledEntries = _journalEntries.filter(entry =>
@@ -5109,7 +5264,7 @@ function renderJournalFolders() {
     const id = escapeAdminHtml(folder._id);
     const entries = _journalEntries.filter(entry => entry.folderId === folder._id &&
       entry.destination !== 'tv' && entry.entryType !== 'ARTGALZIM TV');
-    const childCount = _journalFolders.filter(child => child.parentFolderId === folder._id).length;
+    const childCount = _journalFolders.filter(child => !isTvSystemFolderRecord(child) && child.parentFolderId === folder._id).length;
     const cover = folder.coverUrl
       ? `<div class="album-card-cover"><img src="${escapeAdminHtml(folder.coverUrl)}" alt="${escapeAdminHtml(folder.title || 'Folder')} cover" loading="lazy"></div>`
       : '<div class="album-card-cover" aria-hidden="true"></div>';
@@ -5178,11 +5333,11 @@ function refreshJournalParentOptions(selectedId = document.getElementById('journ
   const editingId = document.getElementById('journal-folder-id').value;
   const excluded = editingId ? journalFolderDescendantIds(editingId) : new Set();
   select.innerHTML = '<option value="">Top level (no parent)</option>' + _journalFolders
-    .filter(folder => !excluded.has(folder._id))
+    .filter(folder => !isTvSystemFolderRecord(folder) && !excluded.has(folder._id))
     .sort((a, b) => journalFolderPath(a).localeCompare(journalFolderPath(b)))
     .map(folder => `<option value="${escapeAdminHtml(folder._id)}">${escapeAdminHtml(journalFolderPath(folder))}</option>`)
     .join('');
-  if (_journalFolders.some(folder => folder._id === selectedId) && !excluded.has(selectedId)) {
+  if (_journalFolders.some(folder => folder._id === selectedId && !isTvSystemFolderRecord(folder)) && !excluded.has(selectedId)) {
     select.value = selectedId;
   } else {
     select.value = '';
@@ -5312,7 +5467,7 @@ function renderTvEntries() {
 
 function refreshJournalFolderOptions(selectedId = document.getElementById('journal-entry-folder').value) {
   const input = document.getElementById('journal-entry-folder');
-  input.value = _journalFolders.some(folder => folder._id === selectedId) ? selectedId : '';
+  input.value = _journalFolders.some(folder => folder._id === selectedId && !isTvSystemFolderRecord(folder)) ? selectedId : '';
 }
 
 function openJournalFolderForm() {

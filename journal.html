@@ -31,20 +31,20 @@
     .journal-folder { container-type: inline-size; }
     .journal-folder-cover-text { position: relative; z-index: 1; width: 100%; padding: 1rem; text-align: center; }
     .journal-folder-cover-text h2 { margin: 0 0 0.55rem; color: #f4eee4; font-family: 'Cormorant Garamond', serif; font-size: clamp(1rem, 7cqi, 2rem); letter-spacing: 0.04em; }
-    .journal-folder-cover-text p { color: var(--gold); font-size: clamp(0.7rem, 3.5cqi, 0.86rem); font-weight: 700; letter-spacing: 0.12em; }
+    .journal-folder-cover-text p { color: var(--gold-text, var(--gold)); font-size: clamp(0.7rem, 3.5cqi, 0.86rem); font-weight: 700; letter-spacing: 0.12em; }
     .journal-folder-content { display: flex; flex: 1; flex-direction: column; gap: 0.55rem; padding: clamp(0.75rem, 5.5cqi, 1.4rem); }
     .journal-folder-eyebrow { color: var(--text-muted); font-size: clamp(0.68rem, 3.2cqi, 0.78rem); letter-spacing: 0.1em; text-transform: uppercase; }
     .journal-folder-content h3 { margin: 0; font-family: 'Cormorant Garamond', serif; font-size: clamp(1.1rem, 7cqi, 1.65rem); font-weight: 500; }
-    .journal-folder-category { color: var(--gold); font-size: clamp(0.72rem, 3.7cqi, 0.85rem); letter-spacing: 0.04em; text-transform: uppercase; }
+    .journal-folder-category { color: var(--gold-text, var(--gold)); font-size: clamp(0.72rem, 3.7cqi, 0.85rem); letter-spacing: 0.04em; text-transform: uppercase; }
     .journal-folder-description { color: var(--text-muted); font-size: clamp(0.82rem, 4cqi, 1rem); line-height: 1.6; }
     .journal-folder-actions { display: grid; gap: 0.8rem; padding: 0 clamp(0.75rem, 5.5cqi, 1.4rem) clamp(0.75rem, 5.5cqi, 1.4rem); }
-    .journal-folder-details, .journal-folder-update { width: fit-content; border: 0; background: transparent; color: var(--gold); font: inherit; font-size: 0.86rem; font-weight: 600; letter-spacing: 0.05em; text-align: left; text-decoration: none; cursor: pointer; }
+    .journal-folder-details, .journal-folder-update { width: fit-content; border: 0; background: transparent; color: var(--gold-text, var(--gold)); font: inherit; font-size: 0.86rem; font-weight: 600; letter-spacing: 0.05em; text-align: left; text-decoration: none; cursor: pointer; }
     .journal-folder-details:hover, .journal-folder-update:hover { color: #f0cf77; }
     .journal-folder-details { display: inline-flex; align-items: center; gap: 0.5rem; padding: 0; }
     .journal-folder-update { border-bottom: 1px solid var(--border-g); }
     .journal-folder-details:focus-visible, .journal-folder-update:focus-visible { outline: 2px solid var(--gold); outline-offset: 3px; }
     .journal-folder-breadcrumb { display: flex; align-items: center; flex-wrap: wrap; gap: 0.55rem; margin: 0 0 1.5rem; color: var(--text-muted); font-size: 0.9rem; }
-    .journal-folder-breadcrumb button { border: 0; padding: 0; background: transparent; color: var(--gold); font: inherit; cursor: pointer; }
+    .journal-folder-breadcrumb button { border: 0; padding: 0; background: transparent; color: var(--gold-text, var(--gold)); font: inherit; cursor: pointer; }
     .journal-folder-breadcrumb button:hover { color: #f0cf77; }
     .journal-folder-breadcrumb button:focus-visible { outline: 2px solid var(--gold); outline-offset: 3px; }
     .journal-folder-breadcrumb [aria-current="page"] { color: var(--text); }
@@ -54,17 +54,17 @@
     .journal-folder-heading > h2 { max-width: 100%; margin: 0 0 0.45rem; font-size: clamp(2rem, 7vw, 3.5rem); line-height: 1.05; overflow-wrap: anywhere; }
     .journal-folder-heading > .journal-meta { margin-bottom: 0.5rem; }
     .journal-folder-heading > p:last-child { margin-bottom: 0; overflow-wrap: anywhere; }
-    .journal-file { display: inline-block; margin: 0 0 1rem; color: var(--gold); text-decoration: underline; overflow-wrap: anywhere; }
+    .journal-file { display: inline-block; margin: 0 0 1rem; color: var(--gold-text, var(--gold)); text-decoration: underline; overflow-wrap: anywhere; }
     .journal-meta { color: var(--text-muted); font-size: 0.82rem; margin-bottom: 0.9rem; }
     .journal-entry-card { display: flex; flex-direction: column; }
     .journal-entry-metadata { display: grid; grid-template-columns: minmax(0, 1fr); gap: 0.1rem; margin: 0 0 1rem; font-size: 0.82rem; line-height: 1.45; overflow-wrap: anywhere; }
-    .journal-entry-metadata dt { margin-top: 0.3rem; color: var(--gold); font-weight: 600; }
+    .journal-entry-metadata dt { margin-top: 0.3rem; color: var(--gold-text, var(--gold)); font-weight: 600; }
     .journal-entry-metadata dd { min-width: 0; margin: 0; color: var(--text-muted); }
     .journal-entry-action { display: inline-flex; align-items: center; justify-content: center; width: fit-content; min-height: 2.75rem; margin-top: auto; padding: 0.65rem 1rem; border: 1px solid var(--gold); border-radius: 4px; background: repeating-linear-gradient(135deg, rgba(201, 168, 76, 0.2) 0 6px, rgba(201, 168, 76, 0.08) 6px 12px); box-shadow: 0 0 0 1px rgba(201, 168, 76, 0.12); color: #f0cf77; font-weight: 700; letter-spacing: 0.08em; text-decoration: none; transition: background 160ms ease, border-color 160ms ease, color 160ms ease, transform 100ms ease; }
     .journal-entry-card .journal-entry-action:hover, .journal-entry-card .journal-entry-action:active { border-color: #f5d476; background: repeating-linear-gradient(135deg, #f5d476 0 7px, #e5bd58 7px 14px); color: #211a08; }
     .journal-entry-card .journal-entry-action:active { transform: translateY(1px); }
     .journal-empty { grid-column: 1 / -1; color: var(--text-muted); padding: 2rem 0; }
-    .journal-button, .journal-back { border: 1px solid var(--border-g); border-radius: 4px; background: transparent; color: var(--gold); padding: 0.65rem 0.9rem; font: inherit; cursor: pointer; }
+    .journal-button, .journal-back { border: 1px solid var(--border-g); border-radius: 4px; background: transparent; color: var(--gold-text, var(--gold)); padding: 0.65rem 0.9rem; font: inherit; cursor: pointer; }
     .journal-back { margin-bottom: 1rem; }
     .journal-button:hover, .journal-back:hover { background: var(--bg3); }
     .journal-detail-body { font-size: 1.05rem; line-height: 1.8; }
@@ -78,18 +78,18 @@
     .journal-detail-thumbnail[aria-pressed="true"], .journal-detail-thumbnail:focus-visible { border-color: var(--gold); outline: 2px solid var(--gold); outline-offset: 2px; }
     .journal-detail-thumbnail img { display: block; width: 100%; height: 100%; margin: 0; object-fit: cover; }
     .journal-detail-content h2 { margin: 0 0 0.7rem; font-size: clamp(1.8rem, 4vw, 2.8rem); line-height: 1.1; overflow-wrap: anywhere; }
-    .journal-detail-section-title { margin: 1.3rem 0 0.45rem; color: var(--gold); font-size: 0.92rem; letter-spacing: 0.08em; text-transform: uppercase; }
+    .journal-detail-section-title { margin: 1.3rem 0 0.45rem; color: var(--gold-text, var(--gold)); font-size: 0.92rem; letter-spacing: 0.08em; text-transform: uppercase; }
     .journal-rich-content { min-width: 0; overflow-wrap: anywhere; white-space: pre-wrap; }
     .journal-rich-content p, .journal-rich-content ul, .journal-rich-content ol, .journal-rich-content blockquote { margin: 0 0 0.8rem; }
     .journal-rich-content h2, .journal-rich-content h3, .journal-rich-content h4 { margin: 1rem 0 0.5rem; color: var(--text); }
     .journal-rich-content blockquote { padding: 0.25rem 0 0.25rem 1rem; border-left: 2px solid var(--gold); color: var(--text-muted); }
-    .journal-rich-content a, .journal-media-actions a { color: var(--gold); text-decoration: underline; overflow-wrap: anywhere; }
+    .journal-rich-content a, .journal-media-actions a { color: var(--gold-text, var(--gold)); text-decoration: underline; overflow-wrap: anywhere; }
     .journal-media-actions { display: flex; flex-wrap: wrap; gap: 0.65rem; margin: 0.8rem 0 1rem; }
     .journal-media-actions a { display: inline-flex; align-items: center; min-height: 2.5rem; padding: 0.5rem 0.75rem; border: 1px solid var(--border-g); border-radius: 4px; text-decoration: none; }
     .journal-media-actions a:hover, .journal-media-actions a:focus-visible { border-color: var(--gold); background: var(--bg3); }
     .journal-tabs { display: flex; gap: 0.75rem; flex-wrap: wrap; margin: 0 0 1.5rem; border-bottom: 1px solid var(--border); }
     .journal-tab { border: 0; border-bottom: 2px solid transparent; background: transparent; color: var(--text-muted); padding: 0.8rem 1rem; font: inherit; font-weight: 700; cursor: pointer; }
-    .journal-tab.active, .journal-tab[aria-selected="true"] { color: var(--gold); border-bottom-color: var(--gold); }
+    .journal-tab.active, .journal-tab[aria-selected="true"] { color: var(--gold-text, var(--gold)); border-bottom-color: var(--gold); }
     .journal-tab:focus-visible, .journal-button:focus-visible, .journal-back:focus-visible { outline: 2px solid var(--gold); outline-offset: 3px; }
     .journal-media-viewer, .journal-document-viewer { position: relative; width: 100%; aspect-ratio: 16 / 9; margin: 1.25rem 0; background: #080808; }
     .journal-media-viewer iframe, .journal-media-viewer video, .journal-document-viewer iframe { display: block; width: 100%; height: 100%; border: 0; }
@@ -104,7 +104,7 @@
       backdrop-filter: blur(12px);
       -webkit-backdrop-filter: blur(12px);
       border: 1.5px solid var(--gold);
-      color: var(--gold);
+      color: var(--gold-text, var(--gold));
       display: flex;
       align-items: center;
       justify-content: center;
@@ -116,7 +116,7 @@
       transform: scale(1.1);
       background: rgba(26, 26, 26, 0.95);
       border-color: #f4e1a6;
-      color: var(--gold);
+      color: var(--gold-text, var(--gold));
       box-shadow: 0 12px 35px rgba(0, 0, 0, 0.85), 0 0 35px rgba(201, 168, 76, 0.55);
     }
     .journal-video-preview-label svg {
@@ -471,7 +471,7 @@
       gap: 8px;
       background: rgba(255, 255, 255, 0.06);
       border: 1px solid var(--border);
-      color: var(--gold);
+      color: var(--gold-text, var(--gold));
       padding: 7px 16px;
       border-radius: 999px;
       font-size: 0.84rem;
@@ -643,13 +643,13 @@
       border: 1px solid var(--border);
       background: var(--bg-card);
     }
-    .ag-tv-short-watch-channel { display: flex; align-items: center; gap: 0.6rem; color: var(--gold); font-size: 0.82rem; }
+    .ag-tv-short-watch-channel { display: flex; align-items: center; gap: 0.6rem; color: var(--gold-text, var(--gold)); font-size: 0.82rem; }
     .ag-tv-short-watch-channel img { width: 2.25rem; height: 2.25rem; border-radius: 50%; object-fit: cover; }
     .ag-tv-short-watch-details h2 { margin: 0.8rem 0 0.4rem; color: var(--text); font-size: 1.25rem; line-height: 1.25; overflow-wrap: anywhere; }
     .ag-tv-short-watch-meta { color: var(--muted); font-size: 0.78rem; }
     .ag-tv-short-watch-excerpt { margin: 0.8rem 0; color: var(--text); font-size: 0.92rem; line-height: 1.5; overflow-wrap: anywhere; }
     .ag-tv-short-watch-body { margin-top: 0.75rem; border-top: 1px solid var(--border); padding-top: 0.65rem; }
-    .ag-tv-short-watch-body summary { color: var(--gold); cursor: pointer; font-size: 0.78rem; text-transform: uppercase; }
+    .ag-tv-short-watch-body summary { color: var(--gold-text, var(--gold)); cursor: pointer; font-size: 0.78rem; text-transform: uppercase; }
     .ag-tv-short-watch-body p { margin: 0.5rem 0 0; color: var(--text-muted); font-size: 0.85rem; line-height: 1.55; white-space: pre-wrap; overflow-wrap: anywhere; }
     .ag-tv-short-watch-actions { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-top: 1rem; }
     .ag-tv-short-watch-actions .ag-tv-action-pill { min-height: 2.5rem; }
@@ -675,7 +675,7 @@
       backdrop-filter: blur(12px);
       -webkit-backdrop-filter: blur(12px);
       border: 1.5px solid var(--gold);
-      color: var(--gold);
+      color: var(--gold-text, var(--gold));
       display: flex;
       align-items: center;
       justify-content: center;
@@ -736,7 +736,7 @@
       backdrop-filter: blur(12px);
       -webkit-backdrop-filter: blur(12px);
       border: 1px solid var(--gold);
-      color: var(--gold);
+      color: var(--gold-text, var(--gold));
       font-size: 0.8rem;
       font-weight: 600;
       letter-spacing: 0.04em;
@@ -890,7 +890,7 @@
       transition: color 0.2s, transform 0.2s, background 0.2s;
     }
     .ag-player-btn:hover {
-      color: var(--gold);
+      color: var(--gold-text, var(--gold));
       background: rgba(255, 255, 255, 0.08);
       transform: scale(1.08);
     }
@@ -996,6 +996,12 @@
       transform: translateY(0) scale(1);
       pointer-events: auto;
     }
+    .ag-player-menu-popover button.ag-menu-item {
+      width: 100%;
+      text-align: left;
+      font: inherit;
+      color: inherit;
+    }
     .ag-download-status {
       position: fixed;
       z-index: 10000;
@@ -1031,7 +1037,7 @@
     }
     .ag-menu-item:hover {
       background: rgba(201, 168, 76, 0.15);
-      color: var(--gold);
+      color: var(--gold-text, var(--gold));
     }
     .ag-menu-item svg {
       width: 16px;
@@ -1044,7 +1050,7 @@
     }
     .ag-menu-badge {
       font-size: 0.72rem;
-      color: var(--gold);
+      color: var(--gold-text, var(--gold));
       font-weight: 600;
     }
 
@@ -1071,7 +1077,7 @@
     }
     .ag-speed-chip:hover {
       border-color: var(--gold);
-      color: var(--gold);
+      color: var(--gold-text, var(--gold));
     }
     .ag-speed-chip.is-active {
       background: var(--gold);
@@ -1264,7 +1270,7 @@
       font-size: 0.86rem;
     }
     .ag-tv-desc-tags {
-      color: var(--gold);
+      color: var(--gold-text, var(--gold));
       font-weight: 500;
       margin-bottom: 8px;
       font-size: 0.82rem;
@@ -1679,6 +1685,18 @@
         justify-content: flex-start;
       }
     }
+    @media (max-width: 600px) {
+      .ag-player-controls { padding: 18px 8px 8px; gap: 2px; }
+      .ag-player-controls-row { gap: 2px; }
+      .ag-controls-group { gap: 1px; min-width: 0; }
+      .ag-player-btn { width: 32px; height: 32px; flex: 0 0 32px; }
+      .ag-player-btn svg { width: 18px; height: 18px; }
+      .ag-volume-slider { display: none; }
+      .ag-player-time { gap: 2px; margin-left: 0; font-size: 0.68rem; white-space: nowrap; }
+      .ag-player-menu-popover { right: 8px; bottom: 52px; width: min(320px, calc(100% - 16px)); min-width: 0; }
+      .ag-tv-player-box:fullscreen .ag-player-controls,
+      .ag-tv-player-box:-webkit-full-screen .ag-player-controls { padding-bottom: max(8px, env(safe-area-inset-bottom)); }
+    }
     @media (max-width: 700px) {
       .journal-main { padding: calc(var(--nav-h) + 0.75rem) 0 2.5rem; }
       .journal-tabs { flex-wrap: nowrap; gap: 0.25rem; }
@@ -1786,7 +1804,7 @@
     <div class="footer-bottom" style="border-top: 1px solid var(--border); padding: 0.8rem 0; margin-top: 1.5rem;">
       <div style="max-width: 1400px; margin: 0 auto; padding: 0 2rem; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
         <p style="font-size: 0.8rem; color: var(--text-muted); cursor: default; user-select: none;" id="adminSecretTrigger">&copy; 2026 ARTGALZIM CENTER</p>
-        <div style="font-weight: 700; letter-spacing: 0.15em; color: var(--gold); font-size: 0.72rem; text-transform: uppercase;">
+        <div style="font-weight: 700; letter-spacing: 0.15em; color: var(--gold-text, var(--gold)); font-size: 0.72rem; text-transform: uppercase;">
           POWERED BY &nbsp;<a href="owa-technologies.html" style="color: inherit; text-decoration: none; border-bottom: 2px solid var(--gold);">OWA TECHNOLOGIES</a> - <span style="color: var(--text); font-weight: 700;">[SAMUEL T SAMOYO-(LYKART06)]</span>
         </div>
       </div>
