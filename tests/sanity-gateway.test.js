@@ -98,6 +98,7 @@ function createSanityMock() {
   documents.videoDownloads = [];
   documents.operations = [];
   documents.deletedAssets = [];
+  documents.emptyAssetUpload = false;
   let assetSequence = 0;
 
   globalThis.fetch = async (input, options = {}) => {
@@ -165,7 +166,18 @@ function createSanityMock() {
         found = found.filter(document => document.id === dashboardId || ids.includes(document._id));
       }
       if (groq.includes('[0]')) found = found.slice(0, 1);
-      return Response.json({ result: found });
+      const includePortfolioFileUrl = groq.includes('"portfolioFileUrl"');
+      const includePortfolioThumbnailUrl = groq.includes('"portfolioThumbnailUrl"');
+      const resolved = found.map(document => {
+        const fileAsset = documents.get(document.portfolioFile?.asset?._ref);
+        const thumbnailAsset = documents.get(document.portfolioThumbnail?.asset?._ref);
+        return {
+          ...document,
+          ...(includePortfolioFileUrl && fileAsset?.url ? { portfolioFileUrl: fileAsset.url } : {}),
+          ...(includePortfolioThumbnailUrl && thumbnailAsset?.url ? { portfolioThumbnailUrl: thumbnailAsset.url } : {})
+        };
+      });
+      return Response.json({ result: resolved });
     }
 
     if (url.pathname.includes('/data/mutate/')) {
@@ -188,6 +200,7 @@ function createSanityMock() {
     }
 
     if (url.pathname.includes('/assets/')) {
+      if (documents.emptyAssetUpload) return new Response(null, { status: 200 });
       const isImage = url.pathname.includes('/assets/images/');
       const id = `${isImage ? 'image' : 'file'}-mock-${++assetSequence}`;
       const filename = url.searchParams.get('filename') || 'asset';
@@ -218,6 +231,213 @@ function createSanityMock() {
 
   return documents;
 }
+
+test('artist portfolios are draft-only until sync and then appear in the public artist data', async () => {
+  const originalFetch = globalThis.fetch;
+  const documents = createSanityMock();
+  const gateway = createSanityGateway({
+    SANITY_API_TOKEN: 'test-token',
+    ADMIN_PASSWORD: 'test-password',
+    ADMIN_SESSION_SECRET: 'test-session-secret'
+  });
+  documents.set('artist-portfolio-example', {
+    _id: 'artist-portfolio-example',
+    _type: 'artist',
+    name: 'Portfolio Example',
+    tier: 'Emerging Artists'
+  });
+
+  async function request(path, { method = 'GET', body, headers = {} } = {}) {
+    return gateway(new Request(`https://example.test${path}`, {
+      method,
+      ...(body === undefined ? {} : { body }),
+      headers: body instanceof FormData ? headers : { 'content-type': 'application/json', ...headers },
+      ...(body !== undefined && !(body instanceof FormData) ? { body: JSON.stringify(body) } : {})
+    }));
+  }
+
+  try {
+    const login = await request('/api/login', { method: 'POST', body: { password: 'test-password' } });
+    const cookie = login.headers.get('set-cookie').split(';')[0];
+    const form = new FormData();
+    form.set('artist', 'Portfolio Example');
+    form.set('mode', 'upload');
+    form.set('portfolioFile', new File(['%PDF-1.7'], 'portfolio.pdf', { type: 'application/pdf' }));
+    form.set('portfolioThumbnail', new File(['thumbnail'], 'artist.png', { type: 'image/png' }));
+
+    const saved = await request('/api/artist-portfolio', {
+      method: 'POST',
+      body: form,
+      headers: { cookie }
+    });
+    assert.equal(saved.status, 200);
+    const savedResult = await saved.json();
+    assert.equal(savedResult.publishRequired, true);
+    const draft = documents.get('drafts.artist-portfolio-example');
+    assert.equal(draft.portfolioFile._type, 'file');
+    assert.equal(draft.portfolioThumbnail._type, 'image');
+
+    const hiddenGalleryResponse = await request('/api/public-gallery');
+    const hiddenGallery = await hiddenGalleryResponse.json();
+    assert.equal(hiddenGallery.data.artistProfiles.find(artist => artist.name === 'Portfolio Example').portfolioFileUrl, '');
+
+    const sync = await request('/api/sync', { method: 'POST', headers: { cookie } });
+    assert.equal(sync.status, 200);
+    const publishedGalleryResponse = await request('/api/public-gallery');
+    const publishedGallery = await publishedGalleryResponse.json();
+    const portfolioArtist = publishedGallery.data.artistProfiles.find(artist => artist.name === 'Portfolio Example');
+    assert.match(portfolioArtist.portfolioFileUrl, /^https:\/\/cdn\.sanity\.io\/files\//);
+    assert.match(portfolioArtist.portfolioThumbnailUrl, /^https:\/\/cdn\.sanity\.io\/images\//);
+    const adminArtistsResponse = await request('/api/artists', { headers: { cookie } });
+    const adminArtists = await adminArtistsResponse.json();
+    const adminPortfolioArtist = adminArtists.find(artist => artist.name === 'Portfolio Example');
+    assert.equal(adminPortfolioArtist.portfolioFileUrl, portfolioArtist.portfolioFileUrl);
+    assert.equal(adminPortfolioArtist.portfolioThumbnailUrl, portfolioArtist.portfolioThumbnailUrl);
+
+    const uploadedPdfId = documents.get('artist-portfolio-example').portfolioFile.asset._ref;
+    const savedThumbnailRef = documents.get('artist-portfolio-example').portfolioThumbnail.asset._ref;
+    const linkForm = new FormData();
+    linkForm.set('artist', 'Portfolio Example');
+    linkForm.set('mode', 'link');
+    linkForm.set('portfolioUrl', 'https://docs.google.com/document/d/portfolio-document-id/edit');
+    const linked = await request('/api/artist-portfolio', { method: 'POST', body: linkForm, headers: { cookie } });
+    assert.equal(linked.status, 200);
+    const linkDraft = documents.get('drafts.artist-portfolio-example');
+    assert.equal(linkDraft.portfolioUrl, 'https://docs.google.com/document/d/portfolio-document-id/edit');
+    assert.equal(linkDraft.portfolioFile, null);
+    assert.deepEqual(linkDraft.pendingPortfolioAssetCleanup, [uploadedPdfId]);
+    assert.equal(linkDraft.portfolioThumbnail.asset._ref, savedThumbnailRef);
+
+    const linkSync = await request('/api/sync', { method: 'POST', headers: { cookie } });
+    assert.equal(linkSync.status, 200);
+    assert.equal(documents.has(uploadedPdfId), false);
+    const linkedGalleryResponse = await request('/api/public-gallery');
+    const linkedGallery = await linkedGalleryResponse.json();
+    const linkedArtist = linkedGallery.data.artistProfiles.find(artist => artist.name === 'Portfolio Example');
+    assert.equal(linkedArtist.portfolioUrl, 'https://docs.google.com/document/d/portfolio-document-id/edit');
+    assert.equal(linkedArtist.portfolioFileUrl, '');
+    assert.match(linkedArtist.portfolioThumbnailUrl, /^https:\/\/cdn\.sanity\.io\/images\//);
+  } finally {
+    globalThis.fetch = originalFetch;
+  }
+});
+
+test('new artists can publish and later edit portfolios with their Sanity folders', async () => {
+  const originalFetch = globalThis.fetch;
+  const documents = createSanityMock();
+  const gateway = createSanityGateway({
+    SANITY_API_TOKEN: 'test-token',
+    ADMIN_PASSWORD: 'test-password',
+    ADMIN_SESSION_SECRET: 'test-session-secret'
+  });
+
+  async function request(path, { method = 'GET', body, headers = {} } = {}) {
+    return gateway(new Request(`https://example.test${path}`, {
+      method,
+      ...(body === undefined ? {} : { body }),
+      headers: body instanceof FormData ? headers : { 'content-type': 'application/json', ...headers },
+      ...(body !== undefined && !(body instanceof FormData) ? { body: JSON.stringify(body) } : {})
+    }));
+  }
+
+  try {
+    const login = await request('/api/login', { method: 'POST', body: { password: 'test-password' } });
+    const cookie = login.headers.get('set-cookie').split(';')[0];
+    const authenticatedRequest = (path, options = {}) => request(path, {
+      ...options,
+      headers: { ...options.headers, cookie }
+    });
+
+    const created = await authenticatedRequest('/api/create-artist-folder', {
+      method: 'POST',
+      body: { artist: 'New Portfolio Artist', category: 'Artworks', tier: 'Emerging Artists' }
+    });
+    assert.equal(created.status, 200);
+    assert.deepEqual((await created.json()).folders, ['Abstract', 'Portraits', 'Commissions']);
+
+    const form = new FormData();
+    form.set('artist', 'New Portfolio Artist');
+    form.set('mode', 'upload');
+    form.set('portfolioFile', new File(['%PDF-1.7'], 'portfolio.pdf', { type: 'application/pdf' }));
+    form.set('portfolioThumbnail', new File(['thumbnail'], 'artist.png', { type: 'image/png' }));
+    const saved = await authenticatedRequest('/api/artist-portfolio', { method: 'POST', body: form });
+    assert.equal(saved.status, 200);
+    assert.equal(documents.get('drafts.artist-new-portfolio-artist').portfolioFile._type, 'file');
+    assert.equal(documents.has('drafts.album-new-portfolio-artist-abstract'), true);
+
+    const sync = await authenticatedRequest('/api/sync', { method: 'POST' });
+    assert.equal(sync.status, 200);
+    const publicResponse = await request('/api/public-gallery');
+    const publicGallery = await publicResponse.json();
+    const publicArtist = publicGallery.data.artistProfiles.find(artist => artist.name === 'New Portfolio Artist');
+    assert.match(publicArtist.portfolioFileUrl, /^https:\/\/cdn\.sanity\.io\/files\//);
+    assert.match(publicArtist.portfolioThumbnailUrl, /^https:\/\/cdn\.sanity\.io\/images\//);
+    assert.deepEqual(publicGallery.data.artistsCollections['New Portfolio Artist/Abstract'].images, []);
+
+    const adminResponse = await authenticatedRequest('/api/artists');
+    const adminArtist = (await adminResponse.json()).find(artist => artist.name === 'New Portfolio Artist');
+    assert.equal(adminArtist.portfolioFileUrl, publicArtist.portfolioFileUrl);
+
+    const previousFileId = documents.get('artist-new-portfolio-artist').portfolioFile.asset._ref;
+    const linkForm = new FormData();
+    linkForm.set('artist', 'New Portfolio Artist');
+    linkForm.set('mode', 'link');
+    linkForm.set('portfolioUrl', 'https://docs.google.com/document/d/new-artist-portfolio/edit');
+    const edited = await authenticatedRequest('/api/artist-portfolio', { method: 'POST', body: linkForm });
+    assert.equal(edited.status, 200);
+    assert.deepEqual(documents.get('drafts.artist-new-portfolio-artist').pendingPortfolioAssetCleanup, [previousFileId]);
+
+    const editSync = await authenticatedRequest('/api/sync', { method: 'POST' });
+    assert.equal(editSync.status, 200);
+    assert.equal(documents.has(previousFileId), false);
+    const editedGalleryResponse = await request('/api/public-gallery');
+    const editedGallery = await editedGalleryResponse.json();
+    const editedArtist = editedGallery.data.artistProfiles.find(artist => artist.name === 'New Portfolio Artist');
+    assert.equal(editedArtist.portfolioUrl, 'https://docs.google.com/document/d/new-artist-portfolio/edit');
+    assert.equal(editedArtist.portfolioFileUrl, '');
+    assert.equal(editedArtist.portfolioThumbnailUrl, publicArtist.portfolioThumbnailUrl);
+  } finally {
+    globalThis.fetch = originalFetch;
+  }
+});
+
+test('empty Sanity asset responses return a useful JSON upload error', async () => {
+  const originalFetch = globalThis.fetch;
+  const documents = createSanityMock();
+  documents.emptyAssetUpload = true;
+  const gateway = createSanityGateway({
+    SANITY_API_TOKEN: 'test-token',
+    ADMIN_PASSWORD: 'test-password',
+    ADMIN_SESSION_SECRET: 'test-session-secret'
+  });
+  const request = (path, { method = 'GET', body, headers = {} } = {}) => gateway(new Request(`https://example.test${path}`, {
+    method,
+    ...(body === undefined ? {} : { body }),
+    headers: body instanceof FormData ? headers : { 'content-type': 'application/json', ...headers },
+    ...(body !== undefined && !(body instanceof FormData) ? { body: JSON.stringify(body) } : {})
+  }));
+
+  try {
+    documents.set('artist-empty-response', {
+      _id: 'artist-empty-response',
+      _type: 'artist',
+      name: 'Empty Response Artist',
+      tier: 'Emerging Artists'
+    });
+    const login = await request('/api/login', { method: 'POST', body: { password: 'test-password' } });
+    const cookie = login.headers.get('set-cookie').split(';')[0];
+    const form = new FormData();
+    form.set('artist', 'Empty Response Artist');
+    form.set('mode', 'upload');
+    form.set('portfolioFile', new File(['%PDF-1.7'], 'portfolio.pdf', { type: 'application/pdf' }));
+    form.set('portfolioThumbnail', new File(['thumbnail'], 'artist.png', { type: 'image/png' }));
+    const response = await request('/api/artist-portfolio', { method: 'POST', body: form, headers: { cookie } });
+    assert.equal(response.status, 500);
+    assert.deepEqual(await response.json(), { error: 'Sanity asset upload returned an empty asset response (HTTP 200).' });
+  } finally {
+    globalThis.fetch = originalFetch;
+  }
+});
 
 test('dashboard artist, folder, artwork and content actions stay in sync with Sanity documents', async () => {
   const originalFetch = globalThis.fetch;

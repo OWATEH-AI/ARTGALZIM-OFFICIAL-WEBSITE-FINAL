@@ -15,6 +15,7 @@
   --text-dim: #555550;
   --gold: #c9a84c;
   --gold-light: #e8c97a;
+  --gold-text: var(--gold);
   --gold-dim: rgba(201, 168, 76, 0.15);
   --beige: #f5f0e8;
   --earth: #8b6f47;
@@ -37,10 +38,37 @@
   --border: rgba(0, 0, 0, 0.08);
   --text: #1a1a18;
   --text-muted: #666660;
-  --text-dim: #aaa;
+  --text-dim: #666660;
+  --gold-text: #735600;
   --gold: #b8940e;
   --gold-light: #c9a830;
   --gold-dim: rgba(184, 148, 14, 0.12);
+}
+
+[data-theme="light"] #preloader .preloader-label {
+  color: #c2c0ba;
+}
+
+[data-theme="light"] .hero-badge,
+[data-theme="light"] .artist-profile-btn {
+  color: var(--gold-light);
+}
+
+[data-theme="light"] .hero-subtitle {
+  color: #fff;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.75);
+}
+
+[data-theme="light"] .choice-btn.wa {
+  color: #06451f !important;
+}
+
+[data-theme="light"] .choice-btn.gmail {
+  color: #260400 !important;
+}
+
+[data-theme="light"].page-owa a[href*="wa.me"] {
+  color: #06451f !important;
 }
 
 /* ---- Reset ---- */
@@ -228,7 +256,7 @@ h3 {
 .logo-sub {
   font-size: 0.55rem;
   letter-spacing: 0.3em;
-  color: var(--gold);
+  color: var(--gold-text, var(--gold));
   font-weight: 500;
 }
 
@@ -252,7 +280,7 @@ h3 {
   font-size: 0.48rem;
   letter-spacing: 0.28em;
   text-transform: uppercase;
-  color: var(--gold);
+  color: var(--gold-text, var(--gold));
   font-weight: 500;
 }
 .nav-links {
@@ -293,7 +321,7 @@ h3 {
 }
 .nav-link-cta {
   border: 1px solid var(--gold);
-  color: var(--gold) !important;
+  color: var(--gold-text, var(--gold)) !important;
   padding: 0.45rem 1.1rem;
   border-radius: var(--radius);
   transition:
@@ -316,9 +344,9 @@ h3 {
 
 /* Donate Button in Nav */
 @keyframes navDonatePulse {
-  0% { box-shadow: 0 0 0 0 rgba(201, 168, 76, 0.4); transform: scale(1); border-color: var(--gold); color: var(--gold); }
+  0% { box-shadow: 0 0 0 0 rgba(201, 168, 76, 0.4); transform: scale(1); border-color: var(--gold); color: var(--gold-text, var(--gold)); }
   50% { box-shadow: 0 0 0 8px rgba(201, 168, 76, 0); transform: scale(1.03); border-color: transparent; color: var(--text); }
-  100% { box-shadow: 0 0 0 0 rgba(201, 168, 76, 0); transform: scale(1); border-color: var(--gold); color: var(--gold); }
+  100% { box-shadow: 0 0 0 0 rgba(201, 168, 76, 0); transform: scale(1); border-color: var(--gold); color: var(--gold-text, var(--gold)); }
 }
 
 @keyframes boxPulse {
@@ -340,7 +368,7 @@ h3 {
   font-size: 0.75rem;
   letter-spacing: 0.12em;
   text-transform: uppercase;
-  color: var(--gold);
+  color: var(--gold-text, var(--gold));
   font-weight: 600;
   transition: all 0.3s ease;
   padding: 0.5rem 0.8rem;
@@ -367,7 +395,7 @@ h3 {
   }
   .donate-icon {
     display: block;
-    color: var(--gold);
+    color: var(--gold-text, var(--gold));
   }
   
 .donate-btn-link {
@@ -377,7 +405,7 @@ h3 {
   font-size: 0.75rem;
   letter-spacing: 0.12em;
   text-transform: uppercase;
-  color: var(--gold);
+  color: var(--gold-text, var(--gold));
   font-weight: 600;
   transition: all 0.3s ease;
   padding: 0.5rem 0.8rem;
@@ -411,7 +439,7 @@ h3 {
   position: relative;
 }
 .theme-toggle:hover {
-  color: var(--gold);
+  color: var(--gold-text, var(--gold));
   background: var(--gold-dim);
 }
 .icon-sun,
@@ -512,7 +540,7 @@ h3 {
   color: var(--text);
 }
 .sidebar-drawer-logo span {
-  color: var(--gold);
+  color: var(--gold-text, var(--gold));
   font-size: 0.55rem;
   letter-spacing: 0.25em;
   text-transform: uppercase;
@@ -531,7 +559,7 @@ h3 {
   font-size: 1rem;
   transition: color 0.3s, border-color 0.3s;
 }
-.sidebar-close-btn:hover { color: var(--gold); border-color: var(--gold); }
+.sidebar-close-btn:hover { color: var(--gold-text, var(--gold)); border-color: var(--gold); }
 .sidebar-drawer-body {
   padding: 1.5rem;
   flex: 1;
@@ -544,7 +572,7 @@ h3 {
   font-size: 0.6rem;
   letter-spacing: 0.2em;
   text-transform: uppercase;
-  color: var(--gold);
+  color: var(--gold-text, var(--gold));
   margin-bottom: 0.75rem;
   font-weight: 700;
 }
@@ -563,7 +591,7 @@ h3 {
   letter-spacing: 0.04em;
 }
 .sidebar-nav-link:hover { color: var(--text); padding-left: 0.5rem; }
-.sidebar-nav-link.active { color: var(--gold); font-weight: 600; }
+.sidebar-nav-link.active { color: var(--gold-text, var(--gold)); font-weight: 600; }
 .sidebar-nav-link[href="visit.html"] {
   margin-top: 0.75rem;
   border-top: 1px solid var(--border-g);
@@ -584,7 +612,7 @@ h3 {
   line-height: 1.6;
 }
 .sidebar-info-section a {
-  color: var(--gold);
+  color: var(--gold-text, var(--gold));
   text-decoration: underline;
 }
 .sidebar-social-row {
@@ -604,7 +632,7 @@ h3 {
   color: var(--text-muted);
   transition: color 0.3s, border-color 0.3s, background 0.3s;
 }
-.sidebar-icon-btn:hover { color: var(--gold); border-color: var(--gold); background: var(--gold-dim); }
+.sidebar-icon-btn:hover { color: var(--gold-text, var(--gold)); border-color: var(--gold); background: var(--gold-dim); }
 
 /* ---- Left Social Bar ---- */
 .left-social-bar {
@@ -638,7 +666,7 @@ h3 {
   color: var(--text-muted);
   transition: color 0.3s, transform 0.3s;
 }
-.left-social-link:hover { color: var(--gold); transform: scale(1.15); }
+.left-social-link:hover { color: var(--gold-text, var(--gold)); transform: scale(1.15); }
 .left-social-divider { width: 1px; height: 24px; background: var(--border); margin: 0.2rem 0; }
 .left-social-label {
   font-size: 0.5rem;
@@ -802,7 +830,7 @@ h3 {
   font-size: 0.72rem;
   letter-spacing: 0.2em;
   text-transform: uppercase;
-  color: var(--gold);
+  color: var(--gold-text, var(--gold));
   margin-bottom: 1.5rem;
   opacity: 0;
   transform: translateY(20px);
@@ -1000,7 +1028,7 @@ h3 {
 }
 .btn-ghost:hover {
   border-color: var(--gold);
-  color: var(--gold);
+  color: var(--gold-text, var(--gold));
 }
 
 /* ---- Ticker ---- */
@@ -1058,7 +1086,7 @@ h3 {
   font-size: 0.68rem;
   letter-spacing: 0.25em;
   text-transform: uppercase;
-  color: var(--gold);
+  color: var(--gold-text, var(--gold));
   margin-bottom: 0.75rem;
 }
 .section-eyebrow.light {
@@ -1153,7 +1181,7 @@ h3 {
 .masonry-link {
   font-size: 0.7rem;
   letter-spacing: 0.1em;
-  color: var(--gold);
+  color: var(--gold-text, var(--gold));
   text-transform: uppercase;
 }
 
@@ -1227,7 +1255,7 @@ h3 {
 }
 .walk-btn:hover {
   border-color: var(--gold);
-  color: var(--gold);
+  color: var(--gold-text, var(--gold));
   background: var(--gold-dim);
 }
 .walk-dots {
@@ -1269,7 +1297,7 @@ h3 {
 }
 .tab-btn:hover { color: var(--text); }
 .tab-btn.active {
-  color: var(--gold);
+  color: var(--gold-text, var(--gold));
   border-bottom-color: var(--gold);
 }
 
@@ -1369,7 +1397,7 @@ h3 {
 .exh-participants {
   font-size: 0.75rem;
   letter-spacing: 0.06em;
-  color: var(--gold);
+  color: var(--gold-text, var(--gold));
   text-transform: uppercase;
   margin-bottom: 0.25rem;
 }
@@ -1388,7 +1416,7 @@ h3 {
   line-height: 1.65;
 }
 .exh-details summary {
-  color: var(--gold);
+  color: var(--gold-text, var(--gold));
   cursor: pointer;
   letter-spacing: 0.06em;
   text-transform: uppercase;
@@ -1411,7 +1439,7 @@ h3 {
   font-size: 0.72rem;
   letter-spacing: 0.12em;
   text-transform: uppercase;
-  color: var(--gold);
+  color: var(--gold-text, var(--gold));
   border-bottom: 1px solid var(--gold-dim);
   padding-bottom: 2px;
   transition: letter-spacing 0.3s, border-color 0.3s;
@@ -1483,7 +1511,7 @@ h3 {
   font-size: 0.65rem;
   letter-spacing: 0.15em;
   text-transform: uppercase;
-  color: var(--gold);
+  color: var(--gold-text, var(--gold));
 }
 .meta-val {
   font-size: 0.9rem;
@@ -1533,7 +1561,7 @@ h3 {
 }
 .discover-card-icon {
   font-size: 1.5rem;
-  color: var(--gold);
+  color: var(--gold-text, var(--gold));
   margin-bottom: 1rem;
   display: block;
 }
@@ -1553,7 +1581,7 @@ h3 {
   font-size: 0.72rem;
   letter-spacing: 0.1em;
   text-transform: uppercase;
-  color: var(--gold);
+  color: var(--gold-text, var(--gold));
   transition: letter-spacing 0.3s;
 }
 .text-link:hover {
@@ -1606,7 +1634,7 @@ h3 {
   letter-spacing: 0.15em;
   text-transform: uppercase;
   border: 1px solid var(--gold);
-  color: var(--gold);
+  color: var(--gold-text, var(--gold));
   padding: 0.5rem 1.2rem;
   transition:
     background 0.3s,
@@ -1624,7 +1652,7 @@ h3 {
 .artist-medium {
   font-size: 0.72rem;
   letter-spacing: 0.08em;
-  color: var(--gold);
+  color: var(--gold-text, var(--gold));
   margin-bottom: 0.5rem;
   text-transform: uppercase;
 }
@@ -1653,7 +1681,7 @@ h3 {
   font-family: "Cormorant Garamond", serif;
   font-size: clamp(2.5rem, 5vw, 4.5rem);
   font-weight: 300;
-  color: var(--gold);
+  color: var(--gold-text, var(--gold));
   line-height: 1;
   margin-bottom: 0.5rem;
 }
@@ -1794,7 +1822,7 @@ h3 {
     background 0.3s;
 }
 .social-link:hover {
-  color: var(--gold);
+  color: var(--gold-text, var(--gold));
   border-color: var(--gold);
   background: var(--gold-dim);
 }
@@ -1825,7 +1853,7 @@ h3 {
   font-size: 0.68rem;
   letter-spacing: 0.2em;
   text-transform: uppercase;
-  color: var(--gold);
+  color: var(--gold-text, var(--gold));
   margin-bottom: 0.5rem;
   font-weight: 600;
 }
@@ -1855,7 +1883,7 @@ h3 {
 }
 .modal-info h3 {
   font-size: 1.1rem;
-  color: var(--gold);
+  color: var(--gold-text, var(--gold));
   margin-bottom: 1rem;
   font-family: 'Inter', sans-serif;
   text-transform: uppercase;
@@ -1902,7 +1930,7 @@ h3 {
 }
 .btn-share:hover {
   border-color: var(--gold);
-  color: var(--gold);
+  color: var(--gold-text, var(--gold));
 }
 .footer-bottom {
   border-top: 1px solid var(--border);
@@ -1992,7 +2020,7 @@ h3 {
 }
 .back-to-top:hover {
   border-color: var(--gold);
-  color: var(--gold);
+  color: var(--gold-text, var(--gold));
 }
 
 /* ===============================================
@@ -2179,7 +2207,7 @@ h3 {
 
 .artwork-artist {
   font-size: 0.85rem;
-  color: var(--gold);
+  color: var(--gold-text, var(--gold));
   text-transform: uppercase;
   letter-spacing: 0.1em;
   margin-bottom: 0.2rem;
@@ -2204,7 +2232,7 @@ h3 {
 
 .btn-inquire:hover {
   border-color: var(--gold);
-  color: var(--gold);
+  color: var(--gold-text, var(--gold));
   background: var(--gold-dim);
 }
 
@@ -2254,7 +2282,7 @@ h3 {
   pointer-events: none;
 }
 .search-input:focus + .search-icon-btn {
-  color: var(--gold);
+  color: var(--gold-text, var(--gold));
 }
 
 @media (max-width: 768px) {
@@ -2291,7 +2319,7 @@ h3 {
   font-family: "Cormorant Garamond", serif;
   font-size: 1.4rem;
   margin-bottom: 0.75rem;
-  color: var(--gold);
+  color: var(--gold-text, var(--gold));
 }
 .about-block p {
   font-size: 0.9rem;
@@ -2396,7 +2424,7 @@ input[type="file"]:disabled::file-selector-button {
   transform: translateX(8px);
 }
 .contact-icon {
-  color: var(--gold);
+  color: var(--gold-text, var(--gold));
   width: 44px;
   height: 44px;
   border: 1px solid var(--gold-dim);
@@ -2415,7 +2443,7 @@ input[type="file"]:disabled::file-selector-button {
   font-size: 0.7rem;
   letter-spacing: 0.15em;
   text-transform: uppercase;
-  color: var(--gold);
+  color: var(--gold-text, var(--gold));
   margin-bottom: 0.4rem;
   font-weight: 600;
 }
@@ -2427,7 +2455,7 @@ input[type="file"]:disabled::file-selector-button {
   transition: color 0.3s;
 }
 .contact-info-item a:hover {
-  color: var(--gold);
+  color: var(--gold-text, var(--gold));
 }
 
 /* Map refinements */
@@ -2460,7 +2488,7 @@ input[type="file"]:disabled::file-selector-button {
 }
 .visit-card-icon {
   font-size: 1.5rem;
-  color: var(--gold);
+  color: var(--gold-text, var(--gold));
   margin-bottom: 1rem;
 }
 .visit-card h3 {
@@ -2498,7 +2526,7 @@ input[type="file"]:disabled::file-selector-button {
 }
 .hour-row span:last-child {
   font-weight: 600;
-  color: #fff; /* Matches screenshot readability */
+  color: var(--text);
 }
 .tourism-section {
   border-top: 1px solid var(--border);
@@ -2518,7 +2546,7 @@ input[type="file"]:disabled::file-selector-button {
 .tourism-item-num {
   font-family: "Cormorant Garamond", serif;
   font-size: 2rem;
-  color: var(--gold);
+  color: var(--gold-text, var(--gold));
   opacity: 0.4;
   line-height: 1;
   flex-shrink: 0;
@@ -2688,7 +2716,7 @@ input[type="file"]:disabled::file-selector-button {
     justify-content: center;
     border-radius: 50%;
     border: 1px solid var(--gold-dim);
-    color: var(--gold);
+    color: var(--gold-text, var(--gold));
   }
   .panel-toggle {
     margin-right: -4px;
@@ -2860,7 +2888,7 @@ input[type="file"]:disabled::file-selector-button {
     content: "POWERED BY " !important;
     font-size: 0.75rem !important;
     letter-spacing: 0.07em !important;
-    color: var(--gold) !important;
+    color: var(--gold-text, var(--gold)) !important;
     font-weight: 700 !important;
     text-transform: uppercase !important;
     display: inline !important;
@@ -2869,7 +2897,7 @@ input[type="file"]:disabled::file-selector-button {
     display: inline !important;
     font-size: 0.75rem !important;
     letter-spacing: 0.07em !important;
-    color: var(--gold) !important;
+    color: var(--gold-text, var(--gold)) !important;
     font-weight: 700 !important;
     text-transform: uppercase !important;
     white-space: nowrap !important;
@@ -3061,7 +3089,7 @@ input[type="file"]:disabled::file-selector-button {
   text-transform: uppercase;
 }
 .video-container:hover .video-placeholder {
-  color: var(--gold);
+  color: var(--gold-text, var(--gold));
   transform: scale(1.05);
 }
 
@@ -3117,7 +3145,7 @@ input[type="file"]:disabled::file-selector-button {
 .artist-tagline {
  font-size: 0.72rem;
  letter-spacing: 0.1em;
- color: var(--gold);
+ color: var(--gold-text, var(--gold));
  text-transform: uppercase;
  margin-bottom: 0.25rem;
 }
@@ -3133,7 +3161,7 @@ input[type="file"]:disabled::file-selector-button {
  font-size: 0.72rem;
  letter-spacing: 0.12em;
  text-transform: uppercase;
- color: var(--gold);
+ color: var(--gold-text, var(--gold));
  border-bottom: 1px solid var(--gold-dim);
  padding-bottom: 2px;
  transition: letter-spacing 0.3s, border-color 0.3s;
@@ -3303,7 +3331,7 @@ input[type="file"]:disabled::file-selector-button {
   font-size: 0.75rem;
   letter-spacing: 0.15em;
   text-transform: uppercase;
-  color: var(--gold);
+  color: var(--gold-text, var(--gold));
   margin-bottom: 1rem;
 }
 #inquiryMessage {
@@ -3791,7 +3819,7 @@ input[type="file"]:disabled::file-selector-button {
 }
 
 .choice-close:hover {
-  color: var(--gold);
+  color: var(--gold-text, var(--gold));
 }
 
 .inquiry-choice-content h4 {
@@ -3875,7 +3903,7 @@ input[type="file"]:disabled::file-selector-button {
 .mission-card h3 {
   font-family: "Cormorant Garamond", serif;
   font-size: 1.5rem;
-  color: var(--gold);
+  color: var(--gold-text, var(--gold));
   margin-bottom: 1.25rem;
   letter-spacing: 0.05em;
 }
@@ -3981,7 +4009,7 @@ input[type="file"]:disabled::file-selector-button {
 .map-overlay-card h4 {
   font-family: "Cormorant Garamond", serif;
   font-size: 1.25rem;
-  color: var(--gold);
+  color: var(--gold-text, var(--gold));
   margin-bottom: 0.5rem;
 }
 .map-overlay-card p {
@@ -4004,7 +4032,7 @@ input[type="file"]:disabled::file-selector-button {
 }
 .btn-map-nav:hover {
  gap: 0.8rem;
- color: var(--gold);
+ color: var(--gold-text, var(--gold));
 }
 @media (max-width: 768px) {
  .map-overlay-card {
@@ -4027,7 +4055,7 @@ input[type="file"]:disabled::file-selector-button {
 }
 .modal-info-bar h3 {
   font-size: 1rem;
-  color: var(--gold);
+  color: var(--gold-text, var(--gold));
   letter-spacing: 0.15em;
   text-transform: uppercase;
 }
@@ -4071,7 +4099,7 @@ input[type="file"]:disabled::file-selector-button {
 }
 
 .artsy-row-value a:hover {
-  color: var(--gold);
+  color: var(--gold-text, var(--gold));
 }
 
 .specs-grid {
@@ -4173,7 +4201,7 @@ input[type="file"]:disabled::file-selector-button {
   
   .artsy-row-label {
     font-size: 0.7rem;
-    color: var(--gold);
+    color: var(--gold-text, var(--gold));
     text-transform: uppercase;
     margin-top: 0.5rem;
   }
@@ -4222,7 +4250,7 @@ input[type="file"]:disabled::file-selector-button {
     font-size: 0.8rem !important;
   }
   .back-to-summary {
-    color: var(--gold);
+    color: var(--gold-text, var(--gold));
     display: flex;
     align-items: center;
     gap: 0.75rem;
@@ -4260,7 +4288,7 @@ input[type="file"]:disabled::file-selector-button {
   
   .mobile-section-heading span {
     font-size: 0.9rem;
-    color: var(--gold);
+    color: var(--gold-text, var(--gold));
     text-transform: uppercase;
     letter-spacing: 0.1em;
     font-family: 'Inter', sans-serif;
@@ -4409,7 +4437,7 @@ input[type="file"]:disabled::file-selector-button {
 
   .artist-album-overlay p {
     font-size: 0.7rem;
-    color: var(--gold);
+    color: var(--gold-text, var(--gold));
     text-transform: uppercase;
     letter-spacing: 0.12em;
     margin-top: 0.3rem;
@@ -4443,7 +4471,7 @@ input[type="file"]:disabled::file-selector-button {
 
   .artist-submenu a::after {
     content: "→";
-    color: var(--gold);
+    color: var(--gold-text, var(--gold));
   }
 
   .artist-submenu a:last-child {
@@ -4494,7 +4522,7 @@ input[type="file"]:disabled::file-selector-button {
   font-size: 0.85rem;
   font-family: 'Inter', sans-serif;
   font-weight: 500;
-  color: var(--gold);
+  color: var(--gold-text, var(--gold));
   text-transform: uppercase;
   letter-spacing: 0.12em;
 }
@@ -4530,6 +4558,12 @@ input[type="file"]:disabled::file-selector-button {
 .ap-album-card:hover {
   box-shadow: 0 12px 30px rgba(0,0,0,0.4);
   border-color: var(--gold);
+}
+
+.ap-album-card.ap-portfolio-card {
+  padding: 0;
+  font: inherit;
+  text-align: inherit;
 }
 
 .ap-album-img {
@@ -4648,7 +4682,7 @@ input[type="file"]:disabled::file-selector-button {
 .ap-artist-overlay p {
   font-size: 0.7rem;
   font-family: 'Inter', sans-serif;
-  color: var(--gold);
+  color: var(--gold-text, var(--gold));
   text-transform: uppercase;
   letter-spacing: 0.12em;
   margin-top: 0.35rem;
@@ -4665,8 +4699,44 @@ input[type="file"]:disabled::file-selector-button {
 }
 
 .ap-artist-submenu.open {
-  max-height: 200px;
+  max-height: 420px;
   border-top: 1px solid var(--gold);
+  flex-direction: row;
+  align-items: flex-start;
+  gap: 0.75rem;
+  padding: 0.75rem;
+  overflow-x: auto;
+  overflow-y: hidden;
+}
+
+.ap-portfolio-entry {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  width: 100%;
+  min-height: 80px;
+  padding: 0.65rem 1rem;
+  border: 0;
+  border-bottom: 1px solid var(--border);
+  background: var(--bg2);
+  color: var(--text);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.ap-portfolio-entry:hover,
+.ap-portfolio-entry:focus-visible {
+  background: var(--bg3);
+  color: var(--gold-text, var(--gold));
+}
+
+.ap-portfolio-entry img {
+  width: 56px;
+  height: 56px;
+  flex: 0 0 56px;
+  border-radius: 4px;
+  object-fit: cover;
 }
 
 .ap-artist-submenu a {
@@ -4682,13 +4752,28 @@ input[type="file"]:disabled::file-selector-button {
   transition: background 0.2s, color 0.2s;
 }
 
+.ap-artist-submenu a.ap-album-card {
+  padding: 0;
+  border: 1px solid var(--border);
+  color: var(--text);
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  justify-content: flex-start;
+}
+
+.ap-artist-submenu a.ap-album-card:hover {
+  background: var(--bg2);
+  color: var(--text);
+}
+
 .ap-artist-submenu a:hover {
   background: var(--bg2);
   color: var(--text);
 }
 
 .ap-artist-submenu a span {
-  color: var(--gold);
+  color: var(--gold-text, var(--gold));
 }
 
 .ap-artist-submenu a:last-child {
@@ -4820,7 +4905,7 @@ input[type="file"]:disabled::file-selector-button {
 }
 
 .album-modal-close:hover {
-  color: var(--gold);
+  color: var(--gold-text, var(--gold));
 }
 
 .album-modal-grid {
@@ -4831,6 +4916,24 @@ input[type="file"]:disabled::file-selector-button {
   gap: 1.5rem;
   scrollbar-width: thin;
   align-items: start;
+}
+
+.album-modal-grid.is-document {
+  display: flex;
+  flex: 1 1 auto;
+  min-height: 60vh;
+  padding: 0;
+  overflow: hidden;
+}
+
+.ap-portfolio-document-frame {
+  display: block;
+  width: 100%;
+  height: 100%;
+  min-height: 60vh;
+  flex: 1 1 auto;
+  border: 0;
+  background: #fff;
 }
 
 .album-modal-grid::-webkit-scrollbar {
@@ -4870,6 +4973,34 @@ input[type="file"]:disabled::file-selector-button {
   filter: brightness(1.1);
 }
 
+.ap-portfolio-preview-content {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
+.ap-portfolio-open-btn {
+  margin-top: 12px;
+  padding: 10px 0;
+  width: 100%;
+  border: 1px solid var(--gold);
+  border-radius: 4px;
+  background: transparent;
+  color: var(--gold);
+  font-family: 'Inter', sans-serif;
+  font-size: 0.8rem;
+  font-weight: 500;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: background 0.3s ease, color 0.3s ease;
+}
+
+.ap-portfolio-open-btn:hover,
+.ap-portfolio-open-btn:focus-visible {
+  background: var(--gold);
+  color: #000;
+}
+
 @media (max-width: 600px) {
   .album-modal {
     padding: 0;
@@ -4893,6 +5024,7 @@ input[type="file"]:disabled::file-selector-button {
     gap: 1rem;
     -webkit-overflow-scrolling: touch;
   }
+  .album-modal-grid.is-document { min-height: 60vh; }
 }
 
 /* =============================================

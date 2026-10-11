@@ -95,7 +95,7 @@
 .exh-participants {
   font-size: 0.75rem;
   letter-spacing: 0.06em;
-  color: var(--gold);
+  color: var(--gold-text, var(--gold));
   text-transform: uppercase;
   margin-bottom: 0.25rem;
 }
@@ -114,7 +114,7 @@
   line-height: 1.65;
 }
 .exh-details summary {
-  color: var(--gold);
+  color: var(--gold-text, var(--gold));
   cursor: pointer;
   letter-spacing: 0.06em;
   text-transform: uppercase;
@@ -130,7 +130,7 @@
   font-size: 0.82rem;
   line-height: 1.6;
 }
-.exh-action-instructions strong { color: var(--gold); font-size: 0.72rem; text-transform: uppercase; }
+.exh-action-instructions strong { color: var(--gold-text, var(--gold)); font-size: 0.72rem; text-transform: uppercase; }
 .exh-action-instructions p { margin-top: 0.3rem; white-space: normal; overflow-wrap: anywhere; }
 .exh-cta {
   display: inline-block;
@@ -138,7 +138,7 @@
   font-size: 0.72rem;
   letter-spacing: 0.12em;
   text-transform: uppercase;
-  color: var(--gold);
+  color: var(--gold-text, var(--gold));
   border-bottom: 1px solid var(--gold-dim);
   padding-bottom: 2px;
   transition: letter-spacing 0.3s, border-color 0.3s;

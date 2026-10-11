@@ -117,6 +117,14 @@ export function createSanityGateway(env) {
     return asset?._id || '';
   }
 
+  async function getPortfolioFileAssetId(file, url) {
+    const referenceId = file?.asset?._ref;
+    if (referenceId) return referenceId;
+    if (!url) return '';
+    const asset = (await query(`*[_type == "sanity.fileAsset" && url == ${JSON.stringify(url)}][0]{_id}`, { privateRead: true }))[0];
+    return asset?._id || '';
+  }
+
   function pendingCoverAssetIds(existing, previousAssetId) {
     return [...new Set([
       ...(Array.isArray(existing?.pendingCoverAssetCleanup) ? existing.pendingCoverAssetCleanup : []),
@@ -130,10 +138,22 @@ export function createSanityGateway(env) {
     if (!asset) return;
     const assetUrl = asset.url ? JSON.stringify(asset.url) : '';
     const urlReferences = assetUrl
-      ? ` || imageUrl == ${assetUrl} || coverSrc == ${assetUrl} || coverUrl == ${assetUrl} || assetUrl == ${assetUrl} || posterUrl == ${assetUrl} || attachmentUrl == ${assetUrl} || ${assetUrl} in imagesUrl`
+      ? ` || imageUrl == ${assetUrl} || coverSrc == ${assetUrl} || coverUrl == ${assetUrl} || assetUrl == ${assetUrl} || posterUrl == ${assetUrl} || attachmentUrl == ${assetUrl} || portfolioThumbnailUrl == ${assetUrl} || ${assetUrl} in imagesUrl`
       : '';
     const references = await query(
       `*[references(${JSON.stringify(assetId)}) || assetRef == ${JSON.stringify(assetId)}${urlReferences}]{_id}`,
+      { privateRead: true }
+    );
+    if (!references.length) await mutate([{ delete: { id: assetId } }]);
+  }
+
+  async function deletePortfolioFileAssetIfUnreferenced(assetId) {
+    if (!assetId?.startsWith('file-')) return;
+    const asset = (await query(`*[_type == "sanity.fileAsset" && _id == ${JSON.stringify(assetId)}][0]{_id, url}`, { privateRead: true }))[0];
+    if (!asset) return;
+    const assetUrl = asset.url ? ` || portfolioFileUrl == ${JSON.stringify(asset.url)}` : '';
+    const references = await query(
+      `*[references(${JSON.stringify(assetId)})${assetUrl}]{_id}`,
       { privateRead: true }
     );
     if (!references.length) await mutate([{ delete: { id: assetId } }]);
@@ -150,8 +170,18 @@ export function createSanityGateway(env) {
       },
       body: file
     });
-    const result = await response.json();
-    if (!response.ok) throw new Error(result.message || `Sanity asset upload failed (${response.status})`);
+    const responseText = await response.text();
+    let result = null;
+    if (responseText.trim()) {
+      try {
+        result = JSON.parse(responseText);
+      } catch {
+        const contentType = response.headers.get('content-type') || 'unknown content type';
+        throw new Error(`Sanity asset upload returned a non-JSON response (HTTP ${response.status}, ${contentType}).`);
+      }
+    }
+    if (!response.ok) throw new Error(result?.message || `Sanity asset upload failed (HTTP ${response.status}).`);
+    if (!result?.document) throw new Error(`Sanity asset upload returned an empty asset response (HTTP ${response.status}).`);
     return result.document;
   }
 
@@ -173,7 +203,7 @@ export function createSanityGateway(env) {
   }
 
   async function getAllDocuments() {
-    const docs = await query('*[_type in ["artwork", "artist", "album", "exhibition", "siteContent", "post", "libraryItem", "journalFolder", "journalEntry"] && !(_id in path("versions.**"))]{..., "imageUrl": coalesce(image.asset->url, poster.asset->url, imageUrl), "coverUrl": coalesce(cover.asset->url, coverUrl), "attachmentUrl": coalesce(attachment.asset->url, attachmentUrl)}', { privateRead: true });
+    const docs = await query('*[_type in ["artwork", "artist", "album", "exhibition", "siteContent", "post", "libraryItem", "journalFolder", "journalEntry"] && !(_id in path("versions.**"))]{..., "imageUrl": coalesce(image.asset->url, poster.asset->url, imageUrl), "coverUrl": coalesce(cover.asset->url, coverUrl), "attachmentUrl": coalesce(attachment.asset->url, attachmentUrl), "portfolioFileUrl": portfolioFile.asset->url, "portfolioThumbnailUrl": coalesce(portfolioThumbnail.asset->url, portfolioThumbnailUrl)}', { privateRead: true });
     const latest = new Map();
     for (const doc of docs) {
       const id = doc._id.replace(/^drafts\./, '');
@@ -260,7 +290,15 @@ export function createSanityGateway(env) {
     const getArtist = name => {
       if (!artists.has(name)) {
         const artist = docs.find(doc => doc._type === 'artist' && doc.name === name);
-        artists.set(name, { name, tier: artist?.tier || (name.toUpperCase().includes('KEITH ZENDA') ? 'Keith Zenda' : 'Emerging Artists'), cover: null, categories: [] });
+        artists.set(name, {
+          name,
+          tier: artist?.tier || (name.toUpperCase().includes('KEITH ZENDA') ? 'Keith Zenda' : 'Emerging Artists'),
+          cover: null,
+          categories: [],
+          portfolioUrl: artist?.portfolioUrl || '',
+          portfolioFileUrl: artist?.portfolioFileUrl || '',
+          portfolioThumbnailUrl: artist?.portfolioThumbnailUrl || ''
+        });
       }
       return artists.get(name);
     };
@@ -270,7 +308,10 @@ export function createSanityGateway(env) {
         name: doc.name,
         tier: doc.tier || (doc.name.toUpperCase().includes('KEITH ZENDA') ? 'Keith Zenda' : 'Emerging Artists'),
         cover: null,
-        categories: []
+        categories: [],
+        portfolioUrl: doc.portfolioUrl || '',
+        portfolioFileUrl: doc.portfolioFileUrl || '',
+        portfolioThumbnailUrl: doc.portfolioThumbnailUrl || ''
       });
     }
     for (const doc of albums) {
@@ -307,9 +348,10 @@ export function createSanityGateway(env) {
   }
 
   async function publicGallery() {
-    const [albumDocs, artworkDocs] = await Promise.all([
+    const [albumDocs, artworkDocs, artistDocs] = await Promise.all([
       query('*[_type == "album" && (!defined(isDeleted) || isDeleted == false)]{artist, name, coverSrc}'),
-      query('*[_type == "artwork" && (!defined(isDeleted) || isDeleted == false)]{title, artist, artistTier, category, medium, size, year, price, purchaseType, paymentLink, description, "imageUrl": coalesce(image.asset->url, imageUrl), sourcePath, filename}')
+      query('*[_type == "artwork" && (!defined(isDeleted) || isDeleted == false)]{title, artist, artistTier, category, medium, size, year, price, purchaseType, paymentLink, description, "imageUrl": coalesce(image.asset->url, imageUrl), sourcePath, filename}'),
+      query('*[_type == "artist" && (!defined(isDeleted) || isDeleted == false)]{name, tier, portfolioUrl, "portfolioFileUrl": portfolioFile.asset->url, "portfolioThumbnailUrl": portfolioThumbnail.asset->url}')
     ]);
     const artistsCollections = {};
     const albumCovers = new Map();
@@ -339,7 +381,14 @@ export function createSanityGateway(env) {
       if (albumCover) entry.cover = albumCover;
     }
 
-    return { artistsCollections, artworks };
+    const artistProfiles = artistDocs.filter(doc => doc.name).map(doc => ({
+      name: doc.name,
+      tier: doc.tier || (doc.name.toUpperCase().includes('KEITH ZENDA') ? 'Keith Zenda' : 'Emerging Artists'),
+      portfolioUrl: doc.portfolioUrl || '',
+      portfolioFileUrl: doc.portfolioFileUrl || '',
+      portfolioThumbnailUrl: doc.portfolioThumbnailUrl || ''
+    }));
+    return { artistsCollections, artworks, artistProfiles };
   }
 
   async function authenticatedRoute(request, url) {
@@ -391,6 +440,85 @@ export function createSanityGateway(env) {
         ...(pendingCleanup.length ? { pendingCoverAssetCleanup: pendingCleanup } : {})
       });
       return json({ ok: true, cover: asset.url, draft: true, publishRequired: true });
+    }
+    if (method === 'POST' && path === '/api/artist-portfolio') {
+      const form = await request.formData();
+      const requestedArtist = String(form.get('artist') || '').trim();
+      const mode = String(form.get('mode') || 'upload');
+      if (!requestedArtist) return json({ error: 'Artist name is required.' }, 400);
+      if (!['upload', 'link'].includes(mode)) return json({ error: 'Choose upload or document link.' }, 400);
+      const artist = await findArtistDoc(requestedArtist);
+      if (!artist) return json({ error: 'Artist not found in Sanity.' }, 404);
+
+      let portfolioFile = artist.portfolioFile || null;
+      let portfolioFileUrl = artist.portfolioFileUrl || '';
+      let portfolioUrl = artist.portfolioUrl || '';
+      let uploadedFileAsset = null;
+      if (mode === 'upload') {
+        const file = form.get('portfolioFile');
+        if (file instanceof File && file.size) {
+          if (!/\.pdf$/i.test(file.name) || (file.type && file.type !== 'application/pdf')) {
+            return json({ error: 'Portfolio uploads must be PDF files.' }, 400);
+          }
+          if (file.size > 50 * 1024 * 1024) return json({ error: 'Portfolio PDFs must be 50 MB or smaller.' }, 413);
+          uploadedFileAsset = await upload(file);
+          if (!uploadedFileAsset?._id || !uploadedFileAsset.url) return json({ error: 'Sanity did not return the uploaded PDF asset.' }, 502);
+          portfolioFile = { _type: 'file', asset: { _type: 'reference', _ref: uploadedFileAsset._id } };
+          portfolioFileUrl = uploadedFileAsset.url;
+        } else if (!portfolioFile?.asset?._ref) {
+          return json({ error: 'Choose a PDF file to upload.' }, 400);
+        }
+        portfolioUrl = '';
+      } else {
+        try {
+          portfolioUrl = validateJournalMediaUrl(form.get('portfolioUrl'), 'document');
+        } catch (error) {
+          return json({ error: error.message }, 400);
+        }
+        if (!portfolioUrl) return json({ error: 'Enter a PDF or Google Drive document URL.' }, 400);
+        portfolioFile = null;
+        portfolioFileUrl = '';
+      }
+
+      const thumbnailFile = form.get('portfolioThumbnail');
+      let portfolioThumbnail = artist.portfolioThumbnail || null;
+      let portfolioThumbnailUrl = artist.portfolioThumbnailUrl || '';
+      let uploadedThumbnailAsset = null;
+      if (thumbnailFile instanceof File && thumbnailFile.size) {
+        if (!thumbnailFile.type.startsWith('image/')) return json({ error: 'Portfolio thumbnails must be image files.' }, 400);
+        if (thumbnailFile.size > 10 * 1024 * 1024) return json({ error: 'Portfolio thumbnails must be 10 MB or smaller.' }, 413);
+        uploadedThumbnailAsset = await upload(thumbnailFile);
+        if (!uploadedThumbnailAsset?._id || !uploadedThumbnailAsset.url) return json({ error: 'Sanity did not return the thumbnail asset.' }, 502);
+        portfolioThumbnail = { _type: 'image', asset: { _type: 'reference', _ref: uploadedThumbnailAsset._id } };
+        portfolioThumbnailUrl = uploadedThumbnailAsset.url;
+      }
+      if (!portfolioThumbnail?.asset?._ref) return json({ error: 'Upload a thumbnail for the artist portfolio.' }, 400);
+
+      const oldFileAssetId = await getPortfolioFileAssetId(artist.portfolioFile, artist.portfolioFileUrl);
+      const oldThumbnailAssetId = await getImageAssetId(artist.portfolioThumbnail, artist.portfolioThumbnailUrl);
+      const nextFileAssetId = portfolioFile?.asset?._ref || '';
+      const nextThumbnailAssetId = portfolioThumbnail?.asset?._ref || '';
+      const pendingPortfolioAssetCleanup = [...new Set([
+        ...(Array.isArray(artist.pendingPortfolioAssetCleanup) ? artist.pendingPortfolioAssetCleanup : []),
+        ...(oldFileAssetId && nextFileAssetId !== oldFileAssetId ? [oldFileAssetId] : []),
+        ...(oldThumbnailAssetId && nextThumbnailAssetId !== oldThumbnailAssetId ? [oldThumbnailAssetId] : [])
+      ])];
+      await saveDraft('artist', artist._id, {
+        name: artist.name,
+        tier: artist.tier,
+        portfolioFile,
+        portfolioUrl,
+        portfolioThumbnail,
+        ...(pendingPortfolioAssetCleanup.length ? { pendingPortfolioAssetCleanup } : {})
+      });
+      return json({
+        ok: true,
+        artist: artist.name,
+        portfolioUrl: portfolioUrl || portfolioFileUrl,
+        portfolioThumbnailUrl,
+        draft: true,
+        publishRequired: true
+      });
     }
     if (method === 'POST' && path === '/api/upload-artwork') {
       const form = await request.formData();
@@ -1005,6 +1133,8 @@ export function createSanityGateway(env) {
       const drafts = await query('*[_id match "drafts.*"]', { privateRead: true });
       const pendingCoverAssetIds = new Set(drafts.flatMap(draft =>
         Array.isArray(draft.pendingCoverAssetCleanup) ? draft.pendingCoverAssetCleanup : []));
+      const pendingPortfolioAssetIds = new Set(drafts.flatMap(draft =>
+        Array.isArray(draft.pendingPortfolioAssetCleanup) ? draft.pendingPortfolioAssetCleanup : []));
       const mutations = [];
       for (const draft of drafts) {
         const publishedId = draft._id.slice('drafts.'.length);
@@ -1028,6 +1158,18 @@ export function createSanityGateway(env) {
       for (const assetId of pendingCoverAssetIds) await deleteImageAssetIfUnreferenced(assetId);
       for (const doc of coverCleanupDocs) {
         await mutate([{ patch: { id: doc._id, unset: ['pendingCoverAssetCleanup'] } }]);
+      }
+      const portfolioCleanupDocs = (await query('*[_type == "artist"]{_id, pendingPortfolioAssetCleanup}', { privateRead: true }))
+        .filter(doc => Array.isArray(doc.pendingPortfolioAssetCleanup) && doc.pendingPortfolioAssetCleanup.length);
+      for (const doc of portfolioCleanupDocs) {
+        for (const assetId of doc.pendingPortfolioAssetCleanup) pendingPortfolioAssetIds.add(assetId);
+      }
+      for (const assetId of pendingPortfolioAssetIds) {
+        if (assetId.startsWith('image-')) await deleteImageAssetIfUnreferenced(assetId);
+        else await deletePortfolioFileAssetIfUnreferenced(assetId);
+      }
+      for (const doc of portfolioCleanupDocs) {
+        await mutate([{ patch: { id: doc._id, unset: ['pendingPortfolioAssetCleanup'] } }]);
       }
       return json({ ok: true, published: drafts.length, output: `Published ${drafts.length} Sanity document(s).` });
     }

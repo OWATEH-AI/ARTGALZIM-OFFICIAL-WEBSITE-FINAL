@@ -18,9 +18,6 @@
     },
     "chitenge": {
       medium: "Mixed media on canvas",
-      size: "135x165cm",
-      year: "2026",
-      desc: "This mixed‑media painting portrays the suffering of young and elderly women during the slavery period. A smooth, red‑painted fabric resembling a woman’s garment (veil/clothes) symbolizes the blood‑stained attire of enslaved women who endured brutality, perished in childbirth, or died along the journey. The intact red fabric against a dark‑to‑light gradient background conveys the physical and emotional scars of these women, highlighting their resilience and the enduring legacy of their experience in slavery."
     },
     "red ascendant": {
       medium: "Mixed media on canvas",
@@ -605,6 +602,7 @@
         if (!window.PageGalleries) window.PageGalleries = {};
         if (data.artistsCollections) window.PageGalleries.artistsCollections = data.artistsCollections;
         if (data.artworks) window.PageGalleries.artworks = data.artworks;
+        if (data.artistProfiles) window.PageGalleries.artistProfiles = data.artistProfiles;
         window.artworksMetadata = {};
         const metadataScore = artwork => [
           artwork.title && artwork.title !== 'Untitled Artwork',
@@ -761,7 +759,11 @@
   // ---- Artist Page Albums (Initialize Covers) ----
   function initArtistAlbums() {
     const cards = document.querySelectorAll('.ap-album-card, .ap-student-card, .ap-artist-submenu a');
-    if (!cards.length || !window.PageGalleries || !window.PageGalleries.artistsCollections) return;
+    if (!cards.length || !window.PageGalleries) return;
+    const artistCollections = window.PageGalleries.artistsCollections || {};
+    const artistProfiles = window.PageGalleries.artistProfiles || [];
+    const normalize = value => String(value || '').toLowerCase().replace(/[^a-z0-9]/g, '');
+    const profileByName = new Map(artistProfiles.map(profile => [normalize(profile.name), profile]));
 
     cards.forEach(card => {
       // Find the onclick attribute to get the album title
@@ -772,13 +774,13 @@
       if (!albumTitle) return;
 
       const searchTitle = albumTitle.toLowerCase().replace(/[^a-z0-9]/g, '');
-      const matchedKey = Object.keys(window.PageGalleries.artistsCollections).find(key => {
+      const matchedKey = Object.keys(artistCollections).find(key => {
         const normalizedKey = key.toLowerCase().replace(/[^a-z0-9]/g, '');
         return normalizedKey === searchTitle || searchTitle.includes(normalizedKey) || normalizedKey.includes(searchTitle);
       });
 
       if (matchedKey) {
-        const data = window.PageGalleries.artistsCollections[matchedKey];
+        const data = artistCollections[matchedKey];
         const cover = data.cover;
         if (cover) {
           // Find the img inside
@@ -799,30 +801,38 @@
         const name = h3.textContent.trim().toLowerCase();
         
         // Find a representative for the artist if it's a cover
-        const matchedKey = Object.keys(window.PageGalleries.artistsCollections).find(key => 
-            key.toLowerCase().startsWith(name) && window.PageGalleries.artistsCollections[key].cover
+        const matchedKey = Object.keys(artistCollections).find(key =>
+          key.toLowerCase().startsWith(name) && artistCollections[key].cover
         );
 
         if (matchedKey) {
             const img = card.querySelector('.ap-artist-cover img');
             if (img && img.src.includes('data:image')) {
-                img.src = window.PageGalleries.artistsCollections[matchedKey].cover;
+                img.src = artistCollections[matchedKey].cover;
                 img.style.opacity = '1';
             }
         }
     });
 
     const collectionGroups = new Map();
-    Object.entries(window.PageGalleries.artistsCollections).forEach(([key, data]) => {
+    artistProfiles.forEach(profile => {
+      if (!profile.name) return;
+      const key = profile.name;
+      const group = collectionGroups.get(key) || { tier: profile.tier || 'Emerging Artists', categories: [] };
+      group.portfolio = profile;
+      collectionGroups.set(key, group);
+    });
+    Object.entries(artistCollections).forEach(([key, data]) => {
       const [artist, category] = key.split('/');
       if (!artist || !category) return;
       const firstArtwork = (data.images || []).find(item => typeof item === 'object');
       const tier = firstArtwork?.artist_tier || (artist.toUpperCase().includes('KEITH ZENDA') ? 'Keith Zenda' : 'Emerging Artists');
       if (!collectionGroups.has(artist)) collectionGroups.set(artist, { tier, categories: [] });
-      collectionGroups.get(artist).categories.push({ name: category, cover: data.cover });
+      const group = collectionGroups.get(artist);
+      if (!group.portfolio) group.portfolio = profileByName.get(normalize(artist));
+      group.categories.push({ name: category, cover: data.cover });
     });
 
-    const normalize = value => value.toLowerCase().replace(/[^a-z0-9]/g, '');
     collectionGroups.forEach((collection, artist) => {
       if (collection.tier === 'Keith Zenda') {
         const founderSection = document.querySelector('.ap-artist-section');
@@ -905,11 +915,25 @@
         card.querySelector('.ap-artist-cover').addEventListener('click', () => submenu.classList.toggle('open'));
       }
       collection.categories.forEach(category => {
-        const exists = [...submenu.querySelectorAll('a')].some(link => normalize(link.textContent) === normalize(category.name));
-        if (exists) return;
-        const link = document.createElement('a');
+        const link = [...submenu.querySelectorAll('a')].find(item => normalize(item.textContent) === normalize(category.name))
+          || document.createElement('a');
+        link.replaceChildren();
         link.href = '#';
-        link.textContent = `${category.name} →`;
+        link.className = 'ap-album-card';
+        link.removeAttribute('onclick');
+        const imageFrame = document.createElement('div');
+        imageFrame.className = 'ap-album-img';
+        const image = document.createElement('img');
+        image.src = category.cover || '';
+        image.alt = category.name;
+        image.loading = 'lazy';
+        imageFrame.appendChild(image);
+        const label = document.createElement('div');
+        label.className = 'ap-album-label';
+        const heading = document.createElement('h3');
+        heading.textContent = category.name;
+        label.appendChild(heading);
+        link.append(imageFrame, label);
         link.addEventListener('click', event => {
           event.preventDefault();
           window.openAlbumViewer(`${artist} - ${category.name}`);
@@ -942,6 +966,46 @@
       }
     }
   };
+
+  window.openArtistPortfolio = function(artistName) {
+    const profile = (window.PageGalleries?.artistProfiles || []).find(item => normalizeArtistName(item.name) === normalizeArtistName(artistName));
+    const source = profile?.portfolioFileUrl || profile?.portfolioUrl || '';
+    const modal = document.getElementById('albumModal');
+    const title = document.getElementById('albumModalTitle');
+    const grid = document.getElementById('albumModalGrid');
+    if (!profile || !source || !modal || !title || !grid) return;
+
+    let embedUrl;
+    try {
+      const url = new URL(source);
+      if (url.protocol !== 'https:') return;
+      const host = url.hostname.toLowerCase();
+      const driveFile = host === 'drive.google.com' && url.pathname.match(/^\/file\/d\/([^/]+)/);
+      const googleDocument = host === 'docs.google.com' && url.pathname.match(/^\/(document|presentation|spreadsheets)\/d\/([^/]+)/);
+      if (driveFile) embedUrl = `https://drive.google.com/file/d/${encodeURIComponent(driveFile[1])}/preview`;
+      else if (googleDocument) embedUrl = `https://docs.google.com/${googleDocument[1]}/d/${encodeURIComponent(googleDocument[2])}/preview`;
+      else embedUrl = url.href;
+    } catch {
+      return;
+    }
+
+    title.textContent = `${profile.name} Portfolio`;
+    grid.replaceChildren();
+    grid.classList.add('is-document');
+    const frame = document.createElement('iframe');
+    frame.className = 'ap-portfolio-document-frame';
+    frame.src = embedUrl;
+    frame.title = `${profile.name} portfolio document`;
+    frame.loading = 'lazy';
+    frame.referrerPolicy = 'strict-origin-when-cross-origin';
+    grid.appendChild(frame);
+    modal.classList.add('open');
+    document.body.style.overflow = 'hidden';
+  };
+
+  function normalizeArtistName(value) {
+    return String(value || '').toLowerCase().replace(/[^a-z0-9]/g, '');
+  }
 
   // Load artworks metadata globally so all pages and album viewers have access to admin-saved artwork metadata
   let artworksMetaPromise = null;
@@ -1060,16 +1124,52 @@
 
     }
 
+    if (!resolvedArtist) {
+      const normalizeArtist = value => String(value || '').toLowerCase().replace(/[^a-z0-9]/g, '');
+      const artistProfile = (window.PageGalleries?.artistProfiles || []).find(profile =>
+        normalizeArtist(profile.name) === normalizeArtist(albumTitle)
+      );
+      if (artistProfile) resolvedArtist = artistProfile.name;
+    }
+
     let images = albumData ? albumData.images : [];
     // Clear old contents
+    grid.classList.remove('is-document');
     grid.innerHTML = '';
+
+    const normalizeArtist = value => String(value || '').toLowerCase().replace(/[^a-z0-9]/g, '');
+    const artistProfile = (window.PageGalleries?.artistProfiles || []).find(profile =>
+      normalizeArtist(profile.name) === normalizeArtist(resolvedArtist)
+    );
+    if (artistProfile && (artistProfile.portfolioFileUrl || artistProfile.portfolioUrl)) {
+      const portfolioCard = document.createElement('div');
+      portfolioCard.className = 'album-img-wrapper ap-portfolio-preview';
+      const content = document.createElement('div');
+      content.className = 'ap-portfolio-preview-content';
+      const image = document.createElement('img');
+      image.src = artistProfile.portfolioThumbnailUrl || 'images/logo.jpg';
+      image.alt = `${artistProfile.name} portfolio`;
+      image.loading = 'lazy';
+      const action = document.createElement('button');
+      action.type = 'button';
+      action.className = 'ap-portfolio-open-btn';
+      action.textContent = 'View Artist Portfolio';
+      action.addEventListener('click', event => {
+        event.preventDefault();
+        event.stopPropagation();
+        window.openArtistPortfolio(artistProfile.name);
+      });
+      content.append(image, action);
+      portfolioCard.appendChild(content);
+      grid.appendChild(portfolioCard);
+    }
     
     // If no images in folder, show empty message
     if (!images || images.length === 0) {
-      grid.innerHTML = `<div style="grid-column:1/-1; text-align:center; padding:3rem; color:var(--text-muted); font-family:var(--font-body);">
-        <p style="font-size:1.1rem; margin-bottom:0.5rem;">No artworks yet</p>
-        <p style="font-size:0.85rem; opacity:0.6;">Please check back later for updates.</p>
-      </div>`;
+      const emptyState = document.createElement('div');
+      emptyState.style.cssText = 'grid-column:1/-1; text-align:center; padding:3rem; color:var(--text-muted); font-family:var(--font-body);';
+      emptyState.innerHTML = '<p style="font-size:1.1rem; margin-bottom:0.5rem;">No artworks yet</p><p style="font-size:0.85rem; opacity:0.6;">Please check back later for updates.</p>';
+      grid.appendChild(emptyState);
     } else {
       // Inject the images
       images.forEach(artworkData => {
@@ -1368,6 +1468,7 @@
     const modal = document.getElementById('albumModal');
     if (modal) {
       modal.classList.remove('open');
+      document.getElementById('albumModalGrid')?.classList.remove('is-document');
       if (document.getElementById('inquiryChoiceBox')?.style.display !== 'flex') {
         document.body.style.overflow = '';
       }

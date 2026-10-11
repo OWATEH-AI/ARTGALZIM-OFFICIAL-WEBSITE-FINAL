@@ -248,6 +248,19 @@ function showVideoDownloadStatus(size) {
   activeVideoDownloadCountdown = { notice, timer };
 }
 
+function startVideoDownload(url, size, filename = '') {
+  if (!url) return false;
+  showVideoDownloadStatus(size);
+  const link = document.createElement('a');
+  link.href = safeMediaUrl(url);
+  link.download = filename;
+  link.rel = 'noopener noreferrer';
+  document.body.appendChild(link);
+  link.click();
+  link.remove();
+  return true;
+}
+
 function createPremiumVideoPlayer({
   videoUrl,
   downloadUrl = '',
@@ -343,7 +356,10 @@ function createPremiumVideoPlayer({
       return;
     }
     if (downloadUrl) {
-      showVideoDownloadStatus(downloadSize);
+      e.preventDefault();
+      const cleanName = (title || 'artgalzim-video').replace(/[^a-z0-9_-]/gi, '_');
+      const filename = cleanName.endsWith('.mp4') ? cleanName : `${cleanName}.mp4`;
+      startVideoDownload(resolvedDownloadUrl, downloadSize, filename);
       popover.classList.remove('is-open');
     } else {
       const cleanName = (title || 'artgalzim-video').replace(/[^a-z0-9_-]/gi, '_');
@@ -421,15 +437,6 @@ function createPremiumVideoPlayer({
     }
   });
 
-  const playBtn = document.createElement('button');
-  playBtn.type = 'button';
-  playBtn.className = 'ag-player-btn ag-btn-play';
-  playBtn.setAttribute('aria-label', 'Play');
-  playBtn.title = 'Play (Space)';
-  const PLAY_SVG = `<svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>`;
-  const PAUSE_SVG = `<svg viewBox="0 0 24 24"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>`;
-  playBtn.innerHTML = PLAY_SVG;
-
   const nextBtn = document.createElement('button');
   nextBtn.type = 'button';
   nextBtn.className = 'ag-player-btn ag-btn-next';
@@ -472,7 +479,7 @@ function createPremiumVideoPlayer({
   timeDisplay.className = 'ag-player-time';
   timeDisplay.innerHTML = `<span class="ag-time-cur">0:00</span><span class="ag-time-sep">/</span><span class="ag-time-dur">0:00</span>`;
 
-  leftGroup.append(prevBtn, playBtn, nextBtn, volGroup, timeDisplay);
+  leftGroup.append(prevBtn, nextBtn, volGroup, timeDisplay);
 
   const rightGroup = document.createElement('div');
   rightGroup.className = 'ag-controls-group';
@@ -510,27 +517,21 @@ function createPremiumVideoPlayer({
       video.pause();
     }
   }
-  playBtn.addEventListener('click', (e) => { e.stopPropagation(); togglePlay(); });
   bigPlay.addEventListener('click', (e) => { e.stopPropagation(); togglePlay(); });
   overlay.addEventListener('click', (e) => { e.stopPropagation(); togglePlay(); });
 
   video.addEventListener('play', () => {
     container.classList.add('is-playing');
     container.classList.remove('is-paused');
-    playBtn.innerHTML = PAUSE_SVG;
-    playBtn.setAttribute('aria-label', 'Pause');
     resetIdleTimer();
   });
   video.addEventListener('pause', () => {
     container.classList.remove('is-playing');
     container.classList.add('is-paused');
-    playBtn.innerHTML = PLAY_SVG;
-    playBtn.setAttribute('aria-label', 'Play');
     container.classList.remove('user-idle');
   });
   video.addEventListener('ended', () => {
     container.classList.remove('is-playing');
-    playBtn.innerHTML = PLAY_SVG;
     if (nextVideo && onNavigate) {
       onNavigate(nextVideo);
     }
@@ -2545,10 +2546,15 @@ function renderTv() {
     downloadBtn.innerHTML = `<svg viewBox="0 0 24 24"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg> Download`;
     downloadBtn.addEventListener('click', () => {
       if (effectiveVideoUrl && hasUploadedVideo) {
-        const a = document.createElement('a');
-        a.href = effectiveVideoUrl;
-        a.download = activeVideo.attachmentName || 'artgalzim-video.mp4';
-        a.click();
+        const download = getSanityVideoDownload(activeVideo);
+        if (download.url) {
+          startVideoDownload(download.url, download.size, activeVideo.attachmentName || 'artgalzim-video.mp4');
+        } else {
+          const link = document.createElement('a');
+          link.href = effectiveVideoUrl;
+          link.download = activeVideo.attachmentName || 'artgalzim-video.mp4';
+          link.click();
+        }
       } else {
         showTvToast('High-definition download available for gallery members');
       }

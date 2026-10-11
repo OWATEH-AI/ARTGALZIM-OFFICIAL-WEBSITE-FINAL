@@ -59,6 +59,17 @@ export const schemaTypes = [
         type: 'string',
         options: { list: artistTierOptions, layout: 'radio' },
         validation: rule => rule.required()
+      }),
+      defineField({ name: 'portfolioFile', title: 'Portfolio PDF', type: 'file' }),
+      defineField({ name: 'portfolioUrl', title: 'Portfolio Document URL', type: 'url' }),
+      defineField({ name: 'portfolioThumbnail', title: 'Portfolio Thumbnail', type: 'image', options: { hotspot: true } }),
+      defineField({
+        name: 'pendingPortfolioAssetCleanup',
+        title: 'Pending Portfolio Asset Cleanup',
+        type: 'array',
+        of: [defineArrayMember({ type: 'string' })],
+        hidden: true,
+        readOnly: true
       })
     ],
     preview: { select: { title: 'name', subtitle: 'tier' } }
