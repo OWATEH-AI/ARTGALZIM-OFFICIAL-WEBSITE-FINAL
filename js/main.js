@@ -918,6 +918,13 @@
         card.appendChild(submenu);
         card.querySelector('.ap-artist-cover').addEventListener('click', () => submenu.classList.toggle('open'));
       }
+      const defaultCategories = ['Abstract', 'Portraits', 'Commissions'];
+      if (collection.tier === 'Emerging Artists') {
+        const categoryNames = new Set(collection.categories.map(category => normalize(category.name)));
+        defaultCategories.forEach(name => {
+          if (!categoryNames.has(normalize(name))) collection.categories.push({ name, cover: null });
+        });
+      }
       const categoryOrder = ['Abstract', 'Portraits', 'Commissions'];
       const orderedCategories = [...collection.categories].sort((first, second) => {
         const firstIndex = categoryOrder.indexOf(first.name);
